@@ -98,7 +98,6 @@ export function UniversityMatchCard({
 						<p className="text-xs font-semibold text-gray-800 group-hover:text-pink-600 transition-colors duration-300 truncate max-w-[60px]">
 							{match.me.name}
 						</p>
-						<p className="text-xs text-gray-500">{match.me.school}</p>
 					</div>
 				</div>
 
@@ -183,7 +182,6 @@ export function UniversityMatchCard({
 						<p className="text-xs font-semibold text-gray-800 group-hover:text-purple-600 transition-colors duration-300 truncate max-w-[60px]">
 							{match.other.name}
 						</p>
-						<p className="text-xs text-gray-500">{match.other.school}</p>
 					</div>
 				</div>
 			</div>
