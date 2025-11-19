@@ -78,9 +78,26 @@ export function CelebrityOfTheDayCard({ faceId }: CelebrityOfTheDayCardProps) {
 
 	if (isLoading) {
 		return (
-			<Card className="mb-6 animate-pulse bg-gradient-to-r from-purple-50 to-pink-50">
-				<div className="p-6">
-					<div className="h-24 bg-gray-200 rounded"></div>
+			<Card className="py-0 animate-pulse bg-gradient-to-r from-purple-50 via-pink-50 to-purple-50 border-2 border-purple-300">
+				<div className="p-4">
+					{/* Badge skeleton */}
+					<div className="mb-3">
+						<div className="h-6 w-40 bg-purple-200 rounded-full"></div>
+					</div>
+
+					{/* Content skeleton */}
+					<div className="flex gap-4 items-start">
+						{/* Image skeleton */}
+						<div className="w-20 h-20 flex-shrink-0 rounded-full bg-purple-200"></div>
+
+						{/* Info skeleton */}
+						<div className="flex-1 space-y-2">
+							<div className="h-5 bg-purple-200 rounded w-3/4"></div>
+							<div className="h-4 bg-purple-200 rounded w-1/3"></div>
+							<div className="h-8 bg-purple-200 rounded w-1/2"></div>
+							<div className="h-4 bg-purple-200 rounded w-full"></div>
+						</div>
+					</div>
 				</div>
 			</Card>
 		);
@@ -93,21 +110,18 @@ export function CelebrityOfTheDayCard({ faceId }: CelebrityOfTheDayCardProps) {
 
 	return (
 		<Card className="py-0 bg-gradient-to-r from-purple-50 via-pink-50 to-purple-50 border-2 border-purple-300 shadow-lg hover:shadow-xl transition-shadow duration-300">
-			<div className="p-6">
-				{/* Header */}
-				<div className="flex items-center justify-between mb-4">
-					<Badge className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-1.5 text-sm font-semibold shadow-md">
+			<div className="p-4">
+				{/* Header Badge - Top left */}
+				<div className="mb-3">
+					<Badge className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-3 py-1 text-xs font-semibold shadow-md">
 						⭐ Celebrity of the Day
 					</Badge>
-					{/* <span className="text-sm text-purple-700 font-medium">
-            {timeLeft}
-          </span> */}
 				</div>
 
-				{/* Content */}
-				<div className="flex gap-6 items-center">
+				{/* Content - Horizontal layout */}
+				<div className="flex gap-4 items-start">
 					{/* Celebrity Image */}
-					<div className="relative w-24 h-24 rounded-full overflow-hidden flex-shrink-0 border-4 border-white shadow-xl">
+					<div className="relative w-20 h-20 flex-shrink-0 rounded-full overflow-hidden border-4 border-white shadow-xl">
 						<BlurImage
 							src={data.celebrity.image_url}
 							alt={data.celebrity.name}
@@ -118,24 +132,24 @@ export function CelebrityOfTheDayCard({ faceId }: CelebrityOfTheDayCardProps) {
 
 					{/* Info */}
 					<div className="flex-1 min-w-0">
-						<h3 className="text-xl font-bold text-gray-900 mb-1 truncate">
+						<h3 className="text-lg font-bold text-gray-900 mb-0.5">
 							{data.celebrity.name}
 						</h3>
-						<p className="text-sm text-purple-600 font-medium capitalize mb-3">
+						<p className="text-xs text-purple-600 font-medium capitalize mb-2">
 							{data.celebrity.category}
 						</p>
 
 						{/* Match Score */}
-						<div className="flex items-baseline gap-2 mb-2">
+						<div className="flex items-baseline gap-1.5 mb-2">
 							<span className="text-3xl font-bold text-purple-600">
 								{matchPercentage}%
 							</span>
-							<span className="text-sm text-gray-600">Match</span>
+							<span className="text-xs text-gray-600 uppercase">Match</span>
 						</div>
 
 						{/* Bio */}
 						{data.celebrity.bio && (
-							<p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
+							<p className="text-xs text-gray-600 line-clamp-2 leading-relaxed">
 								{data.celebrity.bio}
 							</p>
 						)}
