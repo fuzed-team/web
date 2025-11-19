@@ -82,23 +82,22 @@ export function UniversityMatchCard({
 
 			{/* Main content with left-center-right layout */}
 			<div className="flex items-center justify-between mb-4">
-				{/* Current User (Me) */}
+				{/* Current User (Me) - Updated to show "You" instead of name */}
 				<div className="flex flex-col items-center gap-2">
 					<div className="relative group/avatar">
 						<div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full blur-[2px]" />
 						<BlurImage
 							src={match.me.image}
-							alt={match.me.name}
+							alt="You"
 							width={56}
 							height={56}
 							className="relative w-14 h-14 rounded-full border-3 border-white shadow-lg group-hover/avatar:scale-110 transition-transform duration-300"
 						/>
 					</div>
 					<div className="flex flex-col items-center">
-						<p className="text-xs font-semibold text-gray-800 group-hover:text-pink-600 transition-colors duration-300 truncate max-w-[60px]">
-							{match.me.name}
+						<p className="text-xs font-semibold text-gray-800 group-hover:text-pink-600 transition-colors duration-300">
+							You
 						</p>
-						<p className="text-xs text-gray-500">{match.me.school}</p>
 					</div>
 				</div>
 
@@ -183,7 +182,6 @@ export function UniversityMatchCard({
 						<p className="text-xs font-semibold text-gray-800 group-hover:text-purple-600 transition-colors duration-300 truncate max-w-[60px]">
 							{match.other.name}
 						</p>
-						<p className="text-xs text-gray-500">{match.other.school}</p>
 					</div>
 				</div>
 			</div>

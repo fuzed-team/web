@@ -16,14 +16,14 @@ interface NavItem {
 	href: string;
 }
 
+// UPDATED 2025-11-18: Removed "Live Matches" per client feedback
+// Users should only see their own matches, not public feed
 const navItems: NavItem[] = [
-	{ name: "Live Matches", href: "/" },
-	{ name: "Your Matches", href: "/your-matches" },
-	{ name: "Message", href: "/chat" },
+	// { name: "Your Matches", href: "/your-matches" },
+	// { name: "Message", href: "/chat" },
 ];
 
 const navItemsMobile: NavItem[] = [
-	{ name: "Live Matches", href: "/" },
 	{ name: "Your Matches", href: "/your-matches" },
 	{ name: "Message", href: "/chat" },
 	{ name: "Profile", href: "/profile" },
@@ -108,7 +108,10 @@ export function Header({ loading = false }: { loading?: boolean }) {
 							whileHover={{ scale: 1.02 }}
 							transition={{ type: "spring", stiffness: 400, damping: 25 }}
 						>
-							<Link href="/" className="flex items-center space-x-3">
+							<Link
+								href="/your-matches"
+								className="flex items-center space-x-3"
+							>
 								<div className="relative">
 									<div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-rose-500 via-rose-600 to-rose-700 shadow-lg">
 										<Heart className="h-5 w-5 text-white" />

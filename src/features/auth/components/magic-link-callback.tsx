@@ -53,7 +53,7 @@ export function MagicLinkCallback() {
 				}
 
 				toast.success("Successfully signed in!");
-				router.push("/");
+				router.push("/your-matches");
 			} catch (error) {
 				console.error("Auth callback error:", error);
 				toast.error(

@@ -25,7 +25,9 @@ import {
 } from "@/components/ui/dialog";
 import { useGenerateBaby } from "../../api/generate-baby";
 import { useBabyForMatch } from "../../api/get-baby";
+import { useMatchDetails } from "../../api/get-match-details";
 import type { MatchMode } from "../../store/user-matches";
+import { generateMatchMessage } from "../../utils/generate-match-message";
 
 interface BabyGeneratorProps {
 	matchId?: string;
@@ -55,6 +57,14 @@ export const BabyGenerator = ({
 	const [showMutualDialog, setShowMutualDialog] = useState(false);
 	const isLiveMatch = mode === "live-match";
 
+	// Fetch match details with commonalities
+	const { data: matchDetails } = useMatchDetails({
+		matchId,
+		queryConfig: {
+			enabled: !!matchId,
+		},
+	});
+
 	const generateBabyMutation = useGenerateBaby({
 		mutationConfig: {
 			onSuccess: (data) => {
@@ -68,7 +78,12 @@ export const BabyGenerator = ({
 				if (data.mutual_connection) {
 					setMutualConnection(data.mutual_connection);
 					setShowMutualDialog(true);
-					toast.success("It's a match! Chat unlocked! 💬");
+
+					// Generate personalized match message based on commonalities
+					const matchMessage = generateMatchMessage(
+						matchDetails?.commonalities || [],
+					);
+					toast.success(`${matchMessage} Chat unlocked! 💬`);
 				} else {
 					toast.success("Baby generated! Notification sent. 👶");
 				}
@@ -470,6 +485,15 @@ export const BabyGenerator = ({
 							</motion.div>
 						</DialogTitle>
 						<DialogDescription className="text-center space-y-4 pt-4">
+							{/* Commonality Message */}
+							<motion.p
+								initial={{ opacity: 0, y: 10 }}
+								animate={{ opacity: 1, y: 0 }}
+								transition={{ delay: 0.2 }}
+								className="text-base text-gray-700 font-medium"
+							>
+								{generateMatchMessage(matchDetails?.commonalities || [])}
+							</motion.p>
 							<motion.p
 								initial={{ opacity: 0, y: 10 }}
 								animate={{ opacity: 1, y: 0 }}

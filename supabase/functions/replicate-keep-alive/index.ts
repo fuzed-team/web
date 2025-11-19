@@ -51,9 +51,10 @@ Deno.serve(async (req) => {
 				},
 				body: JSON.stringify({
 					version:
-						"eca7af967ef6eb1d8b3c02274421eaff1ebaa9a5ab9a1404d9b0eccfb29a8e48",
+						"c6767fb94776ea415f803079200ec4ab70c370a898ea4cff407d0e854b555f88",
 					input: {
 						image: TEST_IMAGE_URL,
+						analysis_level: "health",
 					},
 				}),
 			},

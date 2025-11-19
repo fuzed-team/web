@@ -19,20 +19,18 @@ export function HomeContent() {
 			<main className="pt-24 min-h-screen bg-gradient-subtle px-4 sm:px-6 lg:px-8">
 				<div className="container mx-auto pb-4 sm:pb-6 lg:pb-8">
 					{/* Two Column Layout */}
-					<div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-6xl mx-auto">
-						{!isMobile && (
-							<div className="space-y-8 mx-0 sm:mx-4">
-								<UploadPhoto className={cn(isMobile && !user && "hidden")} />
-								{user?.image && <UserMatch />}
-							</div>
-						)}
+					<div className="grid grid-cols-1 gap-4 max-w-4xl mx-auto">
+						<div className="space-y-8 mx-0 sm:mx-4">
+							<UploadPhoto />
+							{user?.image && <UserMatch />}
+						</div>
 
-						<LiveMatch />
+						{/* <LiveMatch /> */}
 					</div>
 
 					<MatchDialog />
 				</div>
-				<MatchNavMobile />
+				{/* <MatchNavMobile /> */}
 			</main>
 		</RootLayout>
 	);

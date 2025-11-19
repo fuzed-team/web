@@ -2,6 +2,7 @@
 
 import { Users } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { useUser } from "@/features/auth/api/get-me";
 import { useUserMatch } from "@/features/matching/api/get-user-match";
 import { useMatchId } from "@/features/matching/store/user-matches";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -49,6 +50,7 @@ export const UniversityMatchTab = ({
 }: UniversityMatchTabProps) => {
 	const isMobile = useIsMobile();
 	const matchId = useMatchId();
+	const user = useUser();
 	const { data: userMatches, isLoading } = useUserMatch({
 		input: {
 			faceId: activePhotoId!,
@@ -63,27 +65,25 @@ export const UniversityMatchTab = ({
 	const universityMatch: UniversityMatch[] =
 		userMatches && userMatches.length > 0 ? userMatches : [];
 
+	const schoolName = user?.school || "University";
+
 	return (
 		<div className="w-full max-w-4xl mx-auto">
 			<Card
 				className={cn(
-					"p-0 sm:p-6 border-0 shadow-none sm:shadow-soft bg-gradient-card",
+					"p-0 sm:p-6 border-0 shadow-none sm:shadow-soft bg-gradient-card gap-8",
 					isMobile && "bg-transparent",
 				)}
 			>
 				{/* Header Section */}
-				<div className="text-center mb-8">
+				<div className="text-center">
 					<div className="size-12 sm:size-16 mx-auto mb-4 bg-gradient-to-br from-orange-400 to-pink-500 rounded-full flex items-center justify-center shadow-lg">
 						<Users className="w-6 sm:w-8 text-white" />
 					</div>
 					<h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
 						Your Potential Matches
 					</h2>
-					{universityMatch.length > 0 && (
-						<p className="text-sm sm:text-base text-gray-600 leading-relaxed">
-							Click on someone to see your baby together!
-						</p>
-					)}
+					<p className="text-sm text-gray-600 font-medium">{schoolName}</p>
 				</div>
 
 				{/* Matches List */}
