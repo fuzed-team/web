@@ -20,12 +20,10 @@ export function HomeContent() {
 				<div className="container mx-auto pb-4 sm:pb-6 lg:pb-8">
 					{/* Two Column Layout */}
 					<div className="grid grid-cols-1 gap-4 max-w-4xl mx-auto">
-						{!isMobile && (
-							<div className="space-y-8 mx-0 sm:mx-4">
-								<UploadPhoto className={cn(isMobile && !user && "hidden")} />
-								{user?.image && <UserMatch />}
-							</div>
-						)}
+						<div className="space-y-8 mx-0 sm:mx-4">
+							<UploadPhoto />
+							{user?.image && <UserMatch />}
+						</div>
 
 						{/* <LiveMatch /> */}
 					</div>
