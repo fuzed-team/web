@@ -1,121 +1,101 @@
-# Client Feedback Improvements - Pre-Launch Polish
+# Client Feedback Improvements - Updated Requirements
 
-**Status:** ✅ Completed (Except Celebrity of the Day - Pending Client Confirmation)
+**Status:** 🚧 In Progress
 **Created:** 2025-11-16
-**Completed:** 2025-11-16
+**Updated:** 2025-11-18
 **Priority:** High (Pre-launch requirement)
 
 ---
 
 ## Overview
 
-Implementation of client feedback to polish the application before launch. Focus on improving mobile UX by simplifying feed structure, adding time-based celebrity features, enhancing match messaging, and expanding admin capabilities.
+**UPDATED 2025-11-18:** Client has provided new requirements that simplify and modify the original plan:
+1. **Remove Live Matches entirely** - Users can ONLY see their own matches
+2. **Single Celebrity of the Day** - One celebrity for all users (not gender-based)
+3. **Display changes** - Show "You matched with John" instead of "Sarah matched with John"
+4. **Celebrity location** - Display at top of Your Matches feed (not Live Matches)
+
+This document has been updated to reflect the simplified requirements.
 
 ---
 
-## Client Requirements
+## Client Requirements (Updated 2025-11-18)
 
-### 1. Mobile Flow Simplification ✅
-**Requirement:** Single stream focus, remove Celebrity tab from "Your Matches"
+### 1. Remove Live Matches Feed 🚫
+**Requirement:** Hide the public Live Matches page - users should ONLY see their own matches
 
 **Current State:**
-- 2 feeds: "Live Matches" (global) and "Your Matches" (personal)
-- "Your Matches" has 2 tabs: University + Celebrity
+- "Live Matches" page shows ALL user-to-user matches across the platform
+- Users can see other people's couples (e.g., "Sarah matched with John (85%)")
+- Navigation includes link to both Live Matches and Your Matches
 
 **Target State:**
-- Keep both feeds but simplify "Your Matches" to University only
-- Remove Celebrity tab entirely from "Your Matches"
+- Remove Live Matches page from navigation completely
+- Comment out live-matches route (keep code for potential future use)
+- Users can ONLY access "Your Matches" page showing their own matches
+- Backend API endpoint stays functional but unused
 
 ---
 
 ### 2. Celebrity of the Day Feature 🌟
-**Requirement:** Display one celebrity per day (24-hour rotation) for each gender
+**Requirement:** Display ONE celebrity per day (24-hour rotation) for ALL users
 
 **Current State:**
-- Celebrity matching shows all matched celebrities
+- Celebrity matching shows all matched celebrities in separate tab
 - No time-based rotation
-- Displayed in separate tab
+- Displayed in separate Celebrity tab under Your Matches
 
 **Target State:**
-- Global celebrity of the day (all users see same celebrity)
-- One male + one female celebrity per 24 hours
-- Displayed in separate section at top of "Live Matches" feed
+- Global celebrity of the day (all users see the SAME single celebrity)
+- Only 1 celebrity total (not gender-based)
+- Show to all users regardless of their match score with that celebrity
+- Displayed at the TOP of "Your Matches" feed (not Live Matches)
+- Distinguished styling (different color/highlight) to show it's not a student
 - Automatic rotation at midnight
+- Expires at end of day
 
 ---
 
-### 3. University Tab Enhancement 🎓
-**Requirement:** Replace generic "University" label with actual school name, remove redundant labels
+### 3. Match Display Text Update 💬
+**Requirement:** Change match display to show "You" instead of user's name
 
 **Current State:**
-- Tab labeled "University" (generic)
-- School name shown below each person's photo on match cards
+- Match display shows: "Sarah matched with John (85%)"
+- Uses both users' names in the display
 
 **Target State:**
-- Tab shows user's school name (e.g., "Columbia University")
-- Remove school labels from match cards (redundant since everyone in feed is from same school)
+- Match display shows: "You matched with John (85%)"
+- Current user is always referred to as "You"
+- Only shows the other person's name
 
 ---
 
-### 4. Match Commonality Messages 💬
-**Requirement:** Show what algorithm found in common when users match
+---
 
-**Current State:**
-- Mutual match notification: "It's a match! Chat unlocked! 💬"
-- No details about why they matched
+### Out of Scope for This Update
 
-**Target State:**
-- Display commonalities based on existing facial analysis:
-  - Facial geometry similarity (>80%)
-  - Age compatibility (±2 years)
-  - Similar symmetry scores
-  - Matching skin tone
-  - Similar expressions
-- Show message like: "It's a match! You both have similar facial symmetry and age. Chat unlocked! 💬"
+The following features from the original plan are NOT included in this update:
+
+- ❌ University Tab Enhancement (rename to school name, remove labels)
+- ❌ Match Commonality Messages (show what users have in common)
+- ❌ Admin Panel - School Management
+- ❌ Remove Celebrity Tab from Your Matches (already completed)
+
+These may be implemented in future iterations if needed.
 
 ---
 
-### 5. Admin Panel - School Management 🔧
-**Requirement:** Basic school management functionality
+## Technical Implementation Plan (Updated 2025-11-18)
 
-**Current State:**
-- Admin panel exists with 3 sections: Matching Algorithm, Rate Limits, Feature Toggles
-- No school management capabilities
-
-**Target State:**
-- New "Schools" section in admin panel
-- View all schools in system with statistics:
-  - School name
-  - User count
-  - Active users (last 7 days)
-  - Total matches generated
+**Total Estimated Time:** 14 hours
 
 ---
 
-## Technical Implementation Plan
+### **TASK 1: Database Migration - Celebrity Daily Rotation** ⏱️ 2 hours
 
-### **TASK 1: Remove Celebrity Tab** ⏱️ 2 hours
+**Migration File:** `supabase/migrations/029_celebrity_daily_rotation.sql`
 
-**Files to Modify:**
-- `/src/app/(authenticated)/your-matches/page.tsx`
-- `/src/features/matching/components/user-match/user-match.tsx`
-
-**Changes:**
-1. Remove "Celebrity" tab from tabs array
-2. Remove `celebrity-match-tab` import and component
-3. Keep only "University" tab
-4. Remove celebrity API calls from this page context
-
-**Testing:**
-- Verify "Your Matches" page only shows University tab
-- Confirm no console errors
-- Check mobile and desktop views
-
----
-
-### **TASK 2: Celebrity of the Day** ⏱️ 16 hours
-
-#### 2.1 Database Migration (4 hours)
+**Purpose:** Add fields to track featured celebrity and create automatic daily rotation
 
 **New Table: `daily_celebrities`**
 ```sql
