@@ -9,10 +9,29 @@ import { UploadPhoto } from "@/features/matching/components/upload-photo/upload-
 import { UserMatch } from "@/features/matching/components/user-match/user-match";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
+import StudentLanding from "./student-landing";
+import MinimalHero from "./mini-hero";
 
 export function HomeContent() {
 	const isMobile = useIsMobile();
-	const { data: user } = useMe();
+	const { data: user, isLoading } = useMe();
+
+	if (isLoading) {
+		return (
+			<RootLayout>
+				<div className="min-h-screen" />
+			</RootLayout>
+		);
+	}
+
+	if (!user) {
+		return (
+			// <RootLayout>
+			// 	<StudentLanding />
+			// </RootLayout>
+			<StudentLanding />
+		);
+	}
 
 	return (
 		<RootLayout>
