@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useUser } from "@/features/auth/api/get-me";
+import type { Commonality } from "@/features/matching/utils/generate-match-message";
 import { cn } from "@/lib/utils";
 import { useMessages } from "../api/get-messages";
 import { useSendMessage } from "../api/send-message";
@@ -23,6 +24,7 @@ interface ChatRoomProps {
 			last_seen?: string | null;
 		};
 		baby_image: string | null;
+		commonalities?: Commonality[];
 	};
 	onBack?: () => void;
 	className?: string;
@@ -83,6 +85,7 @@ export function ChatRoom({
 			<ChatHeader
 				otherUser={connection.other_user}
 				babyImage={connection.baby_image}
+				commonalities={connection.commonalities}
 				onBack={handleBack}
 			/>
 

@@ -4,6 +4,8 @@ import { ArrowLeft } from "lucide-react";
 import { BlurImage } from "@/components/blur-image";
 import { Button } from "@/components/ui/button";
 import { usePresenceStatus } from "@/features/presence/hooks/use-presence-status";
+import { CommonalitiesBadge } from "@/features/matching/components/commonalities-badge";
+import type { Commonality } from "@/features/matching/utils/generate-match-message";
 import { cn } from "@/lib/utils";
 
 interface ChatHeaderProps {
@@ -14,10 +16,15 @@ interface ChatHeaderProps {
 		last_seen?: string | null;
 	};
 	babyImage: string | null;
+	commonalities?: Commonality[];
 	onBack?: () => void;
 }
 
-export function ChatHeader({ otherUser, onBack }: ChatHeaderProps) {
+export function ChatHeader({
+	otherUser,
+	commonalities,
+	onBack,
+}: ChatHeaderProps) {
 	const { isOnline, statusText } = usePresenceStatus(
 		otherUser.id,
 		otherUser.last_seen,
@@ -48,9 +55,20 @@ export function ChatHeader({ otherUser, onBack }: ChatHeaderProps) {
 					<h2 className="font-semibold text-gray-900 dark:text-white truncate">
 						{otherUser.name}
 					</h2>
+
+					{/* Commonalities badges */}
+					{commonalities && commonalities.length > 0 && (
+						<div className="mt-1">
+							<CommonalitiesBadge
+								commonalities={commonalities}
+								variant="full"
+							/>
+						</div>
+					)}
+
 					<p
 						className={cn(
-							"text-sm",
+							"text-sm mt-1",
 							isOnline
 								? "text-green-600 dark:text-green-500"
 								: "text-gray-500 dark:text-gray-400",

@@ -2,6 +2,7 @@ import { BlurImage } from "@/components/blur-image";
 import { Separator } from "@/components/ui/separator";
 import { OnlineIndicator } from "@/features/presence/components/online-indicator";
 import { usePresenceStatus } from "@/features/presence/hooks/use-presence-status";
+import { generateShortSummary } from "@/features/matching/utils/generate-match-message";
 import { cn } from "@/lib/utils";
 import type { MutualConnection } from "../types";
 
@@ -69,6 +70,13 @@ export function ConnectionItem({
 						>
 							{statusText}
 						</div>
+
+						{/* Commonalities summary */}
+						{connection.commonalities && connection.commonalities.length > 0 && (
+							<div className="text-xs text-muted-foreground mt-0.5">
+								{generateShortSummary(connection.commonalities)}
+							</div>
+						)}
 
 						{/* Last message preview */}
 						{connection.last_message && (

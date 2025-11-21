@@ -1,3 +1,5 @@
+import type { Commonality } from "@/features/matching/utils/generate-match-message";
+
 /**
  * Connection status
  */
@@ -8,6 +10,8 @@ export type ConnectionStatus = "active" | "blocked" | "archived";
  */
 export interface MutualConnection {
 	id: string;
+	match_id: string | null;
+	commonalities: Commonality[];
 	other_user: {
 		id: string;
 		name: string;

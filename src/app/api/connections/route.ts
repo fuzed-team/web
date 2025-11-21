@@ -73,7 +73,7 @@ export const GET = withSession(async ({ supabase, session, searchParams }) => {
 			throw error;
 		}
 
-		// OPTIMIZATION: First collect all face IDs to fetch in one query
+		// OPTIMIZATION: First collect all face IDs and match IDs to fetch in batch
 		const faceIds = (connections || [])
 			.map((conn: any) => {
 				const otherUser =
@@ -84,15 +84,46 @@ export const GET = withSession(async ({ supabase, session, searchParams }) => {
 			})
 			.filter(Boolean);
 
+		const matchIds = (connections || [])
+			.map((conn: any) => conn.match_id)
+			.filter(Boolean);
+
 		// Fetch all faces in one query
 		const { data: faces } = await supabase
 			.from("faces")
 			.select("id, image_path")
 			.in("id", faceIds);
 
+		// Fetch all matches in one query to get face IDs for commonalities
+		const { data: matches } = await supabase
+			.from("matches")
+			.select("id, face_a_id, face_b_id")
+			.in("id", matchIds);
+
 		// Create face ID to image path map
 		const faceMap = new Map(
 			(faces || []).map((f: any) => [f.id, f.image_path]),
+		);
+
+		// Create match ID to match data map
+		const matchMap = new Map(
+			(matches || []).map((m: any) => [m.id, m]),
+		);
+
+		// Batch fetch commonalities for all matches
+		const commonalitiesPromises = (matches || []).map(async (match: any) => {
+			const { data } = await supabase.rpc("get_match_commonalities", {
+				face_id_1: match.face_a_id,
+				face_id_2: match.face_b_id,
+			});
+			return { matchId: match.id, commonalities: data || [] };
+		});
+
+		const commonalitiesResults = await Promise.all(commonalitiesPromises);
+
+		// Create match ID to commonalities map
+		const commonalitiesMap = new Map(
+			commonalitiesResults.map((r) => [r.matchId, r.commonalities]),
 		);
 
 		// Collect all unique image paths
@@ -139,8 +170,15 @@ export const GET = withSession(async ({ supabase, session, searchParams }) => {
 					.neq("sender_id", session.user.id)
 					.is("read_at", null);
 
+				// Get commonalities from cache
+				const commonalities = conn.match_id
+					? commonalitiesMap.get(conn.match_id) || []
+					: [];
+
 				return {
 					id: conn.id,
+					match_id: conn.match_id || null,
+					commonalities,
 					other_user: {
 						id: otherUser.id,
 						name: otherUser.name,
