@@ -11,7 +11,8 @@ export const env = createEnv({
 			.enum(["development", "test", "production"])
 			.default("development"),
 		// Supabase Server Configuration
-		SUPABASE_SIGNED_URL_TTL: z.coerce.number().positive().default(86400),
+		SUPABASE_SIGNED_URL_TTL: z.coerce.number().positive().default(86400), // 24 hours
+		SUPABASE_CELEBRITY_URL_TTL: z.coerce.number().positive().default(604800), // 7 days (celebrity images never change)
 		SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
 		// AI Services - Replicate
 		REPLICATE_API_TOKEN: z.string().min(1),
@@ -45,6 +46,7 @@ export const env = createEnv({
 
 		// Server-side
 		SUPABASE_SIGNED_URL_TTL: process.env.SUPABASE_SIGNED_URL_TTL,
+		SUPABASE_CELEBRITY_URL_TTL: process.env.SUPABASE_CELEBRITY_URL_TTL,
 		SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
 		REPLICATE_API_TOKEN: process.env.REPLICATE_API_TOKEN,
 		REPLICATE_MODEL_VERSION: process.env.REPLICATE_MODEL_VERSION,
