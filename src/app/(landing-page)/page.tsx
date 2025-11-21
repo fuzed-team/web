@@ -1,8 +1,9 @@
 import { redirect } from "next/navigation";
+import { HomeContent } from "@/components/home-content";
 import { createClient } from "@/lib/supabase/server";
-import { HomeContent } from "../components/home-content";
+import { LandingPage } from "./_pages/landing-page";
 
-export default async function HomePage() {
+const HomePage = async () => {
 	const supabase = await createClient();
 
 	const {
@@ -21,9 +22,13 @@ export default async function HomePage() {
 		const isOnboarding = profile && (!profile?.name || !profile?.gender);
 
 		if (profileError || isOnboarding) {
-			redirect("/onboarding");
+			return redirect("/onboarding");
 		}
+
+		return <HomeContent />;
 	}
 
-	return <HomeContent />;
-}
+	return <LandingPage />;
+};
+
+export default HomePage;
