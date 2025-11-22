@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowRightIcon, Sparkles } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { FeatureCard } from "../_components/feature-card";
@@ -12,7 +13,7 @@ import { FEATURES } from "../_utils/constants/features";
 
 export function LandingPage() {
 	return (
-		<div className="overflow-x-hidden scrollbar-hide size-full pt-20 sm:pt-10">
+		<div className="overflow-x-hidden scrollbar-hide size-full pt-10">
 			{/* Hero Section */}
 			<MaxWidthWrapper>
 				<div className="flex flex-col items-center justify-center w-full text-center bg-gradient-to-t from-background">
@@ -62,26 +63,23 @@ export function LandingPage() {
 					{/* Hero Image/Demo */}
 					<AnimationContainer
 						delay={0.2}
-						className="relative pt-20 pb-20 md:py-32 px-2 bg-transparent w-full"
+						className="relative mt-20 p-2 md:py-32 bg-transparent w-full"
 					>
 						<div className="absolute md:top-[10%] left-1/2 gradient w-3/4 -translate-x-1/2 h-1/4 md:h-1/3 inset-0 blur-[5rem] animate-image-glow"></div>
-						<div className="-m-2 rounded-xl p-2 ring-1 ring-inset ring-foreground/20 lg:-m-4 lg:rounded-2xl bg-opacity-50 backdrop-blur-3xl">
+						<div className="-m-2 rounded-xl p-2 ring-1 ring-inset ring-foreground/20 lg:-m-4 lg:rounded-2xl bg-opacity-50">
 							<BorderBeam size={250} duration={12} delay={9} />
 							{/* Placeholder for app screenshot - replace with actual image */}
-							<div className="rounded-md lg:rounded-xl bg-gradient-to-br from-violet-500/20 via-fuchsia-500/20 to-background ring-1 ring-border min-h-[400px] md:min-h-[600px] flex items-center justify-center">
-								<div className="text-center p-8">
-									<Sparkles className="w-16 h-16 mx-auto mb-4 text-primary animate-pulse" />
-									<p className="text-muted-foreground text-lg">
-										App Screenshot Placeholder
-										<br />
-										<span className="text-sm">
-											(Replace with actual dashboard/matching interface)
-										</span>
-									</p>
-								</div>
+							<div className="rounded-md lg:rounded-xl bg-background ring-1 ring-border overflow-hidden">
+								<Image
+									src="/images/mock-up.png"
+									alt="App Screenshot"
+									width={1200}
+									height={800}
+									className="w-full h-auto"
+									unoptimized={true}
+								/>
 							</div>
-							<div className="absolute -bottom-4 inset-x-0 w-full h-1/2 bg-gradient-to-t from-background z-40"></div>
-							<div className="absolute bottom-0 md:-bottom-8 inset-x-0 w-full h-1/4 bg-gradient-to-t from-background z-50"></div>
+							<div className="absolute bottom-0 md:-bottom-8 inset-x-0 w-full h-1/4 bg-gradient-to-t from-background z-50 rounded-b-xl"></div>
 						</div>
 					</AnimationContainer>
 				</div>
