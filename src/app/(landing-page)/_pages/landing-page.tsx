@@ -1,39 +1,18 @@
 "use client";
 
-import { ArrowRightIcon, StarIcon, Sparkles } from "lucide-react";
-import Image from "next/image";
+import { ArrowRightIcon, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardFooter,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
-import {
-	Accordion,
-	AccordionContent,
-	AccordionItem,
-	AccordionTrigger,
-} from "@/components/ui/accordion";
+import { FeatureCard } from "../_components/feature-card";
 import AnimationContainer from "../_components/global/animation-container";
 import MaxWidthWrapper from "../_components/global/max-widht-wrapper";
 import { BorderBeam } from "../_components/ui/border-beam";
-import { LampContainer } from "../_components/ui/lamp";
 import MagicBadge from "../_components/ui/magic-badge";
-import MagicCard from "../_components/ui/magic-card";
-import { FeatureCard } from "../_components/feature-card";
-import { HowItWorksStep } from "../_components/how-it-works-step";
 import { FEATURES } from "../_utils/constants/features";
-import { HOW_IT_WORKS_STEPS, PROCESS_DESCRIPTION } from "../_utils/constants/how-it-works";
-import { REVIEWS, TRUST_BADGES, APP_STATS } from "../_utils/constants/misc";
-import { FAQ } from "../_utils/constants/faq";
 
 export function LandingPage() {
 	return (
-		<div className="overflow-x-hidden scrollbar-hide size-full">
+		<div className="overflow-x-hidden scrollbar-hide size-full pt-20 sm:pt-10">
 			{/* Hero Section */}
 			<MaxWidthWrapper>
 				<div className="flex flex-col items-center justify-center w-full text-center bg-gradient-to-t from-background">
@@ -58,7 +37,8 @@ export function LandingPage() {
 							</span>
 						</h1>
 						<p className="mb-12 text-lg tracking-tight text-muted-foreground md:text-xl text-balance max-w-2xl">
-							Discover your doppelgängers, match with celebrities, and connect with lookalikes
+							Find your perfect match, match with celebrities, and connect with
+							lookalikes
 							<br className="hidden md:block" />
 							<span className="hidden md:block">
 								using advanced AI face recognition technology.
@@ -67,15 +47,15 @@ export function LandingPage() {
 						<div className="flex items-center justify-center whitespace-nowrap gap-4 z-50">
 							<Button asChild size="lg">
 								<Link href={"/your-matches"} className="flex items-center">
-									Get Started - Upload Photo
+									Get Started
 									<ArrowRightIcon className="w-4 h-4 ml-2" />
 								</Link>
 							</Button>
-							<Button asChild variant="outline" size="lg">
+							{/* <Button asChild variant="outline" size="lg">
 								<Link href={"/how-it-works"}>
 									Learn More
 								</Link>
-							</Button>
+							</Button> */}
 						</div>
 					</AnimationContainer>
 
@@ -94,7 +74,9 @@ export function LandingPage() {
 									<p className="text-muted-foreground text-lg">
 										App Screenshot Placeholder
 										<br />
-										<span className="text-sm">(Replace with actual dashboard/matching interface)</span>
+										<span className="text-sm">
+											(Replace with actual dashboard/matching interface)
+										</span>
 									</p>
 								</div>
 							</div>
@@ -105,34 +87,7 @@ export function LandingPage() {
 				</div>
 			</MaxWidthWrapper>
 
-			{/* Stats Section */}
-			<MaxWidthWrapper>
-				<AnimationContainer delay={0.4}>
-					<div className="py-14">
-						<div className="mx-auto px-4 md:px-8">
-							<div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-								<div>
-									<div className="text-4xl font-bold text-foreground">{APP_STATS.totalUsers}</div>
-									<div className="text-sm text-muted-foreground mt-2">Active Users</div>
-								</div>
-								<div>
-									<div className="text-4xl font-bold text-foreground">{APP_STATS.matchesCreated}</div>
-									<div className="text-sm text-muted-foreground mt-2">Matches Created</div>
-								</div>
-								<div>
-									<div className="text-4xl font-bold text-foreground">{APP_STATS.babiesGenerated}</div>
-									<div className="text-sm text-muted-foreground mt-2">AI Babies Generated</div>
-								</div>
-								<div>
-									<div className="text-4xl font-bold text-foreground">{APP_STATS.celebrityMatches}</div>
-									<div className="text-sm text-muted-foreground mt-2">Celebrity Matches</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</AnimationContainer>
-			</MaxWidthWrapper>
-
+			{/* Stats Section - Removed for simplicity */}
 			{/* Features Section */}
 			<MaxWidthWrapper className="pt-10">
 				<AnimationContainer delay={0.1}>
@@ -142,7 +97,8 @@ export function LandingPage() {
 							Powerful AI-Driven Features
 						</h2>
 						<p className="mt-4 text-center lg:text-center text-lg text-muted-foreground max-w-2xl">
-							Experience the next generation of social connection with our cutting-edge face matching technology
+							Experience the next generation of social connection with our
+							cutting-edge face matching technology
 						</p>
 					</div>
 				</AnimationContainer>
@@ -152,173 +108,11 @@ export function LandingPage() {
 					))}
 				</div>
 			</MaxWidthWrapper>
-
-			{/* How It Works Section */}
-			<MaxWidthWrapper className="py-10">
-				<AnimationContainer delay={0.1}>
-					<div className="flex flex-col items-center lg:items-center justify-center w-full py-8 max-w-xl mx-auto">
-						<MagicBadge title={PROCESS_DESCRIPTION.title} />
-						<h2 className="text-center lg:text-center text-3xl md:text-5xl !leading-[1.1] font-medium font-heading text-foreground mt-6">
-							{PROCESS_DESCRIPTION.subtitle}
-						</h2>
-						<p className="mt-4 text-center lg:text-center text-lg text-muted-foreground max-w-lg">
-							Start finding your face matches in minutes with our simple and intuitive process
-						</p>
-					</div>
-				</AnimationContainer>
-				<div className="flex flex-col gap-12 py-12 max-w-4xl mx-auto">
-					{HOW_IT_WORKS_STEPS.map((step, idx) => (
-						<HowItWorksStep key={idx} {...step} index={idx} />
-					))}
-				</div>
-				<AnimationContainer delay={0.6}>
-					<div className="flex justify-center mt-8">
-						<Button asChild size="lg">
-							<Link href={"/your-matches"}>
-								{PROCESS_DESCRIPTION.cta}
-								<ArrowRightIcon className="w-4 h-4 ml-2" />
-							</Link>
-						</Button>
-					</div>
-				</AnimationContainer>
-			</MaxWidthWrapper>
-
-			{/* Trust/Security Section */}
-			<MaxWidthWrapper className="py-10">
-				<AnimationContainer delay={0.1}>
-					<div className="flex flex-col items-center lg:items-center justify-center w-full py-8 max-w-xl mx-auto">
-						<MagicBadge title="Trust & Security" />
-						<h2 className="text-center lg:text-center text-3xl md:text-5xl !leading-[1.1] font-medium font-heading text-foreground mt-6">
-							Your Privacy is Our Priority
-						</h2>
-						<p className="mt-4 text-center lg:text-center text-lg text-muted-foreground max-w-lg">
-							We use industry-leading security and privacy measures to protect your data
-						</p>
-					</div>
-				</AnimationContainer>
-				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 py-8">
-					{TRUST_BADGES.map((badge, idx) => (
-						<AnimationContainer delay={0.1 * idx} key={idx}>
-							<MagicCard className="p-6 text-center">
-								<div className="flex flex-col items-center">
-									<div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-										<badge.icon className="w-6 h-6 text-primary" />
-									</div>
-									<h3 className="font-semibold mb-2">{badge.title}</h3>
-									<p className="text-sm text-muted-foreground">{badge.description}</p>
-								</div>
-							</MagicCard>
-						</AnimationContainer>
-					))}
-				</div>
-			</MaxWidthWrapper>
-
-			{/* Reviews Section */}
-			<MaxWidthWrapper className="py-10">
-				<AnimationContainer delay={0.1}>
-					<div className="flex flex-col items-center lg:items-center justify-center w-full py-8 max-w-xl mx-auto">
-						<MagicBadge title="Testimonials" />
-						<h2 className="text-center lg:text-center text-3xl md:text-5xl !leading-[1.1] font-medium font-heading text-foreground mt-6">
-							What Our Users Say
-						</h2>
-						<p className="mt-4 text-center lg:text-center text-lg text-muted-foreground max-w-lg">
-							Join thousands of users who have found their matches
-						</p>
-					</div>
-				</AnimationContainer>
-				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 py-10">
-					{REVIEWS.map((review, index) => (
-						<AnimationContainer delay={0.1 * index} key={index}>
-							<MagicCard className="md:p-0 h-full">
-								<Card className="flex flex-col w-full border-none h-full">
-									<CardHeader className="space-y-0">
-										<div className="flex items-center gap-3">
-											<img
-												src={review.avatar}
-												alt={review.name}
-												className="w-12 h-12 rounded-full"
-											/>
-											<div>
-												<CardTitle className="text-lg font-medium text-foreground">
-													{review.name}
-												</CardTitle>
-												<CardDescription>{review.username}</CardDescription>
-											</div>
-										</div>
-									</CardHeader>
-									<CardContent className="space-y-4 pb-4 flex-grow">
-										<p className="text-muted-foreground">{review.review}</p>
-									</CardContent>
-									<CardFooter className="w-full space-x-1">
-										{Array.from({ length: review.rating }, (_, i) => (
-											<StarIcon
-												key={i}
-												className="w-4 h-4 fill-yellow-500 text-yellow-500"
-											/>
-										))}
-									</CardFooter>
-								</Card>
-							</MagicCard>
-						</AnimationContainer>
-					))}
-				</div>
-			</MaxWidthWrapper>
-
-			{/* FAQ Section */}
-			<MaxWidthWrapper className="py-10">
-				<AnimationContainer delay={0.1}>
-					<div className="flex flex-col items-center lg:items-center justify-center w-full py-8 max-w-xl mx-auto">
-						<MagicBadge title="FAQ" />
-						<h2 className="text-center lg:text-center text-3xl md:text-5xl !leading-[1.1] font-medium font-heading text-foreground mt-6">
-							Frequently Asked Questions
-						</h2>
-						<p className="mt-4 text-center lg:text-center text-lg text-muted-foreground max-w-lg">
-							Got questions? We've got answers.
-						</p>
-					</div>
-				</AnimationContainer>
-				<AnimationContainer delay={0.2}>
-					<div className="max-w-3xl mx-auto py-8">
-						<Accordion type="single" collapsible className="w-full">
-							{FAQ.map((faq) => (
-								<AccordionItem key={faq.id} value={faq.id}>
-									<AccordionTrigger className="text-left">
-										{faq.question}
-									</AccordionTrigger>
-									<AccordionContent className="text-muted-foreground">
-										{faq.answer}
-									</AccordionContent>
-								</AccordionItem>
-							))}
-						</Accordion>
-					</div>
-				</AnimationContainer>
-			</MaxWidthWrapper>
-
-			{/* CTA Section */}
-			<MaxWidthWrapper className="mt-20 max-w-[100vw] overflow-x-hidden scrollbar-hide">
-				<AnimationContainer delay={0.1}>
-					<LampContainer>
-						<div className="flex flex-col items-center justify-center relative w-full text-center">
-							<h2 className="bg-gradient-to-b from-neutral-200 to-neutral-400 py-4 bg-clip-text text-center text-4xl md:text-7xl !leading-[1.15] font-medium font-heading tracking-tight text-transparent mt-8">
-								Ready to find your match?
-							</h2>
-							<p className="text-muted-foreground mt-6 max-w-md mx-auto">
-								Join thousands of users discovering their doppelgängers and connecting
-								with lookalikes through our AI-powered platform.
-							</p>
-							<div className="mt-6">
-								<Button asChild size="lg">
-									<Link href={"/your-matches"}>
-										Start Matching Now
-										<ArrowRightIcon className="w-4 h-4 ml-2" />
-									</Link>
-								</Button>
-							</div>
-						</div>
-					</LampContainer>
-				</AnimationContainer>
-			</MaxWidthWrapper>
+			{/* How It Works Section - Removed for simplicity */}
+			{/* Trust/Security Section - Removed for simplicity */}
+			{/* Reviews Section - Removed for simplicity */}
+			{/* FAQ Section - Removed for simplicity */}
+			{/* CTA Section - Removed for simplicity */}
 		</div>
 	);
 }
