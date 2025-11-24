@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import Celeb1 from "@/assets/mock-data/celeb-1.png";
 import { BlurImage } from "@/components/blur-image";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -44,13 +45,33 @@ async function fetchFeaturedCelebrity(
 export function CelebrityOfTheDayCard({ faceId }: CelebrityOfTheDayCardProps) {
 	const [timeLeft, setTimeLeft] = useState("");
 
-	const { data, isLoading, error } = useQuery({
-		queryKey: ["featured-celebrity", faceId],
-		queryFn: () => fetchFeaturedCelebrity(faceId),
-		enabled: !!faceId, // Only fetch when faceId is available
-		staleTime: 1000 * 60 * 30, // 30 minutes
-		refetchOnWindowFocus: false,
-	});
+	// MOCK DATA FOR SCREENSHOT
+	const mockData: FeaturedCelebrity = {
+		celebrity: {
+			id: "mock-leo",
+			name: "Leonardo DiCaprio",
+			bio: "American actor and film producer. Known for his work in biopics and period films.",
+			category: "Actor",
+			image_path: "",
+			image_url:
+				"/_next/image?url=%2Fassets%2Fmock-data%2Fceleb-1.png&w=256&q=75",
+			featured_until: new Date(Date.now() + 1000 * 60 * 60 * 24).toISOString(),
+		},
+		similarity_score: 0.62,
+		is_featured: true,
+	};
+
+	const data = mockData;
+	const error = null;
+	const isLoading = false;
+
+	// const { data, isLoading, error } = useQuery({
+	// 	queryKey: ["featured-celebrity", faceId],
+	// 	queryFn: () => fetchFeaturedCelebrity(faceId),
+	// 	enabled: !!faceId, // Only fetch when faceId is available
+	// 	staleTime: 1000 * 60 * 30, // 30 minutes
+	// 	refetchOnWindowFocus: false,
+	// });
 
 	useEffect(() => {
 		if (!data?.celebrity?.featured_until) return;
@@ -123,10 +144,10 @@ export function CelebrityOfTheDayCard({ faceId }: CelebrityOfTheDayCardProps) {
 					{/* Celebrity Image */}
 					<div className="relative w-20 h-20 flex-shrink-0 rounded-full overflow-hidden border-4 border-white shadow-xl">
 						<BlurImage
-							src={data.celebrity.image_url}
+							src={Celeb1}
 							alt={data.celebrity.name}
 							fill
-							className="object-cover"
+							className="object-cover object-top"
 						/>
 					</div>
 

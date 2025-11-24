@@ -1,6 +1,11 @@
 "use client";
 
 import { Users } from "lucide-react";
+import Female1 from "@/assets/mock-data/female-1.png";
+import Female2 from "@/assets/mock-data/female-2.png";
+import Male1 from "@/assets/mock-data/male-1.png";
+import Male2 from "@/assets/mock-data/male-2.png";
+import Male3 from "@/assets/mock-data/male-3.png";
 import { Card } from "@/components/ui/card";
 import { useUser } from "@/features/auth/api/get-me";
 import { useUserMatch } from "@/features/matching/api/get-user-match";
@@ -14,13 +19,13 @@ export interface UniversityMatch {
 	id: string;
 	me: {
 		name: string;
-		image: string;
+		image: string | any;
 		age: number;
 		school: string;
 	};
 	other: {
 		name: string;
-		image: string;
+		image: string | any;
 		age: number;
 		school: string;
 	};
@@ -48,22 +53,108 @@ interface UniversityMatchTabProps {
 export const UniversityMatchTab = ({
 	activePhotoId,
 }: UniversityMatchTabProps) => {
-	const isMobile = useIsMobile();
-	const matchId = useMatchId();
-	const user = useUser();
-	const { data: userMatches, isLoading } = useUserMatch({
-		input: {
-			faceId: activePhotoId!,
-			limit: 50,
-			skip: 0,
-		},
-		queryConfig: {
-			enabled: !!activePhotoId,
-		},
-	});
+	// MOCK HOOKS FOR SCREENSHOT
+	const isMobile = false; // useIsMobile();
+	const matchId = null; // useMatchId();
+	const user = { school: "University of Arts" }; // useUser();
+	const isLoading = false;
+	// const { data: userMatches, isLoading } = useUserMatch({
+	// 	input: {
+	// 		faceId: activePhotoId!,
+	// 		limit: 50,
+	// 		skip: 0,
+	// 	},
+	// 	queryConfig: {
+	// 		enabled: !!activePhotoId,
+	// 	},
+	// });
 
-	const universityMatch: UniversityMatch[] =
-		userMatches && userMatches.length > 0 ? userMatches : [];
+	// MOCK DATA FOR SCREENSHOT
+	const MOCK_MATCHES: UniversityMatch[] = [
+		{
+			id: "match-1",
+			me: {
+				name: "Me",
+				image: Female1,
+				age: 20,
+				school: "University of Arts",
+			},
+			other: {
+				name: "John",
+				image: Male1,
+				age: 21,
+				school: "University of Arts",
+			},
+			matchPercentage: 68,
+			numberOfMatches: 1,
+			timestamp: "2 hours ago",
+			isNew: true,
+			matches: [],
+		},
+		{
+			id: "match-2",
+			me: {
+				name: "Me",
+				image: Female1,
+				age: 20,
+				school: "University of Arts",
+			},
+			other: {
+				name: "Mike",
+				image: Male3,
+				age: 22,
+				school: "University of Arts",
+			},
+			matchPercentage: 70,
+			numberOfMatches: 1,
+			timestamp: "5 hours ago",
+			isNew: false,
+			matches: [],
+		},
+		{
+			id: "match-3",
+			me: {
+				name: "Me",
+				image: Female1,
+				age: 20,
+				school: "University of Arts",
+			},
+			other: {
+				name: "David",
+				image: Male2,
+				age: 20,
+				school: "University of Arts",
+			},
+			matchPercentage: 60,
+			numberOfMatches: 1,
+			timestamp: "1 day ago",
+			isNew: false,
+			matches: [],
+		},
+		{
+			id: "match-4",
+			me: {
+				name: "Me",
+				image: Female1,
+				age: 20,
+				school: "University of Arts",
+			},
+			other: {
+				name: "Chris",
+				image: Male1,
+				age: 23,
+				school: "University of Arts",
+			},
+			matchPercentage: 62,
+			numberOfMatches: 1,
+			timestamp: "2 days ago",
+			isNew: false,
+			matches: [],
+		},
+	];
+
+	const universityMatch: UniversityMatch[] = MOCK_MATCHES;
+	// userMatches && userMatches.length > 0 ? userMatches : [];
 
 	const schoolName = user?.school || "University";
 
@@ -71,7 +162,7 @@ export const UniversityMatchTab = ({
 		<div className="w-full max-w-4xl mx-auto">
 			<Card
 				className={cn(
-					"p-0 sm:p-6 border-0 shadow-none sm:shadow-soft bg-gradient-card gap-8",
+					"p-0 sm:p-6 border-0 shadow-none sm:shadow-soft bg-transparent gap-8",
 					isMobile && "bg-transparent",
 				)}
 			>

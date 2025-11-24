@@ -91,7 +91,7 @@ export function UniversityMatchCard({
 							alt="You"
 							width={56}
 							height={56}
-							className="relative w-14 h-14 rounded-full border-3 border-white shadow-lg group-hover/avatar:scale-110 transition-transform duration-300"
+							className="relative w-14 h-14 rounded-full border-3 border-white shadow-lg group-hover/avatar:scale-110 transition-transform duration-300 object-cover object-top"
 						/>
 					</div>
 					<div className="flex flex-col items-center">
@@ -175,7 +175,7 @@ export function UniversityMatchCard({
 							alt={match.other.name}
 							width={56}
 							height={56}
-							className="relative w-14 h-14 rounded-full border-3 border-white shadow-lg group-hover/avatar:scale-110 transition-transform duration-300"
+							className="relative w-14 h-14 rounded-full border-3 border-white shadow-lg group-hover/avatar:scale-110 transition-transform duration-300 object-cover object-top"
 						/>
 					</div>
 					<div className="flex flex-col items-center">
