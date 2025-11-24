@@ -16,7 +16,7 @@ export function LandingPage() {
 		<div className="overflow-x-hidden scrollbar-hide size-full pt-10">
 			{/* Hero Section */}
 			<MaxWidthWrapper>
-				<div className="flex flex-col items-center justify-center w-full text-center bg-gradient-to-t from-background">
+				<div className="flex flex-col items-center justify-center w-full text-center bg-gradient-to-t from-background rounded-b-xl sm:bg-none">
 					<AnimationContainer className="flex flex-col items-center justify-center w-full text-center">
 						{/** biome-ignore lint/a11y/useButtonType: false positive */}
 						<button className="group relative grid overflow-hidden rounded-full px-4 py-1 shadow-[0_1000px_0_0_hsl(0_0%_20%)_inset] transition-colors duration-200">
@@ -63,7 +63,7 @@ export function LandingPage() {
 					{/* Hero Image/Demo */}
 					<AnimationContainer
 						delay={0.2}
-						className="relative mt-20 p-2 md:py-32 bg-transparent w-full"
+						className="relative mt-20 p-2 md:py-32 bg-transparent w-full sm:hidden"
 					>
 						<div className="absolute md:top-[10%] left-1/2 gradient w-3/4 -translate-x-1/2 h-1/4 md:h-1/3 inset-0 blur-[5rem] animate-image-glow"></div>
 						<div className="-m-2 rounded-xl p-2 ring-1 ring-inset ring-foreground/20 lg:-m-4 lg:rounded-2xl bg-opacity-50">
