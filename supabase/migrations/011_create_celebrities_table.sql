@@ -1,3 +1,10 @@
+-- ============================================================================
+-- ⚠️  DEPRECATED - DO NOT USE THIS MIGRATION
+-- ============================================================================
+-- This migration has been superseded by newer migrations that handle celebrity
+-- data differently. This file is kept for historical reference only.
+-- ============================================================================
+
 -- Migration 011: Create Celebrities Table
 -- Description: Create a dedicated celebrities table with embedded face data (no reference to faces table)
 -- Author: Claude Code

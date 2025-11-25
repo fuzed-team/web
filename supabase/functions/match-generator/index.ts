@@ -16,6 +16,8 @@ interface MatchJob {
 	max_attempts: number;
 	created_at: string;
 	job_type?: string; // 'user_match', 'celebrity_match', or 'both'
+	last_match_window?: string;
+	matches_in_window: number;
 }
 
 interface UserProfile {
@@ -172,15 +174,70 @@ Deno.serve(async (req) => {
 			`User profile: school=${typedProfile.school}, gender=${typedProfile.gender}`,
 		);
 
-		// Fetch match_threshold from system_settings
-		const { data: thresholdSetting } = await supabase
+		// Fetch match_threshold and rate limit settings from system_settings
+		const { data: settings } = await supabase
 			.from("system_settings")
-			.select("value")
-			.eq("key", "match_threshold")
-			.single();
+			.select("key, value")
+			.in("key", [
+				"match_threshold",
+				"match_rate_limit",
+				"match_time_window_minutes",
+			]);
 
-		const matchThreshold = (thresholdSetting?.value as number) ?? 0.5;
-		console.log(`Using match_threshold: ${matchThreshold}`);
+		const getSetting = (key: string, defaultValue: any) => {
+			const setting = settings?.find((s) => s.key === key);
+			return setting?.value ?? defaultValue;
+		};
+
+		const matchThreshold = getSetting("match_threshold", 0.5) as number;
+		const matchRateLimit = getSetting("match_rate_limit", 2) as number;
+		const timeWindowMinutes = getSetting(
+			"match_time_window_minutes",
+			60,
+		) as number;
+
+		console.log(
+			`Settings: threshold=${matchThreshold}, rate_limit=${matchRateLimit}, window=${timeWindowMinutes}m`,
+		);
+
+		// Check rate limit
+		const currentTime = new Date();
+		const windowStartTime = new Date(
+			currentTime.getTime() - timeWindowMinutes * 60 * 1000,
+		);
+
+		// Check if we need to reset the window
+		const isNewWindow =
+			!typedJob.last_match_window ||
+			new Date(typedJob.last_match_window) <= windowStartTime;
+		const currentMatchesInWindow = isNewWindow
+			? 0
+			: typedJob.matches_in_window || 0;
+
+		if (currentMatchesInWindow >= matchRateLimit) {
+			console.log(
+				`Rate limit reached for user ${typedJob.user_id}: ${currentMatchesInWindow}/${matchRateLimit} in window`,
+			);
+
+			// Leave as pending, will be processed after window expires
+			// We could update last_match_window to ensure we don't retry too often if we wanted,
+			// but for now we'll just return early.
+			return new Response(
+				JSON.stringify({
+					success: true,
+					message: "Rate limit reached, job will retry later",
+					processed: false,
+				}),
+				{
+					headers: { ...corsHeaders, "Content-Type": "application/json" },
+					status: 200,
+				},
+			);
+		}
+
+		// Calculate how many matches we can still make
+		const remainingMatches = matchRateLimit - currentMatchesInWindow;
+		console.log(`Can match ${remainingMatches} more faces in this window`);
 
 		// Validate profile has required fields
 		if (!typedProfile.school || !typedProfile.gender) {
@@ -212,7 +269,7 @@ Deno.serve(async (req) => {
 				user_school: typedProfile.school,
 				user_gender: typedProfile.gender,
 				match_threshold: matchThreshold,
-				match_count: 20,
+				match_count: remainingMatches, // Only fetch what we can process
 			},
 		);
 
@@ -370,12 +427,17 @@ Deno.serve(async (req) => {
 			}
 		}
 
-		// Mark job as completed
+		// Mark job as completed and update rate limit counters
 		const { error: completeError } = await supabase
 			.from("match_jobs")
 			.update({
 				status: "completed",
 				completed_at: new Date().toISOString(),
+				// Update window tracking
+				last_match_window: isNewWindow
+					? currentTime.toISOString()
+					: typedJob.last_match_window,
+				matches_in_window: currentMatchesInWindow + userInsertedCount,
 			})
 			.eq("id", typedJob.id);
 
