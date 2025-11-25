@@ -1,5 +1,8 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { getRandomIcebreaker } from "../../utils/icebreakers";
+import {
+	getDynamicIcebreaker,
+	getRandomIcebreaker,
+} from "../../utils/icebreakers";
 import { createAndBroadcastNotification } from "./notifications";
 
 /**
@@ -118,8 +121,29 @@ export async function createMutualConnection(
 		throw connectionError;
 	}
 
-	// Get random icebreaker message
-	const icebreaker = getRandomIcebreaker();
+	// Get match details to find commonalities
+	// We need to fetch the face IDs first to call the RPC
+	const { data: match } = await supabase
+		.from("matches")
+		.select("face_a_id, face_b_id")
+		.eq("id", params.match_id)
+		.single();
+
+	let icebreaker = getRandomIcebreaker();
+
+	if (match) {
+		// Get commonalities using database function
+		const { data: commonalities } = await supabase.rpc(
+			"get_match_commonalities",
+			{
+				face_id_1: match.face_a_id,
+				face_id_2: match.face_b_id,
+			},
+		);
+
+		// Generate dynamic icebreaker if commonalities exist
+		icebreaker = getDynamicIcebreaker(commonalities || []);
+	}
 
 	// Insert icebreaker as first message
 	const { error: messageError } = await supabase.from("messages").insert({

@@ -71,7 +71,7 @@ BEGIN
       commonalities := commonalities || jsonb_build_object(
         'type', 'symmetry',
         'message', 'similar facial symmetry',
-        'detail', format('symmetry scores: %.2f and %.2f', face1.symmetry_score, face2.symmetry_score)
+        'detail', format('symmetry scores: %s and %s', round(face1.symmetry_score::numeric, 2), round(face2.symmetry_score::numeric, 2))
       );
     END IF;
   END IF;
@@ -85,7 +85,7 @@ BEGIN
       commonalities := commonalities || jsonb_build_object(
         'type', 'skin_tone',
         'message', 'similar skin tone',
-        'detail', format('skin tone difference: %.2f (very close)', skin_tone_distance)
+        'detail', format('skin tone difference: %s (very close)', round(skin_tone_distance::numeric, 2))
       );
     END IF;
   END IF;

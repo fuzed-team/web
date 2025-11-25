@@ -9,8 +9,8 @@ import { UploadPhoto } from "@/features/matching/components/upload-photo/upload-
 import { UserMatch } from "@/features/matching/components/user-match/user-match";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
-import StudentLanding from "./student-landing";
 import MinimalHero from "./mini-hero";
+import StudentLanding from "./student-landing";
 
 export function HomeContent() {
 	const isMobile = useIsMobile();

@@ -1,3 +1,8 @@
+import {
+	type Commonality,
+	generateMatchMessage,
+} from "@/features/matching/utils/generate-match-message";
+
 /**
  * Icebreaker message templates for mutual connections
  *
@@ -54,4 +59,17 @@ export function getAllIcebreakers(): string[] {
  */
 export function getIcebreakerCount(): number {
 	return ICEBREAKER_TEMPLATES.length;
+}
+
+/**
+ * Get a dynamic icebreaker message based on commonalities
+ *
+ * @param commonalities - Array of detected commonalities
+ * @returns A personalized icebreaker message or a random one if no commonalities
+ */
+export function getDynamicIcebreaker(commonalities: Commonality[]): string {
+	if (commonalities && commonalities.length > 0) {
+		return generateMatchMessage(commonalities);
+	}
+	return getRandomIcebreaker();
 }

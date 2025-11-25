@@ -1,11 +1,11 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import { BlurImage } from "@/components/blur-image";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import { calculateMatchPercentage } from "@/lib/utils/match-percentage";
 
 interface FeaturedCelebrity {
@@ -24,6 +24,7 @@ interface FeaturedCelebrity {
 
 interface CelebrityOfTheDayCardProps {
 	faceId: string | null;
+	className?: string;
 }
 
 async function fetchFeaturedCelebrity(
@@ -41,7 +42,10 @@ async function fetchFeaturedCelebrity(
 	return response.json();
 }
 
-export function CelebrityOfTheDayCard({ faceId }: CelebrityOfTheDayCardProps) {
+export function CelebrityOfTheDayCard({
+	faceId,
+	className,
+}: CelebrityOfTheDayCardProps) {
 	const [timeLeft, setTimeLeft] = useState("");
 
 	const { data, isLoading, error } = useQuery({
@@ -109,7 +113,12 @@ export function CelebrityOfTheDayCard({ faceId }: CelebrityOfTheDayCardProps) {
 	const matchPercentage = calculateMatchPercentage(data.similarity_score);
 
 	return (
-		<Card className="py-0 bg-gradient-to-r from-purple-50 via-pink-50 to-purple-50 border-2 border-purple-300 shadow-lg hover:shadow-xl transition-shadow duration-300">
+		<Card
+			className={cn(
+				"py-0 bg-gradient-to-r from-purple-50 via-pink-50 to-purple-50 border-2 border-purple-300 shadow-lg hover:shadow-xl transition-shadow duration-300",
+				className,
+			)}
+		>
 			<div className="p-4">
 				{/* Header Badge - Top left */}
 				<div className="mb-3">
