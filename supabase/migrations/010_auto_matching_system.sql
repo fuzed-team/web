@@ -1,3 +1,6 @@
+-- ============================================================================
+-- ⚠️  DEPRECATED - DO NOT USE THIS MIGRATION
+-- ============================================================================
 -- Auto-Match Generation System
 -- Created: 2025-10-30
 -- Purpose: Automatically generate face matches when users upload photos
