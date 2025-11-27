@@ -1,6 +1,6 @@
 import { Toaster } from "@/components/ui/sonner";
 import { getMeQueryOptions } from "@/features/auth/api/get-me";
-import "@/styles/old-styles.css";
+import "@/styles/styles.css";
 import {
 	dehydrate,
 	HydrationBoundary,

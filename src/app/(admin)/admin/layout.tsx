@@ -53,6 +53,7 @@ export default async function AdminLayout({
 						<AppSidebar />
 						<SidebarInset
 							className={cn(
+								"bg-transparent",
 								// Set content container, so we can use container queries
 								"@container/content",
 

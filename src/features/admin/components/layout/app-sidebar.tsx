@@ -1,28 +1,30 @@
 "use client";
 
+import { Home } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 import {
 	Sidebar,
 	SidebarContent,
 	SidebarFooter,
 	SidebarHeader,
+	SidebarMenu,
+	SidebarMenuButton,
+	SidebarMenuItem,
 	SidebarRail,
 } from "@/components/ui/sidebar";
 import { useLayout } from "@/features/admin/context/layout-provider";
+import { AppTitle } from "./app-title";
 import { sidebarData } from "./data/sidebar-data";
 import { NavGroup } from "./nav-group";
-import { NavUser } from "./nav-user";
-import { TeamSwitcher } from "./team-switcher";
 
 export function AppSidebar() {
+	const router = useRouter();
 	const { collapsible, variant } = useLayout();
 	return (
 		<Sidebar collapsible={collapsible} variant={variant}>
 			<SidebarHeader>
-				<TeamSwitcher teams={sidebarData.teams} />
-
-				{/* Replace <TeamSwitch /> with the following <AppTitle />
-         /* if you want to use the normal app title instead of TeamSwitch dropdown */}
-				{/* <AppTitle /> */}
+				<AppTitle />
 			</SidebarHeader>
 			<SidebarContent>
 				{sidebarData.navGroups.map((props) => (
@@ -30,7 +32,17 @@ export function AppSidebar() {
 				))}
 			</SidebarContent>
 			<SidebarFooter>
-				<NavUser user={sidebarData.user} />
+				<SidebarMenu>
+					<SidebarMenuItem>
+						<Button
+							variant="link"
+							className="text-muted-foreground"
+							onClick={() => router.push("/")}
+						>
+							<span>Back to Home</span>
+						</Button>
+					</SidebarMenuItem>
+				</SidebarMenu>
 			</SidebarFooter>
 			<SidebarRail />
 		</Sidebar>
