@@ -48,7 +48,8 @@
 		"rules": {
 			"recommended": true,
 			"a11y": {
-				"useSemanticElements": "off"
+				"useSemanticElements": "off",
+				"noSvgWithoutTitle": "off"
 			},
 			"suspicious": {
 				"noUnknownAtRules": "off",

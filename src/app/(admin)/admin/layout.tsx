@@ -1,26 +1,13 @@
-import { Gauge, Settings, ToggleLeft } from "lucide-react";
 import { redirect } from "next/navigation";
-import { Separator } from "@/components/ui/separator";
-import { AdminSidebarNav } from "@/features/admin/components/admin-sidebar-nav";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/features/admin/components/layout/app-sidebar";
+import { SkipToMain } from "@/features/admin/components/skip-to-main";
+import { DirectionProvider } from "@/features/admin/context/direction-provider";
+import { LayoutProvider } from "@/features/admin/context/layout-provider";
+import { SearchProvider } from "@/features/admin/context/search-provider";
 import { createClient } from "@/lib/supabase/server";
-
-const adminSidebarNavItems = [
-	{
-		title: "Matching Algorithm",
-		href: "/admin/matching-algorithm",
-		icon: <Settings size={18} />,
-	},
-	{
-		title: "Rate Limits",
-		href: "/admin/rate-limits",
-		icon: <Gauge size={18} />,
-	},
-	{
-		title: "Feature Toggles",
-		href: "/admin/feature-toggles",
-		icon: <ToggleLeft size={18} />,
-	},
-];
+import { cn } from "@/lib/utils";
+import { getCookie } from "@/lib/utils/cookies";
 
 export default async function AdminLayout({
 	children,
@@ -28,6 +15,7 @@ export default async function AdminLayout({
 	children: React.ReactNode;
 }) {
 	const supabase = await createClient();
+	const defaultOpen = getCookie("sidebar_state") !== "false";
 
 	// Check authentication
 	const {
@@ -57,24 +45,31 @@ export default async function AdminLayout({
 	}
 
 	return (
-		<div className="relative flex w-full flex-1 flex-col h-[100vh]">
-			<main className="container pt-24 px-4 sm:px-6 lg:px-8 flex grow flex-col overflow-hidden mx-auto max-w-6xl">
-				<div className="space-y-0.5">
-					<h1 className="text-2xl font-bold tracking-tight md:text-3xl">
-						Admin Settings
-					</h1>
-					<p className="text-muted-foreground">
-						Manage system settings and configure application behavior.
-					</p>
-				</div>
-				<Separator className="my-4 lg:my-6" />
-				<div className="flex flex-1 flex-col space-y-2 overflow-hidden md:space-y-2 lg:flex-row lg:space-y-0 lg:space-x-12">
-					<aside className="top-0 lg:sticky lg:w-1/5">
-						<AdminSidebarNav items={adminSidebarNavItems} />
-					</aside>
-					<div className="flex w-full overflow-y-hidden p-1">{children}</div>
-				</div>
-			</main>
-		</div>
+		<DirectionProvider>
+			<SearchProvider>
+				<LayoutProvider>
+					<SidebarProvider defaultOpen={defaultOpen}>
+						<SkipToMain />
+						<AppSidebar />
+						<SidebarInset
+							className={cn(
+								// Set content container, so we can use container queries
+								"@container/content",
+
+								// If layout is fixed, set the height
+								// to 100svh to prevent overflow
+								"has-data-[layout=fixed]:h-svh",
+
+								// If layout is fixed and sidebar is inset,
+								// set the height to 100svh - spacing (total margins) to prevent overflow
+								"peer-data-[variant=inset]:has-data-[layout=fixed]:h-[calc(100svh-(var(--spacing)*4))]",
+							)}
+						>
+							{children}
+						</SidebarInset>
+					</SidebarProvider>
+				</LayoutProvider>
+			</SearchProvider>
+		</DirectionProvider>
 	);
 }
