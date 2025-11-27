@@ -92,32 +92,32 @@ Deno.serve(async (req) => {
 			},
 		});
 
-		console.log("Fetching next pending job...");
+		console.log("Fetching pending jobs...");
 
-		// Fetch next pending job (FIFO: oldest first)
-		const { data: job, error: fetchError } = await supabase
+		// Fetch next pending jobs (FIFO: oldest first)
+		// INCREASED LIMIT TO 20 for batch processing (Paid Plan)
+		const { data: jobs, error: fetchError } = await supabase
 			.from("match_jobs")
 			.select("*")
 			.eq("status", "pending")
 			.lte("next_run_at", new Date().toISOString()) // Only fetch jobs ready to run
 			.order("next_run_at", { ascending: true }) // Prioritize by schedule
 			.order("created_at", { ascending: true })
-			.limit(1)
-			.maybeSingle();
+			.limit(20);
 
 		if (fetchError) {
-			console.error("Error fetching job:", fetchError);
-			throw new Error(`Failed to fetch job: ${fetchError.message}`);
+			console.error("Error fetching jobs:", fetchError);
+			throw new Error(`Failed to fetch jobs: ${fetchError.message}`);
 		}
 
 		// No pending jobs
-		if (!job) {
+		if (!jobs || jobs.length === 0) {
 			console.log("No pending jobs in queue");
 			return new Response(
 				JSON.stringify({
 					success: true,
 					message: "No pending jobs",
-					processed: false,
+					processedCount: 0,
 				}),
 				{
 					headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -126,84 +126,11 @@ Deno.serve(async (req) => {
 			);
 		}
 
-		const typedJob = job as MatchJob;
-		console.log(`Processing job ${typedJob.id} for user ${typedJob.user_id}`);
-
-		// Mark job as processing (attempts only increment on failure)
-		const { error: updateError } = await supabase
-			.from("match_jobs")
-			.update({
-				status: "processing",
-				started_at: new Date().toISOString(),
-			})
-			.eq("id", typedJob.id);
-
-		if (updateError) {
-			console.error("Error updating job status:", updateError);
-			throw new Error(
-				`Failed to mark job as processing: ${updateError.message}`,
-			);
-		}
-
-		// Get user profile for filtering and validation
-		console.log(`Fetching profile for user ${typedJob.user_id}`);
-		const { data: profile, error: profileError } = await supabase
-			.from("profiles")
-			.select("id, school, gender, name, default_face_id")
-			.eq("id", typedJob.user_id)
-			.maybeSingle();
-
-		if (profileError || !profile) {
-			const errorMsg = profileError?.message || "Profile not found";
-			console.error("Error fetching profile:", errorMsg);
-
-			// Mark job as failed (no retry for missing profile)
-			await supabase
-				.from("match_jobs")
-				.update({
-					status: "failed",
-					completed_at: new Date().toISOString(),
-					error_message: errorMsg,
-				})
-				.eq("id", typedJob.id);
-
-			throw new Error(errorMsg);
-		}
-
-		const typedProfile = profile as UserProfile;
 		console.log(
-			`User profile: school=${typedProfile.school}, gender=${typedProfile.gender}`,
+			`Found ${jobs.length} pending jobs. Starting batch processing...`,
 		);
 
-		// Validate face is still the user's default
-		if (typedProfile.default_face_id !== typedJob.face_id) {
-			console.log(
-				`Face ${typedJob.face_id} is no longer default for user ${typedJob.user_id}`,
-			);
-
-			await supabase
-				.from("match_jobs")
-				.update({
-					status: "completed",
-					completed_at: new Date().toISOString(),
-					error_message: "Face no longer set as default",
-				})
-				.eq("id", typedJob.id);
-
-			return new Response(
-				JSON.stringify({
-					success: true,
-					message: "Job completed (face no longer default)",
-					processed: false,
-				}),
-				{
-					headers: { ...corsHeaders, "Content-Type": "application/json" },
-					status: 200,
-				},
-			);
-		}
-
-		// Fetch match_threshold and rate limit settings from system_settings
+		// Fetch settings ONCE outside the loop
 		const { data: settings } = await supabase
 			.from("system_settings")
 			.select("key, value")
@@ -225,241 +152,269 @@ Deno.serve(async (req) => {
 			60,
 		) as number;
 
-		console.log(
-			`Settings: threshold=${matchThreshold}, rate_limit=${matchRateLimit}, window=${timeWindowMinutes}m`,
-		);
+		const results = [];
 
-		// Simple rate limiting: just match up to the limit!
-		// Scheduling is handled by next_run_at
-		const remainingMatches = matchRateLimit;
-		console.log(`Matching up to ${remainingMatches} faces`);
+		// Process each job
+		for (const job of jobs) {
+			const typedJob = job as MatchJob;
+			const jobResult = {
+				jobId: typedJob.id,
+				userId: typedJob.user_id,
+				success: false,
+				message: "",
+				userMatchCount: 0,
+				celebrityMatchCount: 0,
+			};
 
-		// Validate profile has required fields
-		if (!typedProfile.school || !typedProfile.gender) {
-			const errorMsg = "User profile missing school or gender";
-			console.error(errorMsg);
-
-			await supabase
-				.from("match_jobs")
-				.update({
-					status: "failed",
-					completed_at: new Date().toISOString(),
-					error_message: errorMsg,
-				})
-				.eq("id", typedJob.id);
-
-			throw new Error(errorMsg);
-		}
-
-		// Find similar faces using advanced matching algorithm (NEW: Sophisticated Scoring)
-		console.log("Searching for similar faces with advanced algorithm...");
-		console.log(
-			`Filters: school="${typedProfile.school}", opposite_gender="${typedProfile.gender}", threshold=${matchThreshold}, limit=20`,
-		);
-
-		const { data: matches, error: searchError } = await supabase.rpc(
-			"find_similar_faces_advanced",
-			{
-				query_face_id: typedJob.face_id,
-				user_school: typedProfile.school,
-				user_gender: typedProfile.gender,
-				match_threshold: matchThreshold,
-				match_count: remainingMatches, // Only fetch what we can process
-			},
-		);
-
-		if (searchError) {
-			console.error("Error searching for similar faces:", searchError);
-
-			// Check if we should retry (increment attempts on failure)
-			if (typedJob.attempts < typedJob.max_attempts) {
-				// Mark as pending to retry later
-				await supabase
-					.from("match_jobs")
-					.update({
-						status: "pending",
-						attempts: typedJob.attempts + 1,
-						error_message: searchError.message,
-					})
-					.eq("id", typedJob.id);
-
+			try {
 				console.log(
-					`Job marked for retry (attempt ${typedJob.attempts + 1}/${typedJob.max_attempts})`,
+					`Processing job ${typedJob.id} for user ${typedJob.user_id}`,
 				);
-			} else {
-				// Max attempts reached, mark as failed
-				await supabase
+
+				// Mark job as processing
+				const { error: updateError } = await supabase
 					.from("match_jobs")
 					.update({
-						status: "failed",
-						attempts: typedJob.attempts + 1,
-						completed_at: new Date().toISOString(),
-						error_message: `Max attempts reached: ${searchError.message}`,
+						status: "processing",
+						started_at: new Date().toISOString(),
 					})
 					.eq("id", typedJob.id);
 
-				console.error("Max retry attempts reached, job failed");
-			}
-
-			throw new Error(`Search failed: ${searchError.message}`);
-		}
-
-		const typedMatches = (matches || []) as SimilarFace[];
-		console.log(`Found ${typedMatches.length} similar faces`);
-
-		// Prepare match records for batch insert
-		// Ensure face_a_id < face_b_id to prevent duplicates (enforced by CHECK constraint)
-		const matchRecords: MatchRecord[] = typedMatches.map((match) => ({
-			face_a_id:
-				typedJob.face_id < match.face_id ? typedJob.face_id : match.face_id,
-			face_b_id:
-				typedJob.face_id < match.face_id ? match.face_id : typedJob.face_id,
-			similarity_score: match.similarity,
-		}));
-
-		console.log(`Inserting ${matchRecords.length} user match records...`);
-
-		// Insert user matches individually to handle duplicates gracefully
-		// (upsert doesn't work well with partial unique indexes using LEAST/GREATEST)
-		// Add 10-second delay between each insert
-		let userInsertedCount = 0;
-		for (let i = 0; i < matchRecords.length; i++) {
-			const userMatch = matchRecords[i];
-
-			const { error: insertError } = await supabase
-				.from("matches")
-				.insert(userMatch)
-				.select();
-
-			if (insertError) {
-				// Check if it's a duplicate error (constraint violation)
-				if (insertError.code === "23505") {
-					// Duplicate key - skip silently
-					console.log(
-						`Skipped duplicate match ${i + 1}/${matchRecords.length}`,
+				if (updateError) {
+					console.error(
+						`Error updating job ${typedJob.id} status:`,
+						updateError,
 					);
+					jobResult.message = `Failed to mark as processing: ${updateError.message}`;
+					results.push(jobResult);
+					continue; // Skip to next job
+				}
+
+				// Get user profile
+				const { data: profile, error: profileError } = await supabase
+					.from("profiles")
+					.select("id, school, gender, name, default_face_id")
+					.eq("id", typedJob.user_id)
+					.maybeSingle();
+
+				if (profileError || !profile) {
+					const errorMsg = profileError?.message || "Profile not found";
+					console.error(
+						`Error fetching profile for job ${typedJob.id}:`,
+						errorMsg,
+					);
+
+					await supabase
+						.from("match_jobs")
+						.update({
+							status: "failed",
+							completed_at: new Date().toISOString(),
+							error_message: errorMsg,
+						})
+						.eq("id", typedJob.id);
+
+					jobResult.message = errorMsg;
+					results.push(jobResult);
 					continue;
 				}
-				// Log other errors but don't fail the entire job
-				console.error(`Error inserting user match: ${insertError.message}`);
-			} else {
-				userInsertedCount++;
-				console.log(`✅ Inserted match ${i + 1}/${matchRecords.length}`);
-			}
 
-			// Wait 10 seconds before next insert (except for the last one)
-			if (i < matchRecords.length - 1) {
-				console.log(`Waiting 10 seconds before next insert...`);
-				await new Promise((resolve) => setTimeout(resolve, 10000));
-			}
-		}
+				const typedProfile = profile as UserProfile;
 
-		console.log(
-			`✅ Inserted ${userInsertedCount} new user match records (${matchRecords.length - userInsertedCount} duplicates skipped)`,
-		);
+				// Validate face is still the user's default
+				if (typedProfile.default_face_id !== typedJob.face_id) {
+					console.log(
+						`Face ${typedJob.face_id} is no longer default for user ${typedJob.user_id}`,
+					);
 
-		// CELEBRITY MATCHING (if job_type allows)
-		let celebrityMatchCount = 0;
-		const jobType = typedJob.job_type || "both";
+					await supabase
+						.from("match_jobs")
+						.update({
+							status: "completed",
+							completed_at: new Date().toISOString(),
+							error_message: "Face no longer set as default",
+						})
+						.eq("id", typedJob.id);
 
-		if (jobType === "celebrity_match" || jobType === "both") {
-			console.log("Generating celebrity matches with advanced algorithm...");
+					jobResult.success = true;
+					jobResult.message = "Face no longer default";
+					results.push(jobResult);
+					continue;
+				}
 
-			// Find celebrity matches using the advanced 6-factor algorithm (NEW)
-			const { data: celebrityMatches, error: celebError } = await supabase.rpc(
-				"find_celebrity_matches_advanced",
-				{
-					query_face_id: typedJob.face_id, // Changed from query_embedding to query_face_id
-					user_gender: typedProfile.gender, // Changed from gender_filter to user_gender
-					match_threshold: matchThreshold, // Dynamic threshold from database
-					match_count: 20,
-					category_filter: null, // Optional: filter by actor/musician/athlete
-				},
-			);
+				// Settings fetch removed from here (moved outside loop)
 
-			if (celebError) {
-				console.error("Error finding celebrity matches:", celebError);
-				// Don't fail the entire job, just log the error
-			} else if (celebrityMatches && celebrityMatches.length > 0) {
-				const typedCelebMatches = celebrityMatches as CelebrityMatch[];
-				console.log(`Found ${typedCelebMatches.length} celebrity matches`);
+				// Validate profile has required fields
+				if (!typedProfile.school || !typedProfile.gender) {
+					const errorMsg = "User profile missing school or gender";
+					console.error(errorMsg);
 
-				// Prepare celebrity match records for new celebrity_matches table
-				const celebMatchRecords: CelebrityMatchRecord[] = typedCelebMatches.map(
-					(celeb) => ({
-						face_id: typedJob.face_id,
-						celebrity_id: celeb.celebrity_id,
-						similarity_score: celeb.similarity,
-					}),
+					await supabase
+						.from("match_jobs")
+						.update({
+							status: "failed",
+							completed_at: new Date().toISOString(),
+							error_message: errorMsg,
+						})
+						.eq("id", typedJob.id);
+
+					jobResult.message = errorMsg;
+					results.push(jobResult);
+					continue;
+				}
+
+				// Find similar faces
+				const { data: matches, error: searchError } = await supabase.rpc(
+					"find_similar_faces_advanced",
+					{
+						query_face_id: typedJob.face_id,
+						user_school: typedProfile.school,
+						user_gender: typedProfile.gender,
+						match_threshold: matchThreshold,
+						match_count: matchRateLimit,
+					},
 				);
 
-				// Insert celebrity matches one by one to handle duplicates gracefully
-				let insertedCount = 0;
-				for (const celebMatch of celebMatchRecords) {
-					const { error: celebInsertError } = await supabase
-						.from("celebrity_matches")
-						.insert(celebMatch)
+				if (searchError) {
+					console.error(
+						`Error searching faces for job ${typedJob.id}:`,
+						searchError,
+					);
+
+					if (typedJob.attempts < typedJob.max_attempts) {
+						await supabase
+							.from("match_jobs")
+							.update({
+								status: "pending",
+								attempts: typedJob.attempts + 1,
+								error_message: searchError.message,
+							})
+							.eq("id", typedJob.id);
+					} else {
+						await supabase
+							.from("match_jobs")
+							.update({
+								status: "failed",
+								attempts: typedJob.attempts + 1,
+								completed_at: new Date().toISOString(),
+								error_message: `Max attempts reached: ${searchError.message}`,
+							})
+							.eq("id", typedJob.id);
+					}
+
+					jobResult.message = `Search failed: ${searchError.message}`;
+					results.push(jobResult);
+					continue;
+				}
+
+				const typedMatches = (matches || []) as SimilarFace[];
+
+				// Prepare match records
+				const matchRecords: MatchRecord[] = typedMatches.map((match) => ({
+					face_a_id:
+						typedJob.face_id < match.face_id ? typedJob.face_id : match.face_id,
+					face_b_id:
+						typedJob.face_id < match.face_id ? match.face_id : typedJob.face_id,
+					similarity_score: match.similarity,
+				}));
+
+				// Insert user matches
+				// REMOVED DELAY: Inserting as fast as possible
+				let userInsertedCount = 0;
+				for (let i = 0; i < matchRecords.length; i++) {
+					const userMatch = matchRecords[i];
+					const { error: insertError } = await supabase
+						.from("matches")
+						.insert(userMatch)
 						.select();
 
-					if (celebInsertError) {
-						// Check if it's a duplicate error (constraint violation)
-						if (celebInsertError.code === "23505") {
-							// Duplicate key - skip silently
-							continue;
+					if (insertError) {
+						if (insertError.code !== "23505") {
+							// Ignore duplicates
+							console.error(
+								`Error inserting user match: ${insertError.message}`,
+							);
 						}
-						console.error(
-							`Error inserting celebrity match: ${celebInsertError.message}`,
-						);
 					} else {
-						insertedCount++;
+						userInsertedCount++;
 					}
 				}
 
-				celebrityMatchCount = insertedCount;
+				// Celebrity Matching
+				let celebrityMatchCount = 0;
+				const jobType = typedJob.job_type || "both";
+
+				if (jobType === "celebrity_match" || jobType === "both") {
+					const { data: celebrityMatches, error: celebError } =
+						await supabase.rpc("find_celebrity_matches_advanced", {
+							query_face_id: typedJob.face_id,
+							user_gender: typedProfile.gender,
+							match_threshold: matchThreshold,
+							match_count: 20,
+							category_filter: null,
+						});
+
+					if (!celebError && celebrityMatches && celebrityMatches.length > 0) {
+						const typedCelebMatches = celebrityMatches as CelebrityMatch[];
+						const celebMatchRecords: CelebrityMatchRecord[] =
+							typedCelebMatches.map((celeb) => ({
+								face_id: typedJob.face_id,
+								celebrity_id: celeb.celebrity_id,
+								similarity_score: celeb.similarity,
+							}));
+
+						let insertedCount = 0;
+						for (const celebMatch of celebMatchRecords) {
+							const { error: celebInsertError } = await supabase
+								.from("celebrity_matches")
+								.insert(celebMatch)
+								.select();
+
+							if (!celebInsertError || celebInsertError.code === "23505") {
+								if (!celebInsertError) insertedCount++;
+							}
+						}
+						celebrityMatchCount = insertedCount;
+					}
+				}
+
+				// Calculate next run time
+				const nextRunAt = new Date(Date.now() + timeWindowMinutes * 60 * 1000);
+
+				// Update job status
+				await supabase
+					.from("match_jobs")
+					.update({
+						status: "pending", // Keep pending for continuous matching
+						next_run_at: nextRunAt.toISOString(),
+					})
+					.eq("id", typedJob.id);
+
 				console.log(
-					`✅ Inserted ${celebrityMatchCount} new celebrity match records (${celebMatchRecords.length - insertedCount} duplicates skipped)`,
+					`✅ Job ${typedJob.id} processed: ${userInsertedCount} user, ${celebrityMatchCount} celeb matches`,
 				);
-			} else {
-				console.log("No celebrity matches found");
+
+				jobResult.success = true;
+				jobResult.message = "Completed successfully";
+				jobResult.userMatchCount = userInsertedCount;
+				jobResult.celebrityMatchCount = celebrityMatchCount;
+				results.push(jobResult);
+			} catch (jobError: any) {
+				console.error(
+					`Unexpected error processing job ${typedJob.id}:`,
+					jobError,
+				);
+				jobResult.message = `Unexpected error: ${jobError.message}`;
+				results.push(jobResult);
 			}
 		}
 
-		// Calculate next run time (start of next window)
-		const nextRunAt = new Date(Date.now() + timeWindowMinutes * 60 * 1000);
-
-		// Update job status - KEEP AS PENDING for continuous matching
-		const { error: completeError } = await supabase
-			.from("match_jobs")
-			.update({
-				status: "pending", // Keep pending for continuous matching
-				next_run_at: nextRunAt.toISOString(),
-			})
-			.eq("id", typedJob.id);
-
-		if (completeError) {
-			console.error("Error marking job as completed:", completeError);
-			// Don't throw - matches were inserted successfully
-		}
-
-		console.log(
-			`✅ Job ${typedJob.id} completed successfully with ${userInsertedCount} user matches and ${celebrityMatchCount} celebrity matches`,
-		);
-
-		// Return success response
+		// Return batch summary
 		return new Response(
 			JSON.stringify({
 				success: true,
-				message: "Matches generated successfully",
-				jobId: typedJob.id,
-				userId: typedJob.user_id,
-				userMatchCount: userInsertedCount,
-				celebrityMatchCount: celebrityMatchCount,
-				totalMatchCount: userInsertedCount + celebrityMatchCount,
-				processed: true,
-				matches: typedMatches.map((m) => ({
-					profile_name: m.profile_name,
-					similarity: Math.round(m.similarity * 100) / 100,
-				})),
+				message: `Processed ${results.length} jobs`,
+				processedCount: results.length,
+				results: results,
 			}),
 			{
 				headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -468,12 +423,10 @@ Deno.serve(async (req) => {
 		);
 	} catch (error: any) {
 		console.error("Match generation failed:", error);
-
 		return new Response(
 			JSON.stringify({
 				success: false,
 				error: error.message || "Unknown error",
-				processed: false,
 			}),
 			{
 				headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -500,7 +453,4 @@ Deno.serve(async (req) => {
 
 4. View logs:
    supabase functions logs match-generator --tail
-
-5. Monitor via Supabase Dashboard:
-   Functions → match-generator → Invocations
 */
