@@ -1,11 +1,14 @@
 "use client";
 
 import { Users } from "lucide-react";
+import React from "react";
+import { useInView } from "react-intersection-observer";
 import { Card } from "@/components/ui/card";
 import { useUser } from "@/features/auth/api/get-me";
-import { useUserMatch } from "@/features/matching/api/get-user-match";
+import { useUserMatchInfinite } from "@/features/matching/api/get-user-match";
 import { useMatchId } from "@/features/matching/store/user-matches";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { PAGINATION } from "@/lib/constants/constant";
 import { cn } from "@/lib/utils";
 import { UniversityMatchCard } from "./university-match-card";
 import { UniversityMatchSkeleton } from "./university-match-skeleton";
@@ -51,11 +54,17 @@ export const UniversityMatchTab = ({
 	const isMobile = useIsMobile();
 	const matchId = useMatchId();
 	const user = useUser();
-	const { data: userMatches, isLoading } = useUserMatch({
+	const { ref, inView } = useInView();
+
+	const {
+		data: userMatches,
+		isLoading,
+		isFetchingNextPage,
+		fetchNextPage,
+	} = useUserMatchInfinite({
 		input: {
 			faceId: activePhotoId!,
-			limit: 50,
-			skip: 0,
+			limit: PAGINATION.DEFAULT_LIMIT,
 		},
 		queryConfig: {
 			enabled: !!activePhotoId,
@@ -66,6 +75,12 @@ export const UniversityMatchTab = ({
 		userMatches && userMatches.length > 0 ? userMatches : [];
 
 	const schoolName = user?.school || "University";
+
+	React.useEffect(() => {
+		if (inView) {
+			fetchNextPage();
+		}
+	}, [fetchNextPage, inView]);
 
 	return (
 		<div className="w-full max-w-4xl mx-auto">
@@ -93,17 +108,20 @@ export const UniversityMatchTab = ({
 							<UniversityMatchSkeleton key={index} />
 						))
 					) : universityMatch.length > 0 ? (
-						universityMatch.map((match) => {
-							const isSelected = matchId === match.id;
+						<>
+							{universityMatch.map((match) => {
+								const isSelected = matchId === match.id;
 
-							return (
-								<UniversityMatchCard
-									key={match.id}
-									match={match}
-									isSelected={isSelected}
-								/>
-							);
-						})
+								return (
+									<UniversityMatchCard
+										key={match.id}
+										match={match}
+										isSelected={isSelected}
+									/>
+								);
+							})}
+							<div ref={ref} />
+						</>
 					) : (
 						<div className="text-center py-12">
 							<h3 className="text-xl font-semibold text-gray-600 mb-2">
@@ -114,6 +132,10 @@ export const UniversityMatchTab = ({
 							</p>
 						</div>
 					)}
+					{isFetchingNextPage &&
+						Array.from({ length: 2 }).map((_, index) => (
+							<UniversityMatchSkeleton key={`loading-${index}`} />
+						))}
 				</div>
 			</Card>
 		</div>
