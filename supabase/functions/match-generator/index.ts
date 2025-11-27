@@ -129,13 +129,12 @@ Deno.serve(async (req) => {
 		const typedJob = job as MatchJob;
 		console.log(`Processing job ${typedJob.id} for user ${typedJob.user_id}`);
 
-		// Mark job as processing
+		// Mark job as processing (attempts only increment on failure)
 		const { error: updateError } = await supabase
 			.from("match_jobs")
 			.update({
 				status: "processing",
 				started_at: new Date().toISOString(),
-				attempts: typedJob.attempts + 1,
 			})
 			.eq("id", typedJob.id);
 
@@ -272,13 +271,14 @@ Deno.serve(async (req) => {
 		if (searchError) {
 			console.error("Error searching for similar faces:", searchError);
 
-			// Check if we should retry
-			if (typedJob.attempts + 1 < typedJob.max_attempts) {
+			// Check if we should retry (increment attempts on failure)
+			if (typedJob.attempts < typedJob.max_attempts) {
 				// Mark as pending to retry later
 				await supabase
 					.from("match_jobs")
 					.update({
 						status: "pending",
+						attempts: typedJob.attempts + 1,
 						error_message: searchError.message,
 					})
 					.eq("id", typedJob.id);
@@ -292,6 +292,7 @@ Deno.serve(async (req) => {
 					.from("match_jobs")
 					.update({
 						status: "failed",
+						attempts: typedJob.attempts + 1,
 						completed_at: new Date().toISOString(),
 						error_message: `Max attempts reached: ${searchError.message}`,
 					})
