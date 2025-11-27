@@ -16,8 +16,7 @@ interface MatchJob {
 	max_attempts: number;
 	created_at: string;
 	job_type?: string; // 'user_match', 'celebrity_match', or 'both'
-	last_match_window?: string;
-	matches_in_window: number;
+	next_run_at?: string;
 }
 
 interface UserProfile {
@@ -25,6 +24,7 @@ interface UserProfile {
 	school: string;
 	gender: string;
 	name: string;
+	default_face_id?: string;
 }
 
 interface SimilarFace {
@@ -99,6 +99,8 @@ Deno.serve(async (req) => {
 			.from("match_jobs")
 			.select("*")
 			.eq("status", "pending")
+			.lte("next_run_at", new Date().toISOString()) // Only fetch jobs ready to run
+			.order("next_run_at", { ascending: true }) // Prioritize by schedule
 			.order("created_at", { ascending: true })
 			.limit(1)
 			.maybeSingle();
@@ -144,11 +146,11 @@ Deno.serve(async (req) => {
 			);
 		}
 
-		// Get user profile for filtering
+		// Get user profile for filtering and validation
 		console.log(`Fetching profile for user ${typedJob.user_id}`);
 		const { data: profile, error: profileError } = await supabase
 			.from("profiles")
-			.select("id, school, gender, name")
+			.select("id, school, gender, name, default_face_id")
 			.eq("id", typedJob.user_id)
 			.maybeSingle();
 
@@ -173,6 +175,34 @@ Deno.serve(async (req) => {
 		console.log(
 			`User profile: school=${typedProfile.school}, gender=${typedProfile.gender}`,
 		);
+
+		// Validate face is still the user's default
+		if (typedProfile.default_face_id !== typedJob.face_id) {
+			console.log(
+				`Face ${typedJob.face_id} is no longer default for user ${typedJob.user_id}`,
+			);
+
+			await supabase
+				.from("match_jobs")
+				.update({
+					status: "completed",
+					completed_at: new Date().toISOString(),
+					error_message: "Face no longer set as default",
+				})
+				.eq("id", typedJob.id);
+
+			return new Response(
+				JSON.stringify({
+					success: true,
+					message: "Job completed (face no longer default)",
+					processed: false,
+				}),
+				{
+					headers: { ...corsHeaders, "Content-Type": "application/json" },
+					status: 200,
+				},
+			);
+		}
 
 		// Fetch match_threshold and rate limit settings from system_settings
 		const { data: settings } = await supabase
@@ -200,44 +230,10 @@ Deno.serve(async (req) => {
 			`Settings: threshold=${matchThreshold}, rate_limit=${matchRateLimit}, window=${timeWindowMinutes}m`,
 		);
 
-		// Check rate limit
-		const currentTime = new Date();
-		const windowStartTime = new Date(
-			currentTime.getTime() - timeWindowMinutes * 60 * 1000,
-		);
-
-		// Check if we need to reset the window
-		const isNewWindow =
-			!typedJob.last_match_window ||
-			new Date(typedJob.last_match_window) <= windowStartTime;
-		const currentMatchesInWindow = isNewWindow
-			? 0
-			: typedJob.matches_in_window || 0;
-
-		if (currentMatchesInWindow >= matchRateLimit) {
-			console.log(
-				`Rate limit reached for user ${typedJob.user_id}: ${currentMatchesInWindow}/${matchRateLimit} in window`,
-			);
-
-			// Leave as pending, will be processed after window expires
-			// We could update last_match_window to ensure we don't retry too often if we wanted,
-			// but for now we'll just return early.
-			return new Response(
-				JSON.stringify({
-					success: true,
-					message: "Rate limit reached, job will retry later",
-					processed: false,
-				}),
-				{
-					headers: { ...corsHeaders, "Content-Type": "application/json" },
-					status: 200,
-				},
-			);
-		}
-
-		// Calculate how many matches we can still make
-		const remainingMatches = matchRateLimit - currentMatchesInWindow;
-		console.log(`Can match ${remainingMatches} more faces in this window`);
+		// Simple rate limiting: just match up to the limit!
+		// Scheduling is handled by next_run_at
+		const remainingMatches = matchRateLimit;
+		console.log(`Matching up to ${remainingMatches} faces`);
 
 		// Validate profile has required fields
 		if (!typedProfile.school || !typedProfile.gender) {
@@ -427,17 +423,15 @@ Deno.serve(async (req) => {
 			}
 		}
 
-		// Mark job as completed and update rate limit counters
+		// Calculate next run time (start of next window)
+		const nextRunAt = new Date(Date.now() + timeWindowMinutes * 60 * 1000);
+
+		// Update job status - KEEP AS PENDING for continuous matching
 		const { error: completeError } = await supabase
 			.from("match_jobs")
 			.update({
-				status: "completed",
-				completed_at: new Date().toISOString(),
-				// Update window tracking
-				last_match_window: isNewWindow
-					? currentTime.toISOString()
-					: typedJob.last_match_window,
-				matches_in_window: currentMatchesInWindow + userInsertedCount,
+				status: "pending", // Keep pending for continuous matching
+				next_run_at: nextRunAt.toISOString(),
 			})
 			.eq("id", typedJob.id);
 
