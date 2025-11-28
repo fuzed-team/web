@@ -24,8 +24,6 @@ export function DataTablePagination<TData>({
 	table,
 	pageSizeOptions = [10, 20, 30, 40, 50],
 }: DataTablePaginationProps<TData>) {
-
-
 	return (
 		<div className="flex items-center justify-between px-2">
 			<div className="text-muted-foreground flex-1 text-sm">
@@ -42,6 +40,7 @@ export function DataTablePagination<TData>({
 					>
 						<SelectTrigger
 							className={buttonVariants({
+								variant: "outline",
 								className: "h-8 w-[70px] border-none",
 							})}
 						>
@@ -62,6 +61,7 @@ export function DataTablePagination<TData>({
 				</div>
 				<div className="flex items-center space-x-2">
 					<Button
+						variant="outline"
 						className="hidden h-8 w-8 p-0 lg:flex"
 						onClick={() => table.firstPage()}
 						disabled={!table.getCanPreviousPage()}
@@ -70,6 +70,7 @@ export function DataTablePagination<TData>({
 						<DoubleArrowLeftIcon className="h-4 w-4" />
 					</Button>
 					<Button
+						variant="outline"
 						className="h-8 w-8 p-0"
 						onClick={() => table.previousPage()}
 						disabled={!table.getCanPreviousPage()}
@@ -78,6 +79,7 @@ export function DataTablePagination<TData>({
 						<ChevronLeftIcon className="h-4 w-4" />
 					</Button>
 					<Button
+						variant="outline"
 						className="h-8 w-8 p-0"
 						onClick={() => table.nextPage()}
 						disabled={!table.getCanNextPage()}
@@ -86,6 +88,7 @@ export function DataTablePagination<TData>({
 						<ChevronRightIcon className="h-4 w-4" />
 					</Button>
 					<Button
+						variant="outline"
 						className="hidden h-8 w-8 p-0 lg:flex"
 						onClick={() => table.lastPage()}
 						disabled={!table.getCanNextPage()}

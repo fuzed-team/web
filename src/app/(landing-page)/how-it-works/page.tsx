@@ -1,17 +1,18 @@
-import { Metadata } from "next";
+import { ArrowRightIcon, Brain, Heart, Shield, Zap } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRightIcon, Brain, Shield, Zap, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AnimationContainer from "../_components/global/animation-container";
 import MaxWidthWrapper from "../_components/global/max-widht-wrapper";
-import MagicBadge from "../_components/ui/magic-badge";
 import { HowItWorksStep } from "../_components/how-it-works-step";
-import { HOW_IT_WORKS_STEPS } from "../_utils/constants/how-it-works";
+import MagicBadge from "../_components/ui/magic-badge";
 import { FEATURE_HIGHLIGHTS } from "../_utils/constants/features";
+import { HOW_IT_WORKS_STEPS } from "../_utils/constants/how-it-works";
 
 export const metadata: Metadata = {
 	title: "How It Works | AI Face Matching",
-	description: "Learn how our AI-powered face matching technology works to help you find your doppelgängers and connect with lookalikes.",
+	description:
+		"Learn how our AI-powered face matching technology works to help you find your doppelgängers and connect with lookalikes.",
 };
 
 export default function HowItWorksPage() {
@@ -29,8 +30,8 @@ export default function HowItWorksPage() {
 							</span>
 						</h1>
 						<p className="mt-6 text-lg md:text-xl text-muted-foreground max-w-2xl">
-							Our advanced AI technology analyzes your facial features to find your perfect matches.
-							Here's how it works under the hood.
+							Our advanced AI technology analyzes your facial features to find
+							your perfect matches. Here's how it works under the hood.
 						</p>
 					</AnimationContainer>
 				</div>
@@ -54,7 +55,8 @@ export default function HowItWorksPage() {
 							Powered by Advanced AI
 						</h2>
 						<p className="mt-4 text-lg text-muted-foreground max-w-lg">
-							We use state-of-the-art artificial intelligence to provide accurate and secure face matching
+							We use state-of-the-art artificial intelligence to provide
+							accurate and secure face matching
 						</p>
 					</div>
 				</AnimationContainer>
@@ -70,7 +72,9 @@ export default function HowItWorksPage() {
 							<ul className="space-y-2 text-sm text-muted-foreground">
 								<li className="flex items-start">
 									<span className="mr-2 text-primary">•</span>
-									<span>Deep learning neural networks trained on millions of faces</span>
+									<span>
+										Deep learning neural networks trained on millions of faces
+									</span>
 								</li>
 								<li className="flex items-start">
 									<span className="mr-2 text-primary">•</span>
@@ -87,7 +91,9 @@ export default function HowItWorksPage() {
 					<AnimationContainer delay={0.2}>
 						<div className="p-8 rounded-xl border border-border bg-card hover:border-primary/50 transition-colors">
 							<Zap className="w-12 h-12 text-primary mb-4" />
-							<h3 className="text-2xl font-semibold mb-3">FAL.AI Baby Generation</h3>
+							<h3 className="text-2xl font-semibold mb-3">
+								FAL.AI Baby Generation
+							</h3>
 							<p className="text-muted-foreground mb-4">
 								{FEATURE_HIGHLIGHTS.technology}
 							</p>
@@ -111,7 +117,9 @@ export default function HowItWorksPage() {
 					<AnimationContainer delay={0.3}>
 						<div className="p-8 rounded-xl border border-border bg-card hover:border-primary/50 transition-colors">
 							<Shield className="w-12 h-12 text-primary mb-4" />
-							<h3 className="text-2xl font-semibold mb-3">Privacy & Security</h3>
+							<h3 className="text-2xl font-semibold mb-3">
+								Privacy & Security
+							</h3>
 							<p className="text-muted-foreground mb-4">
 								{FEATURE_HIGHLIGHTS.privacy}
 							</p>
@@ -135,14 +143,18 @@ export default function HowItWorksPage() {
 					<AnimationContainer delay={0.4}>
 						<div className="p-8 rounded-xl border border-border bg-card hover:border-primary/50 transition-colors">
 							<Heart className="w-12 h-12 text-primary mb-4" />
-							<h3 className="text-2xl font-semibold mb-3">Real-time Matching</h3>
+							<h3 className="text-2xl font-semibold mb-3">
+								Real-time Matching
+							</h3>
 							<p className="text-muted-foreground mb-4">
 								{FEATURE_HIGHLIGHTS.instant}
 							</p>
 							<ul className="space-y-2 text-sm text-muted-foreground">
 								<li className="flex items-start">
 									<span className="mr-2 text-primary">•</span>
-									<span>Instant similarity calculations using vector search</span>
+									<span>
+										Instant similarity calculations using vector search
+									</span>
 								</li>
 								<li className="flex items-start">
 									<span className="mr-2 text-primary">•</span>
@@ -180,10 +192,14 @@ export default function HowItWorksPage() {
 									1
 								</div>
 								<div>
-									<h3 className="text-xl font-semibold mb-2">Face Detection & Extraction</h3>
+									<h3 className="text-xl font-semibold mb-2">
+										Face Detection & Extraction
+									</h3>
 									<p className="text-muted-foreground">
-										When you upload a photo, our AI first detects your face in the image and extracts the facial region.
-										It identifies key landmarks like eyes, nose, mouth, and jawline with pixel-perfect precision.
+										When you upload a photo, our AI first detects your face in
+										the image and extracts the facial region. It identifies key
+										landmarks like eyes, nose, mouth, and jawline with
+										pixel-perfect precision.
 									</p>
 								</div>
 							</div>
@@ -197,11 +213,15 @@ export default function HowItWorksPage() {
 									2
 								</div>
 								<div>
-									<h3 className="text-xl font-semibold mb-2">Feature Embedding Generation</h3>
+									<h3 className="text-xl font-semibold mb-2">
+										Feature Embedding Generation
+									</h3>
 									<p className="text-muted-foreground">
-										Your facial features are converted into a 512-dimensional vector (embedding) using deep learning.
-										This mathematical representation captures unique aspects of your face like facial structure, proportions,
-										and distinctive features in a way that enables accurate comparison.
+										Your facial features are converted into a 512-dimensional
+										vector (embedding) using deep learning. This mathematical
+										representation captures unique aspects of your face like
+										facial structure, proportions, and distinctive features in a
+										way that enables accurate comparison.
 									</p>
 								</div>
 							</div>
@@ -215,11 +235,16 @@ export default function HowItWorksPage() {
 									3
 								</div>
 								<div>
-									<h3 className="text-xl font-semibold mb-2">Similarity Calculation</h3>
+									<h3 className="text-xl font-semibold mb-2">
+										Similarity Calculation
+									</h3>
 									<p className="text-muted-foreground">
-										We compare your embedding with others using cosine similarity, which measures the angle between vectors.
-										A score closer to 1 means very similar faces, while closer to 0 means less similar. The algorithm also
-										factors in photo quality, facial attributes, and pose alignment for more accurate results.
+										We compare your embedding with others using cosine
+										similarity, which measures the angle between vectors. A
+										score closer to 1 means very similar faces, while closer to
+										0 means less similar. The algorithm also factors in photo
+										quality, facial attributes, and pose alignment for more
+										accurate results.
 									</p>
 								</div>
 							</div>
@@ -233,11 +258,15 @@ export default function HowItWorksPage() {
 									4
 								</div>
 								<div>
-									<h3 className="text-xl font-semibold mb-2">Match Ranking & Filtering</h3>
+									<h3 className="text-xl font-semibold mb-2">
+										Match Ranking & Filtering
+									</h3>
 									<p className="text-muted-foreground">
-										All potential matches are ranked by similarity score. We apply filters based on your preferences
-										(like school/university) and quality thresholds to ensure you only see meaningful matches. The top
-										matches are then displayed in your feed with their similarity percentages.
+										All potential matches are ranked by similarity score. We
+										apply filters based on your preferences (like
+										school/university) and quality thresholds to ensure you only
+										see meaningful matches. The top matches are then displayed
+										in your feed with their similarity percentages.
 									</p>
 								</div>
 							</div>
@@ -254,7 +283,8 @@ export default function HowItWorksPage() {
 							Ready to Find Your Match?
 						</h2>
 						<p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-							Join thousands of users discovering their doppelgängers with our AI-powered face matching technology
+							Join thousands of users discovering their doppelgängers with our
+							AI-powered face matching technology
 						</p>
 						<div className="flex flex-wrap items-center justify-center gap-4">
 							<Button asChild size="lg">
@@ -264,9 +294,7 @@ export default function HowItWorksPage() {
 								</Link>
 							</Button>
 							<Button asChild variant="outline" size="lg">
-								<Link href="/">
-									Back to Home
-								</Link>
+								<Link href="/">Back to Home</Link>
 							</Button>
 						</div>
 					</div>

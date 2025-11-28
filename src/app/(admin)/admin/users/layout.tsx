@@ -1,13 +1,13 @@
 "use client";
 
 import { ProfileDropdown } from "@/components/profile-dropdown";
-import { ConfigDrawer } from "@/features/admin/components/config-drawer";
+// import { ConfigDrawer } from "@/features/admin/components/config-drawer";
 import { Header } from "@/features/admin/components/layout/header";
 import { Main } from "@/features/admin/components/layout/main";
 import { Search } from "@/features/admin/components/search";
-import { ThemeSwitch } from "@/features/admin/components/theme-switch";
-import { UsersDialogs } from "@/features/admin/pages/users/components/users-dialogs";
-import { UsersProvider } from "@/features/admin/pages/users/components/users-provider";
+// import { ThemeSwitch } from "@/features/admin/components/theme-switch";
+import { UsersDialogs } from "@/features/admin/pages/users/components/dialog/user-dialogs";
+import { UsersProvider } from "@/features/admin/pages/users/context/user-context";
 
 export default function UsersLayout({
 	children,

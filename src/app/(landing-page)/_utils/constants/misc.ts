@@ -1,4 +1,4 @@
-import { Users, Brain, Baby, Shield } from "lucide-react";
+import { Baby, Brain, Shield, Users } from "lucide-react";
 
 export const DEFAULT_AVATAR_URL =
 	"https://api.dicebear.com/8.x/initials/svg?backgroundType=gradientLinear&backgroundRotation=0,360&seed=";

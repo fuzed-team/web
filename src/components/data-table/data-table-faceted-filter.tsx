@@ -35,7 +35,6 @@ export function DataTableFacetedFilter<TData, TValue>({
 	options,
 	multiple = true,
 }: DataTableFacetedFilterProps<TData, TValue>) {
-
 	const filterValue = column?.getFilterValue();
 	const selectedValues = multiple
 		? new Set(filterValue as string[])

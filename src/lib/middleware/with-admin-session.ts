@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { type NextRequest, NextResponse } from "next/server";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 import { type Session, withSession } from "./with-session";
 
 /**
@@ -42,6 +43,9 @@ export const withAdminSession = (handler: WithAdminSessionHandler) => {
 		}
 
 		// User is admin, proceed with handler
-		return await handler(context);
+		return await handler({
+			...context,
+			supabase: supabaseAdmin,
+		});
 	});
 };

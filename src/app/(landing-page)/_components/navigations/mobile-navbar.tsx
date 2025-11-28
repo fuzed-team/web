@@ -55,7 +55,10 @@ const MobileNavbar = () => {
 						</div>
 						<ul className="flex flex-col items-start w-full mt-6">
 							{NAV_LINKS.map((link) => (
-								<div key={link.title} className="w-full border-b last:border-none">
+								<div
+									key={link.title}
+									className="w-full border-b last:border-none"
+								>
 									<Link
 										href={link.href}
 										onClick={handleClose}

@@ -18,14 +18,12 @@ interface DataTableViewOptionsProps<TData> {
 export function DataTableViewOptions<TData>({
 	table,
 }: DataTableViewOptionsProps<TData>) {
-
-
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
 				<Button
 					aria-label="Toggle columns"
-					variant="default"
+					variant="outline"
 					size="sm"
 					className="ml-auto hidden h-8 lg:flex"
 				>
@@ -50,9 +48,7 @@ export function DataTableViewOptions<TData>({
 								checked={column.getIsVisible()}
 								onCheckedChange={(value) => column.toggleVisibility(!!value)}
 							>
-								<span className="truncate">
-									{column.id}
-								</span>
+								<span className="truncate">{column.id}</span>
 							</DropdownMenuCheckboxItem>
 						);
 					})}

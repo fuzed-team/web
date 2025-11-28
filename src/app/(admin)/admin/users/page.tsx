@@ -1,5 +1,5 @@
-import { UsersPrimaryButtons } from "@/features/admin/pages/users/components/users-primary-buttons";
-import { UsersTable } from "@/features/admin/pages/users/components/users-table";
+import { UsersTable } from "@/features/admin/pages/users/components/table/user-table";
+import { UsersPrimaryButtons } from "@/features/admin/pages/users/components/user-primary-buttons";
 
 export default function UsersPage() {
 	return (
@@ -13,7 +13,9 @@ export default function UsersPage() {
 				</div>
 				<UsersPrimaryButtons />
 			</div>
-			{/* <UsersTable data={users} search={search} navigate={navigate} /> */}
+			<div className="-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-y-0 lg:space-x-12">
+				<UsersTable />
+			</div>
 		</>
 	);
 }

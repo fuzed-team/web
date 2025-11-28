@@ -1,7 +1,7 @@
 "use client";
 
-import { LucideIcon } from "lucide-react";
 import { motion } from "framer-motion";
+import type { LucideIcon } from "lucide-react";
 
 interface HowItWorksStepProps {
 	icon: LucideIcon;
@@ -43,9 +43,7 @@ export function HowItWorksStep({
 						<Icon className="w-6 h-6 text-primary" />
 						<h3 className="text-2xl font-bold">{title}</h3>
 					</div>
-					<p className="text-muted-foreground text-lg mb-4">
-						{description}
-					</p>
+					<p className="text-muted-foreground text-lg mb-4">{description}</p>
 					{details && details.length > 0 && (
 						<ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-muted-foreground">
 							{details.map((detail, idx) => (

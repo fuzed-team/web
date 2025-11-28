@@ -7,6 +7,8 @@ export enum Gender {
 export type Reaction = "favorite";
 export type ReactionType = "like" | "viewed";
 
+export type UserRole = "admin" | "user";
+
 export type UserApi = {
 	id: string;
 	name: string;
@@ -16,7 +18,9 @@ export type UserApi = {
 	default_face_id?: string;
 	image?: string;
 	school?: string;
-	role: string;
+	role: UserRole | string;
+	createdAt?: string;
+	updatedAt?: string;
 };
 
 export type LiveMatchApi = {
