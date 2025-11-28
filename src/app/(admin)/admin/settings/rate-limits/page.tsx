@@ -1,5 +1,5 @@
 import { AdminContentSection } from "@/features/admin/components/admin-content-section";
-import { RateLimitsForm } from "@/features/admin/forms/rate-limits-form";
+import { RateLimitsForm } from "@/features/admin/pages/settings/components/rate-limits-form";
 
 export default function RateLimitsPage() {
 	return (

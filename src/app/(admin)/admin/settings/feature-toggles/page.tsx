@@ -1,5 +1,5 @@
 import { AdminContentSection } from "@/features/admin/components/admin-content-section";
-import { FeatureTogglesForm } from "@/features/admin/forms/feature-toggles-form";
+import { FeatureTogglesForm } from "@/features/admin/pages/settings/components/feature-toggles-form";
 
 export default function FeatureTogglesPage() {
 	return (

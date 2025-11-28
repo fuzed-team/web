@@ -1,5 +1,5 @@
 import { AdminContentSection } from "@/features/admin/components/admin-content-section";
-import { MatchingAlgorithmForm } from "@/features/admin/forms/matching-algorithm-form";
+import { MatchingAlgorithmForm } from "@/features/admin/pages/settings/components/matching-algorithm-form";
 
 export default function MatchingAlgorithmPage() {
 	return (

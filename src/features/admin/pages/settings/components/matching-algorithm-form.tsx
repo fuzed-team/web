@@ -18,10 +18,8 @@ import {
 } from "@/components/ui/form";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Slider } from "@/components/ui/slider";
-import {
-	useAdminSettings,
-	useUpdateSettings,
-} from "@/lib/hooks/use-admin-settings";
+import { useAdminSettings } from "@/features/admin/pages/settings/api/get-admin-settings";
+import { useUpdateAdminSettings as useUpdateSettings } from "@/features/admin/pages/settings/api/update-admin-settings";
 
 /**
  * Schema for matching weights

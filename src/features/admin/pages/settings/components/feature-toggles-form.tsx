@@ -18,10 +18,8 @@ import {
 } from "@/components/ui/form";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
-import {
-	useAdminSettings,
-	useUpdateSettings,
-} from "@/lib/hooks/use-admin-settings";
+import { useAdminSettings } from "@/features/admin/pages/settings/api/get-admin-settings";
+import { useUpdateAdminSettings as useUpdateSettings } from "@/features/admin/pages/settings/api/update-admin-settings";
 
 const featureTogglesFormSchema = z.object({
 	allow_non_edu_emails: z.boolean(),
