@@ -32,6 +32,7 @@ export function UsersTableToolbar({
 	const limit = Number(searchParams.get("limit")) || 10;
 	const name = searchParams.get("name") || undefined;
 	const role = searchParams.get("role") || undefined;
+	const sort = searchParams.get("sort") || undefined;
 	const createdAtFrom = searchParams.get("createdAtFrom")
 		? new Date(searchParams.get("createdAtFrom")!)
 		: undefined;
@@ -46,6 +47,7 @@ export function UsersTableToolbar({
 		role: role ? [role as any] : undefined,
 		createdAtFrom: createdAtFrom?.toISOString(),
 		createdAtTo: createdAtTo?.toISOString(),
+		sort,
 	};
 
 	const deleteUsersMutation = useDeleteUsers({
@@ -85,13 +87,13 @@ export function UsersTableToolbar({
 	return (
 		<DataTableToolbar table={table} filterFields={filterFields}>
 			<div className="flex flex-wrap items-center gap-2">
-				<div className="flex items-center gap-2">
+				{/* <div className="flex items-center gap-2">
 					<SingleDayPicker
 						value={createdAtFrom}
 						onChange={handleCreatedAtFromChange}
 						placeholder="Select Created At From"
 					/>
-				</div>
+				</div> */}
 				{selectedRowIds.length > 0 && (
 					<Button
 						variant="destructive"

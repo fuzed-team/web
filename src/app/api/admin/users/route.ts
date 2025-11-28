@@ -25,6 +25,7 @@ const querySchema = z.object({
 	role: z.string().optional(),
 	createdAtFrom: z.string().optional(),
 	createdAtTo: z.string().optional(),
+	sort: z.string().optional(),
 });
 
 /**
@@ -49,19 +50,46 @@ export const GET = withAdminSession(async ({ request, supabase }) => {
 			);
 		}
 
-		const { page, limit, name, role, createdAtFrom, createdAtTo } =
+		const { page, limit, name, role, createdAtFrom, createdAtTo, sort } =
 			validation.data;
 
 		// Calculate pagination
 		const from = (page - 1) * limit;
 		const to = from + limit - 1;
 
+		// Determine sort
+		let sortColumn = "created_at";
+		let ascending = false;
+
+		if (sort) {
+			const [field, direction] = sort.split(".");
+			if (direction === "asc") {
+				ascending = true;
+			}
+
+			// Map frontend fields to DB columns
+			const fieldMap: Record<string, string> = {
+				createdAt: "created_at",
+				updatedAt: "updated_at",
+				name: "name",
+				email: "email",
+				role: "role",
+				gender: "gender",
+				school: "school",
+				age: "age",
+			};
+
+			if (field && fieldMap[field]) {
+				sortColumn = fieldMap[field];
+			}
+		}
+
 		// Build query
 		let query = supabase
 			.from("profiles")
 			.select("*", { count: "exact" })
 			.range(from, to)
-			.order("created_at", { ascending: false });
+			.order(sortColumn, { ascending });
 
 		// Apply filters
 		if (name) {

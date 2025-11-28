@@ -95,9 +95,7 @@ export function DataTableFacetedFilter<TData, TValue>({
 							</div>
 						</>
 					)}
-					<div className="grid size-5 place-items-center rounded bg-white shadow-none">
-						<IconChevronDown className="text-foreground size-4 opacity-50" />
-					</div>
+					<IconChevronDown className="text-foreground size-4 opacity-50" />
 				</Button>
 			</PopoverTrigger>
 			<PopoverContent className="w-[12.5rem] p-0" align="start">

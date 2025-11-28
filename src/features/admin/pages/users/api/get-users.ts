@@ -28,6 +28,7 @@ export const getUsersApi = (
 	if (input?.limit) params.limit = String(input.limit);
 	if (input?.name) params.name = input.name;
 	if (input?.role?.length) params.role = input.role.join(",");
+	if (input?.sort) params.sort = input.sort;
 	if (input?.createdAtFrom) params.createdAtFrom = input.createdAtFrom;
 	if (input?.createdAtTo) params.createdAtTo = input.createdAtTo;
 

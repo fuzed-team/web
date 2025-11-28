@@ -21,13 +21,13 @@ export function UsersPrimaryButtons() {
 			<Button className="space-x-1" onClick={() => setOpen("add")}>
 				<span>Add User</span> <IconUserPlus size={18} />
 			</Button>
-			<Button
+			{/* <Button
 				className="space-x-1"
 				disabled={createUsersMutation.isPending}
 				onClick={handleCreateRandomUsers}
 			>
 				<span>Create Random Users</span>
-			</Button>
+			</Button> */}
 		</div>
 	);
 }

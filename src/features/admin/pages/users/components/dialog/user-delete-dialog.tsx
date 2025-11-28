@@ -24,6 +24,7 @@ export function UserDeleteDialog({ open, onOpenChange, currentRow }: Props) {
 	const limit = Number(searchParams.get("limit")) || 10;
 	const name = searchParams.get("name") || undefined;
 	const role = searchParams.get("role") || undefined;
+	const sort = searchParams.get("sort") || undefined;
 	const createdAtFrom = searchParams.get("createdAtFrom")
 		? new Date(searchParams.get("createdAtFrom")!)
 		: undefined;
@@ -38,6 +39,7 @@ export function UserDeleteDialog({ open, onOpenChange, currentRow }: Props) {
 		role: role ? [role as any] : undefined,
 		createdAtFrom: createdAtFrom?.toISOString(),
 		createdAtTo: createdAtTo?.toISOString(),
+		sort,
 	};
 
 	const deleteUserMutation = useDeleteUser({
