@@ -26,7 +26,7 @@ const adminSidebarNavItems = [
 	},
 ];
 
-export default async function SettingLayout({
+export default function SettingLayout({
 	children,
 }: {
 	children: React.ReactNode;

@@ -39,6 +39,11 @@ export const sidebarData: SidebarData = {
 				// 	icon: MessagesSquare,
 				// },
 				{
+					title: "Live Matches",
+					url: "/admin/live-matches",
+					icon: Command,
+				},
+				{
 					title: "Users",
 					url: "/admin/users",
 					icon: Users,
