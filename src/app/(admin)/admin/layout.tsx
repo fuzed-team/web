@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { NavigationProgress } from "@/components/navigation-progress";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/features/admin/components/layout/app-sidebar";
 import { SkipToMain } from "@/features/admin/components/skip-to-main";
@@ -49,6 +50,7 @@ export default async function AdminLayout({
 			<SearchProvider>
 				<LayoutProvider>
 					<SidebarProvider defaultOpen={defaultOpen}>
+						<NavigationProgress />
 						<SkipToMain />
 						<AppSidebar />
 						<SidebarInset

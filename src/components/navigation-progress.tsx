@@ -1,10 +1,13 @@
-import { usePathname } from "next/navigation";
+"use client";
+
+import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useRef } from "react";
 import LoadingBar, { type LoadingBarRef } from "react-top-loading-bar";
 
 export function NavigationProgress() {
 	const ref = useRef<LoadingBarRef>(null);
 	const pathname = usePathname();
+	const searchParams = useSearchParams();
 
 	useEffect(() => {
 		// Start loading on pathname change
@@ -16,7 +19,7 @@ export function NavigationProgress() {
 		}, 100);
 
 		return () => clearTimeout(timer);
-	}, [pathname]);
+	}, [pathname, searchParams]);
 
 	return (
 		<LoadingBar
