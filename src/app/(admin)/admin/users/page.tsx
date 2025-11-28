@@ -6,7 +6,7 @@ export default function UsersPage() {
 		<>
 			<div className="flex flex-wrap items-end justify-between gap-2">
 				<div>
-					<h2 className="text-2xl font-bold tracking-tight">User List</h2>
+					<h1 className="text-2xl font-bold tracking-tight md:text-3xl">User List</h1>
 					<p className="text-muted-foreground">
 						Manage your users and their roles here.
 					</p>
