@@ -48,6 +48,11 @@ export const sidebarData: SidebarData = {
 					url: "/admin/users",
 					icon: Users,
 				},
+				{
+					title: "Flags",
+					url: "/admin/flags",
+					icon: Bell,
+				},
 			],
 		},
 		{

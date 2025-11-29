@@ -15,6 +15,8 @@ const createFlagSchema = z.object({
  * Schema for query parameters
  */
 const querySchema = z.object({
+	page: z.coerce.number().int().positive().default(1),
+	limit: z.coerce.number().int().positive().max(100).default(10),
 	status: z.enum(["pending", "reviewed", "dismissed"]).optional(),
 	reported_user_id: z.string().uuid().optional(),
 });
@@ -127,7 +129,11 @@ export const GET = withAdminSession(async ({ request, supabase }) => {
 			);
 		}
 
-		const { status, reported_user_id } = validation.data;
+		const { page, limit, status, reported_user_id } = validation.data;
+
+		// Calculate pagination
+		const from = (page - 1) * limit;
+		const to = from + limit - 1;
 
 		// Build query
 		let query = supabase
@@ -155,7 +161,9 @@ export const GET = withAdminSession(async ({ request, supabase }) => {
 					name
 				)
 			`,
+				{ count: "exact" },
 			)
+			.range(from, to)
 			.order("created_at", { ascending: false });
 
 		// Apply filters
@@ -166,7 +174,7 @@ export const GET = withAdminSession(async ({ request, supabase }) => {
 			query = query.eq("reported_user_id", reported_user_id);
 		}
 
-		const { data: flags, error } = await query;
+		const { data: flags, error, count } = await query;
 
 		if (error) {
 			console.error("Error fetching flags:", error);
@@ -178,7 +186,12 @@ export const GET = withAdminSession(async ({ request, supabase }) => {
 
 		return NextResponse.json({
 			data: flags,
-			count: flags?.length || 0,
+			pagination: {
+				page,
+				limit,
+				totalRecords: count || 0,
+				totalPages: Math.ceil((count || 0) / limit),
+			},
 		});
 	} catch (error) {
 		console.error("Unexpected error:", error);
