@@ -221,13 +221,13 @@ export const POST = withSession(async ({ request, session, supabase }) => {
 
 	// Queue automatic matching job (NEW - Auto-Match Generation Feature)
 	// This triggers background job processing via pg_cron + Edge Function
-	// job_type 'both' = generate both user-to-user AND celebrity matches
+	// job_type 'user_match' = only user-to-user matches (celebrity matches via daily cron)
 	try {
 		const { error: jobError } = await supabaseAdmin.from("match_jobs").insert({
 			face_id: face.id,
 			user_id: profile.id,
 			status: "pending",
-			job_type: "both", // Generate both user and celebrity matches
+			job_type: "user_match", // Only user-to-user matching (celebrity matching done by daily cron)
 		});
 
 		if (jobError) {

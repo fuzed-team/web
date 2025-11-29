@@ -58,7 +58,6 @@ interface CelebrityMatch {
 	category?: string;
 	gender?: string;
 }
-
 // CORS headers for API responses
 const corsHeaders = {
 	"Access-Control-Allow-Origin": "*",
@@ -339,7 +338,7 @@ Deno.serve(async (req) => {
 					}
 				}
 
-				// Celebrity Matching
+				// Celebrity Matching (only if job_type includes celebrity_match or both)
 				let celebrityMatchCount = 0;
 				const jobType = typedJob.job_type || "both";
 

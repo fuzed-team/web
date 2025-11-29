@@ -31,8 +31,10 @@ BEGIN
   -- Unfeature all celebrities (reset)
   UPDATE celebrities SET is_featured = false;
 
-  -- Select ONE random celebrity and feature for 24 hours
+  -- Select 2 random celebrities (1 male, 1 female) and feature for 24 hours
   -- Only selects celebrities that have embeddings (quality check)
+  
+  -- Feature 1 random male celebrity
   UPDATE celebrities SET
     is_featured = true,
     featured_from = NOW(),
@@ -41,18 +43,33 @@ BEGIN
     SELECT id FROM celebrities
     WHERE embedding IS NOT NULL
       AND quality_score >= 0.6  -- Only high-quality celebrity images
+      AND gender = 'male'
     ORDER BY RANDOM()
-    LIMIT 1  -- Only 1 celebrity for all users
+    LIMIT 1
+  );
+
+  -- Feature 1 random female celebrity
+  UPDATE celebrities SET
+    is_featured = true,
+    featured_from = NOW(),
+    featured_until = NOW() + INTERVAL '1 day'
+  WHERE id = (
+    SELECT id FROM celebrities
+    WHERE embedding IS NOT NULL
+      AND quality_score >= 0.6  -- Only high-quality celebrity images
+      AND gender = 'female'
+    ORDER BY RANDOM()
+    LIMIT 1
   );
 
   -- Log the rotation for debugging
-  RAISE NOTICE 'Celebrity of the day rotated at %', NOW();
+  RAISE NOTICE 'Celebrity of the day rotated at % - 2 celebrities (1 male, 1 female)', NOW();
 END;
 $$;
 
 -- Add comment to function
 COMMENT ON FUNCTION rotate_daily_celebrity() IS
-  'Rotates the featured celebrity of the day. Unfeatures all celebrities and randomly selects one high-quality celebrity to feature for 24 hours.';
+  'Rotates the featured celebrities of the day. Unfeatures all celebrities and randomly selects 2 high-quality celebrities (1 male, 1 female) to feature for 24 hours.';
 
 -- Schedule daily rotation at midnight UTC using pg_cron
 -- Note: pg_cron extension must be enabled in Supabase
@@ -88,8 +105,8 @@ BEGIN
   RAISE NOTICE 'Featured celebrities count: %', featured_count;
   RAISE NOTICE 'Current celebrity of the day: %', COALESCE(celeb_name, 'None');
 
-  -- Verify exactly one celebrity is featured
-  IF featured_count != 1 THEN
-    RAISE WARNING 'Expected exactly 1 featured celebrity, but found %', featured_count;
+  -- Verify exactly two celebrities are featured
+  IF featured_count != 2 THEN
+    RAISE WARNING 'Expected exactly 2 featured celebrities (1 male, 1 female), but found %', featured_count;
   END IF;
 END $$;

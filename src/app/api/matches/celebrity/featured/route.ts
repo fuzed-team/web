@@ -70,11 +70,15 @@ export async function GET(request: Request) {
 		);
 	}
 
-	// Get today's featured celebrity
+	// Get today's featured celebrity (opposite gender of user)
+	// Since we now have 2 featured celebrities (1 male, 1 female),
+	// we filter by opposite gender to get the correct one
+	const oppositeGender = profile.gender === "male" ? "female" : "male";
 	const { data: celebrity, error: celebError } = await supabase
 		.from("celebrities")
 		.select("*")
 		.eq("is_featured", true)
+		.eq("gender", oppositeGender)
 		.gte("featured_until", new Date().toISOString())
 		.single();
 
