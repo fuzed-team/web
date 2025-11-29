@@ -1,14 +1,11 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { ConfirmDialog } from "@/features/admin/components/confirm-dialog";
 import type { UserApi } from "@/types/api";
-import { useDeleteUser } from "../../api/delete-user";
 import type { UsersInput } from "../../api/get-users";
+import { useUnsuspendUser } from "../../api/unsuspend-user";
 
 interface Props {
 	open: boolean;
@@ -16,8 +13,7 @@ interface Props {
 	currentRow: UserApi;
 }
 
-export function UserDeleteDialog({ open, onOpenChange, currentRow }: Props) {
-	const [value, setValue] = useState("");
+export function UserUnsuspendDialog({ open, onOpenChange, currentRow }: Props) {
 	const searchParams = useSearchParams();
 
 	const page = Number(searchParams.get("page")) || 1;
@@ -42,7 +38,7 @@ export function UserDeleteDialog({ open, onOpenChange, currentRow }: Props) {
 		sort,
 	};
 
-	const deleteUserMutation = useDeleteUser({
+	const unsuspendUserMutation = useUnsuspendUser({
 		inputQuery: usersInput,
 		mutationConfig: {
 			onSuccess: () => {
@@ -51,42 +47,35 @@ export function UserDeleteDialog({ open, onOpenChange, currentRow }: Props) {
 		},
 	});
 
-	const handleDelete = () => {
-		if (value.trim() !== currentRow.name) return;
-		if (deleteUserMutation.isPending) return;
-		deleteUserMutation.mutate({ id: currentRow.id });
+	const handleUnsuspend = () => {
+		if (unsuspendUserMutation.isPending) return;
+		unsuspendUserMutation.mutate({ id: currentRow.id });
 	};
 
 	return (
 		<ConfirmDialog
-			isLoading={deleteUserMutation.isPending}
+			isLoading={unsuspendUserMutation.isPending}
 			open={open}
 			onOpenChange={onOpenChange}
-			handleConfirm={handleDelete}
-			disabled={value.trim() !== currentRow.name}
-			title="Delete User"
+			handleConfirm={handleUnsuspend}
+			title="Unsuspend User Account"
 			desc={
 				<span>
-					Are you sure you want to delete <strong>{currentRow.name}</strong>
-					?
+					Are you sure you want to unsuspend <strong>{currentRow.name}</strong>
+					's account?
 					<br />
-					This action cannot be undone.
+					They will be able to access the application again.
 				</span>
 			}
-			confirmText="Delete"
-			destructive
+			confirmText="Unsuspend Account"
 		>
-			<Label className="my-2">
-				Name:
-				<Input
-					value={value}
-					onChange={(e) => setValue(e.target.value)}
-					placeholder="Enter name to confirm"
-				/>
-			</Label>
-			<Alert variant="destructive">
-				<AlertTitle>Warning</AlertTitle>
-				<AlertDescription>Please be certain.</AlertDescription>
+			<Alert>
+				<AlertTitle>Info</AlertTitle>
+				<AlertDescription>
+					{currentRow.suspension_reason
+						? `This account was suspended for: "${currentRow.suspension_reason}"`
+						: "This account is currently suspended."}
+				</AlertDescription>
 			</Alert>
 		</ConfirmDialog>
 	);

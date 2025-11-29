@@ -3,6 +3,7 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
 import LongText from "@/components/long-text";
+import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { formatDate } from "@/lib/utils/date";
 import type { UserApi } from "@/types/api";
@@ -85,6 +86,26 @@ export const useUserColumns = (): ColumnDef<UserApi>[] => {
 			},
 			enableSorting: false,
 			enableHiding: false,
+		},
+		{
+			accessorKey: "status",
+			header: ({ column }) => (
+				<DataTableColumnHeader column={column} title="Status" />
+			),
+			cell: ({ row }) => {
+				const status = row.original.status || "active";
+				const statusConfig = {
+					active: { label: "Active", variant: "success" as const },
+					suspended: { label: "Suspended", variant: "destructive" as const },
+					deleted: { label: "Deleted", variant: "secondary" as const },
+				};
+				const config =
+					statusConfig[status as keyof typeof statusConfig] ||
+					statusConfig.active;
+
+				return <Badge variant={config.variant}>{config.label}</Badge>;
+			},
+			enableSorting: false,
 		},
 		{
 			accessorKey: "createdAt",

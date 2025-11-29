@@ -113,6 +113,7 @@ export function UserMutateDialog({ currentRow, open, onOpenChange }: Props) {
 
 	const onSubmit = async (values: UserForm) => {
 		if (isEdit) {
+			if (updateUserMutation.isPending) return;
 			updateUserMutation.mutate({
 				id: currentRow.id!,
 				email: values.email,
@@ -122,6 +123,7 @@ export function UserMutateDialog({ currentRow, open, onOpenChange }: Props) {
 				gender: values.gender,
 			});
 		} else {
+			if (createUserMutation.isPending) return;
 			createUserMutation.mutate({
 				email: values.email,
 				name: values.name,

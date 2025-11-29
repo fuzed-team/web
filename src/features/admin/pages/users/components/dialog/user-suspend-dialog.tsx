@@ -3,12 +3,12 @@
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { ConfirmDialog } from "@/features/admin/components/confirm-dialog";
 import type { UserApi } from "@/types/api";
-import { useDeleteUser } from "../../api/delete-user";
 import type { UsersInput } from "../../api/get-users";
+import { useSuspendUser } from "../../api/suspend-user";
 
 interface Props {
 	open: boolean;
@@ -16,8 +16,8 @@ interface Props {
 	currentRow: UserApi;
 }
 
-export function UserDeleteDialog({ open, onOpenChange, currentRow }: Props) {
-	const [value, setValue] = useState("");
+export function UserSuspendDialog({ open, onOpenChange, currentRow }: Props) {
+	const [reason, setReason] = useState("");
 	const searchParams = useSearchParams();
 
 	const page = Number(searchParams.get("page")) || 1;
@@ -42,51 +42,59 @@ export function UserDeleteDialog({ open, onOpenChange, currentRow }: Props) {
 		sort,
 	};
 
-	const deleteUserMutation = useDeleteUser({
+	const suspendUserMutation = useSuspendUser({
 		inputQuery: usersInput,
 		mutationConfig: {
 			onSuccess: () => {
 				onOpenChange(false);
+				setReason("");
 			},
 		},
 	});
 
-	const handleDelete = () => {
-		if (value.trim() !== currentRow.name) return;
-		if (deleteUserMutation.isPending) return;
-		deleteUserMutation.mutate({ id: currentRow.id });
+	const handleSuspend = () => {
+		if (reason.trim().length < 1) return;
+		if (suspendUserMutation.isPending) return;
+		suspendUserMutation.mutate({ id: currentRow.id, reason });
 	};
 
 	return (
 		<ConfirmDialog
-			isLoading={deleteUserMutation.isPending}
+			isLoading={suspendUserMutation.isPending}
 			open={open}
-			onOpenChange={onOpenChange}
-			handleConfirm={handleDelete}
-			disabled={value.trim() !== currentRow.name}
-			title="Delete User"
+			onOpenChange={(open) => {
+				onOpenChange(open);
+				if (!open) setReason("");
+			}}
+			handleConfirm={handleSuspend}
+			disabled={reason.trim().length < 1}
+			title="Suspend User Account"
 			desc={
 				<span>
-					Are you sure you want to delete <strong>{currentRow.name}</strong>
-					?
+					Are you sure you want to suspend <strong>{currentRow.name}</strong>'s
+					account?
 					<br />
-					This action cannot be undone.
+					They will not be able to access the application until unsuspended.
 				</span>
 			}
-			confirmText="Delete"
+			confirmText="Suspend Account"
 			destructive
 		>
 			<Label className="my-2">
-				Name:
-				<Input
-					value={value}
-					onChange={(e) => setValue(e.target.value)}
-					placeholder="Enter name to confirm"
+				Suspension Reason:
+				<Textarea
+					value={reason}
+					onChange={(e) => setReason(e.target.value)}
+					placeholder="Enter reason for suspension..."
+					rows={3}
+					className="mt-2"
 				/>
 			</Label>
 			<Alert variant="destructive">
 				<AlertTitle>Warning</AlertTitle>
-				<AlertDescription>Please be certain.</AlertDescription>
+				<AlertDescription>
+					This user will be immediately blocked from logging in.
+				</AlertDescription>
 			</Alert>
 		</ConfirmDialog>
 	);

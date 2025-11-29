@@ -1,3 +1,5 @@
+"use client";
+
 import { UsersTable } from "@/features/admin/pages/users/components/table/user-table";
 import { UsersPrimaryButtons } from "@/features/admin/pages/users/components/user-primary-buttons";
 
@@ -6,7 +8,9 @@ export default function UsersPage() {
 		<>
 			<div className="flex flex-wrap items-end justify-between gap-2">
 				<div>
-					<h1 className="text-2xl font-bold tracking-tight md:text-3xl">User List</h1>
+					<h1 className="text-2xl font-bold tracking-tight md:text-3xl">
+						User List
+					</h1>
 					<p className="text-muted-foreground">
 						Manage your users and their roles here.
 					</p>

@@ -13,5 +13,20 @@ export const userRoleOptions = [
 	},
 ];
 
+export const userStatusOptions = [
+	{
+		value: "active",
+		label: "Active",
+	},
+	{
+		value: "suspended",
+		label: "Suspended",
+	},
+	{
+		value: "deleted",
+		label: "Deleted",
+	},
+];
+
 // For backwards compatibility
 export const userRoleOptionsFn = () => userRoleOptions;

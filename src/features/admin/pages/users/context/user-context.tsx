@@ -4,7 +4,13 @@ import React, { useState } from "react";
 import { useDialogState } from "@/hooks/use-dialog-state";
 import type { UserApi } from "@/types/api";
 
-type UserDialogType = "invite" | "add" | "edit" | "delete";
+type UserDialogType =
+	| "invite"
+	| "add"
+	| "edit"
+	| "delete"
+	| "suspend"
+	| "unsuspend";
 
 interface UserContextType {
 	open: UserDialogType | null;

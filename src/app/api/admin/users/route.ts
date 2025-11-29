@@ -23,6 +23,7 @@ const querySchema = z.object({
 	limit: z.coerce.number().int().positive().max(100).default(10),
 	name: z.string().optional(),
 	role: z.string().optional(),
+	status: z.string().optional(),
 	createdAtFrom: z.string().optional(),
 	createdAtTo: z.string().optional(),
 	sort: z.string().optional(),
@@ -50,8 +51,16 @@ export const GET = withAdminSession(async ({ request, supabase }) => {
 			);
 		}
 
-		const { page, limit, name, role, createdAtFrom, createdAtTo, sort } =
-			validation.data;
+		const {
+			page,
+			limit,
+			name,
+			role,
+			status,
+			createdAtFrom,
+			createdAtTo,
+			sort,
+		} = validation.data;
 
 		// Calculate pagination
 		const from = (page - 1) * limit;
@@ -98,6 +107,9 @@ export const GET = withAdminSession(async ({ request, supabase }) => {
 		if (role) {
 			query = query.eq("role", role);
 		}
+		if (status) {
+			query = query.eq("status", status);
+		}
 		if (createdAtFrom) {
 			query = query.gte("created_at", createdAtFrom);
 		}
@@ -143,6 +155,7 @@ export const GET = withAdminSession(async ({ request, supabase }) => {
 					gender: user.gender,
 					school: user.school,
 					default_face_id: user.default_face_id,
+					status: user.status,
 					image,
 					age: user.age,
 					createdAt: user.created_at,

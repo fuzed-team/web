@@ -8,6 +8,7 @@ export type Reaction = "favorite";
 export type ReactionType = "like" | "viewed";
 
 export type UserRole = "admin" | "user";
+export type UserStatus = "active" | "suspended" | "deleted";
 
 export type UserApi = {
 	id: string;
@@ -19,6 +20,11 @@ export type UserApi = {
 	image?: string;
 	school?: string;
 	role: UserRole | string;
+	status?: UserStatus;
+	suspended_at?: string;
+	suspended_by?: string;
+	suspension_reason?: string;
+	flag_count?: number;
 	createdAt?: string;
 	updatedAt?: string;
 };
@@ -168,5 +174,29 @@ export type SupabaseMatch = {
 	face_a_id: string;
 	face_b_id: string;
 	similarity_score: number;
+	created_at: string;
+};
+
+// User moderation types
+export type UserFlag = {
+	id: string;
+	reporter: {
+		id: string;
+		name: string;
+		email: string;
+	};
+	reported_user: {
+		id: string;
+		name: string;
+		email: string;
+		status?: UserStatus;
+	};
+	reason: string;
+	status: "pending" | "reviewed" | "dismissed";
+	reviewer?: {
+		id: string;
+		name: string;
+	};
+	reviewed_at?: string;
 	created_at: string;
 };

@@ -1,7 +1,12 @@
 "use client";
 
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
-import { IconEdit, IconTrash } from "@tabler/icons-react";
+import {
+	IconEdit,
+	IconTrash,
+	IconUserCheck,
+	IconUserOff,
+} from "@tabler/icons-react";
 import type { Row } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,6 +27,8 @@ interface UsersTableRowActionsProps {
 
 export function UsersTableRowActions({ row }: UsersTableRowActionsProps) {
 	const { setOpen, setCurrentRow } = useUser();
+	const user = row.original;
+	const isSuspended = user.status === "suspended";
 
 	return (
 		<DropdownMenu modal={false}>
@@ -34,7 +41,7 @@ export function UsersTableRowActions({ row }: UsersTableRowActionsProps) {
 					<span className="sr-only">Open menu</span>
 				</Button>
 			</DropdownMenuTrigger>
-			<DropdownMenuContent align="end" className="w-[160px]">
+			<DropdownMenuContent align="end" className="w-[180px]">
 				<DropdownMenuItem
 					onClick={() => {
 						setCurrentRow(row.original);
@@ -46,6 +53,34 @@ export function UsersTableRowActions({ row }: UsersTableRowActionsProps) {
 						<IconEdit size={16} />
 					</DropdownMenuShortcut>
 				</DropdownMenuItem>
+				<DropdownMenuSeparator />
+				{!isSuspended ? (
+					<DropdownMenuItem
+						onClick={() => {
+							setCurrentRow(row.original);
+							setOpen("suspend");
+						}}
+						className="text-orange-600"
+					>
+						Suspend Account
+						<DropdownMenuShortcut>
+							<IconUserOff size={16} />
+						</DropdownMenuShortcut>
+					</DropdownMenuItem>
+				) : (
+					<DropdownMenuItem
+						onClick={() => {
+							setCurrentRow(row.original);
+							setOpen("unsuspend");
+						}}
+						className="text-green-600"
+					>
+						Unsuspend Account
+						<DropdownMenuShortcut>
+							<IconUserCheck size={16} />
+						</DropdownMenuShortcut>
+					</DropdownMenuItem>
+				)}
 				<DropdownMenuSeparator />
 				<DropdownMenuItem
 					onClick={() => {

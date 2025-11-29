@@ -6,7 +6,10 @@ import { useDataTable } from "@/hooks/use-data-table";
 import type { UserApi } from "@/types/api";
 import type { DataTableFilterField } from "@/types/common";
 import { type UsersInput, useUsers } from "../../api/get-users";
-import { userRoleOptions } from "../../constants/user-options";
+import {
+	userRoleOptions,
+	userStatusOptions,
+} from "../../constants/user-options";
 import { useUserColumns } from "./user-columns";
 import { UsersTableToolbar } from "./user-table-toolbar";
 
@@ -18,6 +21,7 @@ export function UsersTable() {
 	const limit = Number(searchParams.get("limit")) || 10;
 	const name = searchParams.get("name") || undefined;
 	const role = searchParams.get("role") || undefined;
+	const status = searchParams.get("status") || undefined;
 	const sort = searchParams.get("sort") || undefined;
 	const createdAtFrom = searchParams.get("createdAtFrom")
 		? new Date(searchParams.get("createdAtFrom")!)
@@ -31,6 +35,7 @@ export function UsersTable() {
 		limit,
 		name,
 		role: role ? [role as any] : undefined,
+		status: status ? [status as any] : undefined,
 		createdAtFrom: createdAtFrom?.toISOString(),
 		createdAtTo: createdAtTo?.toISOString(),
 		sort,
@@ -52,6 +57,11 @@ export function UsersTable() {
 			label: "Role",
 			value: "role",
 			options: userRoleOptions,
+		},
+		{
+			label: "Status",
+			value: "status",
+			options: userStatusOptions,
 		},
 	];
 

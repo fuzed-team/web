@@ -1,10 +1,18 @@
 "use client";
 
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, MoreVertical } from "lucide-react";
+import { useState } from "react";
 import { BlurImage } from "@/components/blur-image";
 import { Button } from "@/components/ui/button";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { usePresenceStatus } from "@/features/presence/hooks/use-presence-status";
 import { cn } from "@/lib/utils";
+import { FlagUserDialog } from "./flag-user-dialog";
 
 interface ChatHeaderProps {
 	otherUser: {
@@ -22,6 +30,7 @@ export function ChatHeader({ otherUser, onBack }: ChatHeaderProps) {
 		otherUser.id,
 		otherUser.last_seen,
 	);
+	const [flagDialogOpen, setFlagDialogOpen] = useState(false);
 
 	return (
 		<div className="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 shadow-lg z-10">
@@ -60,34 +69,35 @@ export function ChatHeader({ otherUser, onBack }: ChatHeaderProps) {
 					</p>
 				</div>
 
-				{/* <div className="flex items-center gap-1 lg:gap-2">
-					{(onArchive || onBlock) && (
-						<DropdownMenu>
-							<DropdownMenuTrigger asChild>
-								<Button
-									variant="ghost"
-									size="icon"
-									className="shrink-0 h-10 rounded-md sm:h-8 sm:w-4 lg:h-10 lg:w-6"
-								>
-									<MoreVertical className="h-5 w-5 sm:size-5 stroke-muted-foreground" />
-								</Button>
-							</DropdownMenuTrigger>
-							<DropdownMenuContent align="end">
-								{onArchive && (
-									<DropdownMenuItem onClick={onArchive}>
-										Archive conversation
-									</DropdownMenuItem>
-								)}
-								{onBlock && (
-									<DropdownMenuItem onClick={onBlock} className="text-red-600">
-										Block user
-									</DropdownMenuItem>
-								)}
-							</DropdownMenuContent>
-						</DropdownMenu>
-					)}
-				</div> */}
+				<div className="flex items-center gap-1 lg:gap-2">
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<Button
+								variant="ghost"
+								size="icon"
+								className="shrink-0 h-10 rounded-md sm:h-8 sm:w-4 lg:h-10 lg:w-6"
+							>
+								<MoreVertical className="h-5 w-5 sm:size-5 stroke-muted-foreground" />
+							</Button>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent align="end">
+							<DropdownMenuItem
+								onClick={() => setFlagDialogOpen(true)}
+								className="text-red-600"
+							>
+								Flag user
+							</DropdownMenuItem>
+						</DropdownMenuContent>
+					</DropdownMenu>
+				</div>
 			</div>
+
+			<FlagUserDialog
+				open={flagDialogOpen}
+				onOpenChange={setFlagDialogOpen}
+				userId={otherUser.id}
+				userName={otherUser.name}
+			/>
 		</div>
 	);
 }

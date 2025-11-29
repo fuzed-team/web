@@ -3,6 +3,8 @@
 import { useUser } from "../../context/user-context";
 import { UserDeleteDialog } from "./user-delete-dialog";
 import { UserMutateDialog } from "./user-mutate-dialog";
+import { UserSuspendDialog } from "./user-suspend-dialog";
+import { UserUnsuspendDialog } from "./user-unsuspend-dialog";
 
 export function UsersDialogs() {
 	const { open, setOpen, currentRow, setCurrentRow } = useUser();
@@ -33,6 +35,30 @@ export function UsersDialogs() {
 						open={open === "delete"}
 						onOpenChange={() => {
 							setOpen("delete");
+							setTimeout(() => {
+								setCurrentRow(null);
+							}, 500);
+						}}
+						currentRow={currentRow}
+					/>
+
+					<UserSuspendDialog
+						key={`user-suspend-${currentRow.id}`}
+						open={open === "suspend"}
+						onOpenChange={() => {
+							setOpen("suspend");
+							setTimeout(() => {
+								setCurrentRow(null);
+							}, 500);
+						}}
+						currentRow={currentRow}
+					/>
+
+					<UserUnsuspendDialog
+						key={`user-unsuspend-${currentRow.id}`}
+						open={open === "unsuspend"}
+						onOpenChange={() => {
+							setOpen("unsuspend");
 							setTimeout(() => {
 								setCurrentRow(null);
 							}, 500);
