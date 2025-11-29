@@ -101,39 +101,62 @@ export async function GET(request: Request) {
 	let similarityScore = existingMatch?.similarity_score;
 
 	// Calculate match on-demand if not exists
-	// Uses advanced matching algorithm (embedding 20%, geometry 20%, age 15%,
-	// symmetry 15%, skin_tone 15%, expression 15%)
+	// This handles cases where:
+	// 1. User uploads a new photo mid-day and sets it as default
+	// 2. Daily cron hasn't run yet for this celebrity rotation
+	// OPTIMIZED: Only calculate for the specific featured celebrity (not searching 50!)
 	if (!similarityScore) {
-		const { data: rpcMatches, error: rpcError } = await supabase.rpc(
-			"find_celebrity_matches_advanced",
+		// Get the face details for similarity calculation
+		const { data: face, error: faceError } = await supabase
+			.from("faces")
+			.select(
+				"embedding, age, symmetry_score, skin_tone_lab, expression, geometry_ratios",
+			)
+			.eq("id", userFace.id)
+			.single();
+
+		if (faceError || !face || !face.embedding) {
+			return NextResponse.json(
+				{ error: "Face data not found or incomplete" },
+				{ status: 404 },
+			);
+		}
+
+		// Calculate similarity using the advanced algorithm
+		const { data: calculatedScore, error: calcError } = await supabase.rpc(
+			"calculate_advanced_similarity",
 			{
-				query_face_id: userFace.id,
-				user_gender: profile.gender,
-				match_threshold: 0.0, // Get any score, even low matches
-				match_count: 50, // Get top 50 to ensure we find featured celebrity
+				query_embedding: face.embedding,
+				query_age: face.age,
+				query_symmetry: face.symmetry_score,
+				query_skin_tone: face.skin_tone_lab,
+				query_expression: face.expression,
+				query_geometry: face.geometry_ratios,
+				target_embedding: celebrity.embedding,
+				target_age: celebrity.age,
+				target_symmetry: celebrity.symmetry_score,
+				target_skin_tone: celebrity.skin_tone_lab,
+				target_expression: celebrity.expression,
+				target_geometry: celebrity.geometry_ratios,
 			},
 		);
 
-		if (rpcError) {
-			console.error("Error calling find_celebrity_matches_advanced:", rpcError);
-			// Fallback to default score
-			similarityScore = 0.5;
-		} else {
-			// Find the featured celebrity in results
-			const celebrityMatch = rpcMatches?.find(
-				(m: any) => m.id === celebrity.id,
+		if (calcError) {
+			console.error("Error calculating similarity:", calcError);
+			return NextResponse.json(
+				{ error: "Failed to calculate similarity" },
+				{ status: 500 },
 			);
-			similarityScore = celebrityMatch?.similarity || 0.5;
-
-			// Store the match for future queries
-			if (celebrityMatch && celebrityMatch.similarity) {
-				await supabase.from("celebrity_matches").insert({
-					face_id: userFace.id,
-					celebrity_id: celebrity.id,
-					similarity_score: celebrityMatch.similarity,
-				});
-			}
 		}
+
+		similarityScore = calculatedScore || 0.3;
+
+		// Store the match for future queries
+		await supabase.from("celebrity_matches").insert({
+			face_id: userFace.id,
+			celebrity_id: celebrity.id,
+			similarity_score: similarityScore,
+		});
 	}
 
 	// Get public URL for celebrity image (bucket is public)
