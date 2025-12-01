@@ -8,7 +8,8 @@
 		"test": "vitest run",
 		"lint": "biome check --write",
 		"lint:unsafe": "biome check --write --unsafe",
-		"seed:celebrities": "bun run scripts/generate-celebrity-embeddings.ts"
+		"seed:celebrities": "bun run scripts/generate-celebrity-embeddings.ts",
+		"gen:type": "npx supabase gen types typescript --project-id 'lsbzbltpmmtplakdrjvq' --schema public > src/types/database.types.ts"
 	},
 	"dependencies": {
 		"@hookform/resolvers": "^5.2.1",
@@ -97,6 +98,7 @@
 		"eslint-config-next": "^16.0.0",
 		"jsdom": "^26.0.0",
 		"node-fetch": "^3.3.2",
+		"supabase": "^2.63.1",
 		"tailwindcss": "^4",
 		"typescript": "^5.7.2",
 		"vitest": "^3.0.5",
