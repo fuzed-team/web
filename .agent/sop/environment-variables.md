@@ -76,7 +76,6 @@ export const env = createEnv({
 | `PYTHON_AI_SERVICE_API_KEY` | string | Required | API key for AI service authentication |
 | `FAL_AI_API_KEY` | string | Required | FAL.AI API key for baby generation |
 | `FAL_BABY_MODEL_ID` | string | `fal-ai/nano-banana/edit` | FAL.AI model ID |
-| `DEV_ALLOW_NON_EDU_EMAILS` | boolean | `false` | Allow non-.edu emails in development for testing |
 
 ---
 

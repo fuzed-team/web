@@ -811,7 +811,6 @@ Migrated to `@t3-oss/env-nextjs` for fully type-safe, validated environment vari
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Supabase public key
    - `SUPABASE_SERVICE_ROLE_KEY` - Supabase service role key for admin operations
    - `SUPABASE_SIGNED_URL_TTL` - Configurable signed URL timeout (default: 86400s / 24 hours)
-   - `DEV_ALLOW_NON_EDU_EMAILS` - Allow non-.edu emails in development (default: false)
    - `PYTHON_AI_SERVICE_URL` - Python AI service endpoint
    - `PYTHON_AI_SERVICE_API_KEY` - AI service authentication
    - `FAL_AI_API_KEY` - FAL.AI API key

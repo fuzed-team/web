@@ -729,7 +729,6 @@ PYTHON_AI_SERVICE_URL=http://localhost:5000
 PYTHON_AI_SERVICE_API_KEY=<ai-service-key>
 FAL_AI_API_KEY=<fal-api-key>
 FAL_BABY_MODEL_ID=fal-ai/nano-banana/edit  # Optional, has default
-DEV_ALLOW_NON_EDU_EMAILS=false  # Set true in dev to allow non-.edu emails
 ```
 
 **Key Features:**
