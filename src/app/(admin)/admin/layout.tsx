@@ -28,15 +28,20 @@ export default async function AdminLayout({
 		redirect("/auth/sign-in");
 	}
 
-	// Fetch user profile to check role
+	// Fetch user profile to check role and account status
 	const { data: profile, error: profileError } = await supabase
 		.from("profiles")
-		.select("role")
+		.select("role, status")
 		.eq("id", user.id)
 		.single();
 
 	if (profileError || !profile) {
 		redirect("/");
+	}
+
+	// Check if account is suspended or deleted
+	if (profile.status === "suspended" || profile.status === "deleted") {
+		redirect("/auth/sign-in");
 	}
 
 	// Check if user has admin role

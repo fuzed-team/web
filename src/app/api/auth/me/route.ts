@@ -50,6 +50,30 @@ export async function GET(_request: NextRequest) {
 			return NextResponse.json({ error: "Profile not found" }, { status: 404 });
 		}
 
+		// Check if account is suspended or deleted
+		if (profile.status === "suspended") {
+			return NextResponse.json(
+				{
+					error: "Account suspended",
+					message:
+						profile.suspension_reason ||
+						"Your account has been suspended. Please contact support for assistance.",
+					suspended_at: profile.suspended_at,
+				},
+				{ status: 403 },
+			);
+		}
+
+		if (profile.status === "deleted") {
+			return NextResponse.json(
+				{
+					error: "Account deleted",
+					message: "This account has been deleted and cannot be accessed.",
+				},
+				{ status: 403 },
+			);
+		}
+
 		// Get default face image if exists
 		let defaultFaceImage = null;
 		if (profile.default_face_id && faces && faces.length > 0) {

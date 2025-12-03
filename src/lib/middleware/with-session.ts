@@ -14,6 +14,9 @@ export type Profile = {
 	school: string | null;
 	default_face_id: string | null;
 	role: string;
+	status: string;
+	suspended_at: string | null;
+	suspension_reason: string | null;
 	created_at: string;
 	updated_at: string;
 };
@@ -88,6 +91,30 @@ export const withSession = (handler: WithSessionHandler) => {
 							"Profile not found. Please complete onboarding at /api/auth/me",
 					},
 					{ status: 404 },
+				);
+			}
+
+			// Check if account is suspended or deleted
+			if (profile.status === "suspended") {
+				return NextResponse.json(
+					{
+						error: "Account suspended",
+						message:
+							profile.suspension_reason ||
+							"Your account has been suspended. Please contact support for assistance.",
+						suspended_at: profile.suspended_at,
+					},
+					{ status: 403 },
+				);
+			}
+
+			if (profile.status === "deleted") {
+				return NextResponse.json(
+					{
+						error: "Account deleted",
+						message: "This account has been deleted and cannot be accessed.",
+					},
+					{ status: 403 },
 				);
 			}
 

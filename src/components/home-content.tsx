@@ -1,20 +1,21 @@
 "use client";
 
+import { toast } from "sonner";
 import { RootLayout } from "@/components/layout/root-layout";
 import { useMe } from "@/features/auth/api/get-me";
-import { LiveMatch } from "@/features/matching/components/live-match/live-match";
+import { useSignOut } from "@/features/auth/api/sign-out";
 import { MatchDialog } from "@/features/matching/components/match-dialog/match-dialog";
-import { MatchNavMobile } from "@/features/matching/components/match-nav-mobile";
 import { UploadPhoto } from "@/features/matching/components/upload-photo/upload-photo";
 import { UserMatch } from "@/features/matching/components/user-match/user-match";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { cn } from "@/lib/utils";
-import MinimalHero from "./mini-hero";
-import StudentLanding from "./student-landing";
 
 export function HomeContent() {
-	const isMobile = useIsMobile();
-	const { data: user, isLoading } = useMe();
+	const { data: user, isLoading, error } = useMe();
+	console.log("user", error?.message);
+	const signOutMutation = useSignOut();
+	const handleLogout = () => {
+		if (signOutMutation.isPending) return;
+		signOutMutation.mutate(undefined);
+	};
 
 	if (isLoading) {
 		return (
@@ -24,13 +25,9 @@ export function HomeContent() {
 		);
 	}
 
-	if (!user) {
-		return (
-			// <RootLayout>
-			// 	<StudentLanding />
-			// </RootLayout>
-			<StudentLanding />
-		);
+	if (error?.message === "Account suspended") {
+		toast("Account has been suspended");
+		return handleLogout();
 	}
 
 	return (

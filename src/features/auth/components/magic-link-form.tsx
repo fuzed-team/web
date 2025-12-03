@@ -1,5 +1,7 @@
+"use client";
+
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Mail } from "lucide-react";
+import { Loader, Mail } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -13,6 +15,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useConfig } from "@/lib/hooks/use-config";
+import { useCheckAccountStatus } from "../api/check-account-status";
 import {
 	createMagicLinkSchema,
 	type MagicLinkInput,
@@ -45,7 +48,47 @@ export function MagicLinkForm({ mode }: MagicLinkFormProps) {
 		},
 	});
 
-	const onSubmit = (values: MagicLinkInput) => {
+	// Initialize the check account status hook with current email
+	const { refetch: checkAccountStatus } = useCheckAccountStatus({
+		email: form.watch("email") || "",
+		queryConfig: {
+			enabled: false,
+		},
+	});
+
+	const onSubmit = async (values: MagicLinkInput) => {
+		// Check if account is suspended before sending magic link
+		try {
+			const { data, isError } = await checkAccountStatus();
+
+			if (isError || !data) {
+				// Continue with magic link if status check fails (fail open)
+				sendMagicLink.mutate(values);
+				return;
+			}
+
+			if (data.suspended) {
+				form.setError("email", {
+					type: "manual",
+					message: data.suspension_reason
+						? `Account suspended: ${data.suspension_reason}`
+						: "This account has been suspended. Please contact support for assistance.",
+				});
+				return;
+			}
+
+			if (data.deleted) {
+				form.setError("email", {
+					type: "manual",
+					message: "This account has been deleted and cannot be accessed.",
+				});
+				return;
+			}
+		} catch (error) {
+			console.error("Failed to check account status:", error);
+			// Continue with magic link if status check fails (fail open)
+		}
+
 		sendMagicLink.mutate(values);
 	};
 
@@ -119,7 +162,7 @@ export function MagicLinkForm({ mode }: MagicLinkFormProps) {
 						disabled={sendMagicLink.isPending}
 					>
 						{sendMagicLink.isPending && (
-							<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+							<Loader className="h-4 w-4 animate-spin" />
 						)}
 						{mode === "signin" ? "Send sign-in link" : "Send magic link"}
 					</Button>
