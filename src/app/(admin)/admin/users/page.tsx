@@ -1,5 +1,3 @@
-"use client";
-
 import { UsersTable } from "@/features/admin/pages/users/components/table/user-table";
 import { UsersPrimaryButtons } from "@/features/admin/pages/users/components/user-primary-buttons";
 

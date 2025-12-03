@@ -1,25 +1,27 @@
-export enum Gender {
-	MALE = "male",
-	FEMALE = "female",
-	OTHER = "other",
-}
+export const GENDERS = ["male", "female", "other"];
+export const USER_ROLES = ["admin", "user"];
+export const USER_STATUSES = ["active", "suspended", "deleted"];
+export const REACTIONS = ["like", "viewed"];
+export const MATCH_TYPES = ["user-user", "celebrity"];
+export const USER_FLAG_STATUSES = ["pending", "reviewed", "dismissed"];
 
-export type Reaction = "favorite";
-export type ReactionType = "like" | "viewed";
-
-export type UserRole = "admin" | "user";
-export type UserStatus = "active" | "suspended" | "deleted";
+export type Gender = (typeof GENDERS)[number];
+export type UserRole = (typeof USER_ROLES)[number];
+export type UserStatus = (typeof USER_STATUSES)[number];
+export type Reaction = (typeof REACTIONS)[number];
+export type MatchType = (typeof MATCH_TYPES)[number];
+export type UserFlagStatus = (typeof USER_FLAG_STATUSES)[number];
 
 export type UserApi = {
 	id: string;
 	name: string;
 	email: string;
 	age?: number;
-	gender?: Gender | string;
+	gender?: Gender;
 	default_face_id?: string;
 	image?: string;
 	school?: string;
-	role: UserRole | string;
+	role: UserRole;
 	status?: UserStatus;
 	suspended_at?: string;
 	suspended_by?: string;
@@ -93,7 +95,7 @@ export type CelebMatchApi = {
 };
 export type MatchFoundEvent = {
 	id: string;
-	type: "user-user" | "celebrity";
+	type: MatchType;
 	me: {
 		id: string;
 		name: string;
@@ -192,7 +194,7 @@ export type UserFlag = {
 		status?: UserStatus;
 	};
 	reason: string;
-	status: "pending" | "reviewed" | "dismissed";
+	status: UserFlagStatus;
 	reviewer?: {
 		id: string;
 		name: string;

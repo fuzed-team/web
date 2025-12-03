@@ -3,18 +3,17 @@ import {
 	useInfiniteQuery,
 	useQuery,
 } from "@tanstack/react-query";
+import qs from "qs";
 import { api } from "@/lib/api-client";
 import { PAGINATION } from "@/lib/constants/constant";
 import type { QueryConfig } from "@/lib/react-query";
-import type { UserApi, UserRole } from "@/types/api";
+import type { UserApi, UserRole, UserStatus } from "@/types/api";
 import type { Pagination, PaginationInput } from "@/types/common";
-
 export type UsersInput = PaginationInput & {
 	name?: string;
 	role?: UserRole[];
-	status?: string[];
-	createdAtFrom?: string;
-	createdAtTo?: string;
+	status?: UserStatus[];
+	createdAt?: string;
 };
 
 export const getUsersApi = (
@@ -23,18 +22,15 @@ export const getUsersApi = (
 	data: UserApi[];
 	pagination: Pagination;
 }> => {
-	const params: Record<string, string> = {};
+	const transformedInput = input?.sort
+		? {
+				...input,
+				sort: input.sort.map((s) => `${s.id}.${s.desc ? "desc" : "asc"}`),
+			}
+		: input;
 
-	if (input?.page) params.page = String(input.page);
-	if (input?.limit) params.limit = String(input.limit);
-	if (input?.name) params.name = input.name;
-	if (input?.role?.length) params.role = input.role.join(",");
-	if (input?.status?.length) params.status = input.status.join(",");
-	if (input?.sort) params.sort = input.sort;
-	if (input?.createdAtFrom) params.createdAtFrom = input.createdAtFrom;
-	if (input?.createdAtTo) params.createdAtTo = input.createdAtTo;
-
-	return api.get("/admin/users", { params });
+	const params = qs.stringify(transformedInput, { arrayFormat: "comma" });
+	return api.get(`/admin/users?${params}`);
 };
 
 export const getUsersQueryOptions = (

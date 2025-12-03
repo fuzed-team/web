@@ -1,76 +1,25 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
 import { DataTable } from "@/components/data-table/data-table";
+import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
 import { useDataTable } from "@/hooks/use-data-table";
-import type { UserApi } from "@/types/api";
-import type { DataTableFilterField } from "@/types/common";
-import { type UsersInput, useUsers } from "../../api/get-users";
-import {
-	userRoleOptions,
-	userStatusOptions,
-} from "../../constants/user-options";
+import { useUsers } from "../../api/get-users";
+import { useUsersSearchParams } from "../../utils/search-params";
 import { useUserColumns } from "./user-columns";
-import { UsersTableToolbar } from "./user-table-toolbar";
 
 export function UsersTable() {
 	const columns = useUserColumns();
-	const searchParams = useSearchParams();
-
-	const page = Number(searchParams.get("page")) || 1;
-	const limit = Number(searchParams.get("limit")) || 10;
-	const name = searchParams.get("name") || undefined;
-	const role = searchParams.get("role") || undefined;
-	const status = searchParams.get("status") || undefined;
-	const sort = searchParams.get("sort") || undefined;
-	const createdAtFrom = searchParams.get("createdAtFrom")
-		? new Date(searchParams.get("createdAtFrom")!)
-		: undefined;
-	const createdAtTo = searchParams.get("createdAtTo")
-		? new Date(searchParams.get("createdAtTo")!)
-		: undefined;
-
-	const usersInput: UsersInput = {
-		page,
-		limit,
-		name,
-		role: role ? [role as any] : undefined,
-		status: status ? [status as any] : undefined,
-		createdAtFrom: createdAtFrom?.toISOString(),
-		createdAtTo: createdAtTo?.toISOString(),
-		sort,
-	};
+	const urlParams = useUsersSearchParams();
 
 	const { data, isLoading, error } = useUsers({
-		input: usersInput,
+		input: urlParams,
 	});
-
-	const total = data?.pagination?.totalRecords ?? 0;
-
-	const filterFields: DataTableFilterField<UserApi>[] = [
-		{
-			label: "Name",
-			value: "name",
-			placeholder: "Filter by name...",
-		},
-		{
-			label: "Role",
-			value: "role",
-			options: userRoleOptions,
-		},
-		{
-			label: "Status",
-			value: "status",
-			options: userStatusOptions,
-		},
-	];
 
 	const { table } = useDataTable({
 		isLoading,
 		data: data?.data ?? [],
 		columns,
-		rowCount: total,
-		filterFields,
+		pageCount: data?.pagination?.totalPages ?? 0,
 	});
 
 	if (error) {
@@ -82,9 +31,8 @@ export function UsersTable() {
 	}
 
 	return (
-		<div className="space-y-4">
-			<UsersTableToolbar table={table} filterFields={filterFields} />
-			<DataTable table={table} />
-		</div>
+		<DataTable table={table}>
+			<DataTableToolbar table={table} />
+		</DataTable>
 	);
 }

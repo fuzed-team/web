@@ -1,8 +1,10 @@
+import { endOfDay, startOfDay } from "date-fns";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { env } from "@/config/env";
 import { STORAGE_BUCKETS } from "@/lib/constants/constant";
 import { withAdminSession } from "@/lib/middleware/with-admin-session";
+import { formatDateISOFromUnix } from "@/lib/utils/date";
 
 /**
  * Schema for user creation
@@ -24,8 +26,7 @@ const querySchema = z.object({
 	name: z.string().optional(),
 	role: z.string().optional(),
 	status: z.string().optional(),
-	createdAtFrom: z.string().optional(),
-	createdAtTo: z.string().optional(),
+	createdAt: z.string().optional(),
 	sort: z.string().optional(),
 });
 
@@ -51,16 +52,8 @@ export const GET = withAdminSession(async ({ request, supabase }) => {
 			);
 		}
 
-		const {
-			page,
-			limit,
-			name,
-			role,
-			status,
-			createdAtFrom,
-			createdAtTo,
-			sort,
-		} = validation.data;
+		const { page, limit, name, role, status, createdAt, sort } =
+			validation.data;
 
 		// Calculate pagination
 		const from = (page - 1) * limit;
@@ -105,16 +98,31 @@ export const GET = withAdminSession(async ({ request, supabase }) => {
 			query = query.ilike("name", `%${name}%`);
 		}
 		if (role) {
-			query = query.eq("role", role);
+			const roles = role.split(",");
+			if (roles.length > 1) {
+				query = query.in("role", roles);
+			} else {
+				query = query.eq("role", role);
+			}
 		}
 		if (status) {
-			query = query.eq("status", status);
+			const statuses = status.split(",");
+			if (statuses.length > 1) {
+				query = query.in("status", statuses);
+			} else {
+				query = query.eq("status", status);
+			}
 		}
-		if (createdAtFrom) {
-			query = query.gte("created_at", createdAtFrom);
-		}
-		if (createdAtTo) {
-			query = query.lte("created_at", createdAtTo);
+		if (createdAt) {
+			const [createdAtFrom, createdAtTo] = createdAt.split(",");
+			const startDate = startOfDay(
+				formatDateISOFromUnix(createdAtFrom),
+			).toISOString();
+			const endDate = endOfDay(
+				formatDateISOFromUnix(createdAtTo),
+			).toISOString();
+			query = query.gte("created_at", startDate);
+			query = query.lte("created_at", endDate);
 		}
 
 		const { data: users, error, count } = await query;

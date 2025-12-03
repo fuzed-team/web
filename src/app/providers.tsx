@@ -6,6 +6,7 @@ import {
 	QueryClientProvider,
 } from "@tanstack/react-query";
 import { AxiosError } from "axios";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import React from "react";
 import { toast } from "sonner";
 import { ThemeProvider } from "@/contexts/theme-context";
@@ -63,10 +64,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
 	);
 
 	return (
-		<QueryClientProvider client={queryClient}>
-			<ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-				{children}
-			</ThemeProvider>
-		</QueryClientProvider>
+		<NuqsAdapter>
+			<QueryClientProvider client={queryClient}>
+				<ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+					{children}
+				</ThemeProvider>
+			</QueryClientProvider>
+		</NuqsAdapter>
 	);
 }

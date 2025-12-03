@@ -22,6 +22,7 @@
 		"@magicui": "https://magicui.design/r/{name}.json",
 		"@kokonutui": "https://kokonutui.com/r/{name}.json",
 		"@rigidui": "https://rigidui.com/r/{name}.json",
-		"@smoothui": "https://smoothui.dev/r/{name}.json"
+		"@smoothui": "https://smoothui.dev/r/{name}.json",
+		"@diceui": "https://diceui.com/r/{name}.json"
 	}
 }

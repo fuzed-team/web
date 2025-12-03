@@ -13,8 +13,7 @@ export interface SelectOption {
 export interface PaginationInput {
 	page?: number;
 	limit?: number;
-	q?: string;
-	sort?: string;
+	sort?: any[];
 }
 
 export interface MutationOptions {
@@ -35,4 +34,8 @@ export interface DataTableFilterField<TData> {
 	placeholder?: string;
 	options?: DataTableOption[];
 	multiple?: boolean;
+}
+
+export interface SearchParams {
+	[key: string]: string | string[] | undefined;
 }

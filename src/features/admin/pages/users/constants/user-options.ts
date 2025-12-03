@@ -1,30 +1,33 @@
-import { IconUser, IconUserShield } from "@tabler/icons-react";
+import {
+	IconBan,
+	IconCircleCheck,
+	IconUser,
+	IconUserShield,
+} from "@tabler/icons-react";
 
 export const userRoleOptions = [
 	{
-		value: "admin",
 		icon: IconUserShield,
+		value: "admin",
 		label: "Admin",
 	},
 	{
-		value: "user",
 		icon: IconUser,
+		value: "user",
 		label: "User",
 	},
 ];
 
 export const userStatusOptions = [
 	{
+		icon: IconCircleCheck,
 		value: "active",
 		label: "Active",
 	},
 	{
+		icon: IconBan,
 		value: "suspended",
 		label: "Suspended",
-	},
-	{
-		value: "deleted",
-		label: "Deleted",
 	},
 ];
 

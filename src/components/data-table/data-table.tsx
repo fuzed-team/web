@@ -1,13 +1,10 @@
-"use client";
-
 import {
 	type ColumnMeta,
 	flexRender,
-	type Row,
-	type RowData,
 	type Table as TanstackTable,
 } from "@tanstack/react-table";
 import type * as React from "react";
+
 import { DataTablePagination } from "@/components/data-table/data-table-pagination";
 import {
 	Table,
@@ -17,75 +14,50 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
+import { getCommonPinningStyles } from "@/lib/data-table";
 import { cn } from "@/lib/utils";
 
-interface DataTableProps<TData> {
-	/**
-	 * The table instance returned from useDataTable hook with pagination, sorting, filtering, etc.
-	 * @type TanstackTable<TData>
-	 */
+interface DataTableProps<TData> extends React.ComponentProps<"div"> {
 	table: TanstackTable<TData>;
-
-	/**
-	 * The floating bar to render at the bottom of the table on row selection.
-	 * @default null
-	 * @type React.ReactNode | null
-	 * @example floatingBar={<TasksTableFloatingBar table={table} />}
-	 */
-	floatingBar?: React.ReactNode | null;
-
-	/**
-	 * Whether to enable pagination.
-	 * @default true
-	 * @type boolean
-	 */
-	enablePagination?: boolean;
-
-	/**
-	 * The function to handle row click.
-	 * @default null
-	 * @type (row: Row<TData>) => void | null
-	 */
-	onRowClick?: (row: Row<TData>) => void;
-}
-
-declare module "@tanstack/react-table" {
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	interface ColumnMeta<TData extends RowData, TValue> {
-		className?: string;
-		align?: "left" | "center" | "right";
-	}
+	actionBar?: React.ReactNode;
 }
 
 export function DataTable<TData>({
 	table,
-	floatingBar = null,
-	enablePagination = true,
-	onRowClick,
+	actionBar,
+	children,
+	className,
+	...props
 }: DataTableProps<TData>) {
 	return (
-		<div className="w-full space-y-2.5 overflow-auto">
+		<div
+			className={cn("flex w-full flex-col gap-2.5 overflow-auto", className)}
+			{...props}
+		>
+			{children}
 			<div className="overflow-hidden rounded-md border">
 				<Table>
-					<TableHeader className="bg-[#e9edf0]">
+					<TableHeader>
 						{table.getHeaderGroups().map((headerGroup) => (
-							<TableRow
-								key={headerGroup.id}
-								className="[&_th]:border-r [&_th:last-child]:border-r-0"
-							>
+							<TableRow key={headerGroup.id}>
 								{headerGroup.headers.map((header) => {
 									const meta = header.column.columnDef.meta as ColumnMeta<
 										TData,
 										any
 									>;
+
 									return (
 										<TableHead
 											key={header.id}
+											colSpan={header.colSpan}
 											className={cn(
 												meta?.className,
 												meta?.align === "center" && "text-center",
 												meta?.align === "right" && "text-right",
 											)}
+											style={{
+												...getCommonPinningStyles({ column: header.column }),
+											}}
 										>
 											{header.isPlaceholder
 												? null
@@ -105,8 +77,6 @@ export function DataTable<TData>({
 								<TableRow
 									key={row.id}
 									data-state={row.getIsSelected() && "selected"}
-									className="bg-white [&_td]:border-r [&_td:last-child]:border-r-0"
-									onClick={() => onRowClick?.(row)}
 								>
 									{row.getVisibleCells().map((cell) => {
 										const meta = cell.column.columnDef.meta as ColumnMeta<
@@ -121,6 +91,9 @@ export function DataTable<TData>({
 													meta?.align === "center" && "text-center",
 													meta?.align === "right" && "text-right",
 												)}
+												style={{
+													...getCommonPinningStyles({ column: cell.column }),
+												}}
 											>
 												{flexRender(
 													cell.column.columnDef.cell,
@@ -145,8 +118,10 @@ export function DataTable<TData>({
 				</Table>
 			</div>
 			<div className="flex flex-col gap-2.5">
-				{enablePagination && <DataTablePagination table={table} />}
-				{table.getFilteredSelectedRowModel().rows.length > 0 && floatingBar}
+				<DataTablePagination table={table} />
+				{actionBar &&
+					table.getFilteredSelectedRowModel().rows.length > 0 &&
+					actionBar}
 			</div>
 		</div>
 	);

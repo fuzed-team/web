@@ -23,7 +23,7 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Gender, type UserApi } from "@/types/api";
+import { GENDERS, type Gender, type UserApi } from "@/types/api";
 import { useCreateUser } from "../../api/create-user";
 import type { UsersInput } from "../../api/get-users";
 import { useUpdateUser } from "../../api/update-user";
@@ -41,7 +41,7 @@ const formSchema = z.object({
 		.email({ message: "invalidEmail" }),
 	role: z.enum(USER_ROLES),
 	school: z.string().optional(),
-	gender: z.nativeEnum(Gender).optional(),
+	gender: z.enum(GENDERS).optional(),
 	isEdit: z.boolean(),
 });
 

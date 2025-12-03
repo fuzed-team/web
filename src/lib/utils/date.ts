@@ -41,3 +41,7 @@ export const formatDate = (
 export const formatDateISO = (date: string | Date) => {
 	return new Date(date).toISOString();
 };
+
+export const formatDateISOFromUnix = (date: string) => {
+	return new Date(parseInt(date, 10)).toISOString();
+};
