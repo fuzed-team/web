@@ -14,6 +14,7 @@ import {
 	SheetTrigger,
 } from "@/components/ui/sheet";
 import { useSidebar } from "@/components/ui/sidebar";
+import { useTheme } from "@/contexts/theme-context";
 import { IconDir } from "@/features/admin/assets/custom/icon-dir";
 import { IconLayoutCompact } from "@/features/admin/assets/custom/icon-layout-compact";
 import { IconLayoutDefault } from "@/features/admin/assets/custom/icon-layout-default";
@@ -29,7 +30,6 @@ import {
 	type Collapsible,
 	useLayout,
 } from "@/features/admin/context/layout-provider";
-import { useTheme } from "@/features/admin/context/theme-provider";
 import { cn } from "@/lib/utils";
 
 export function ConfigDrawer() {

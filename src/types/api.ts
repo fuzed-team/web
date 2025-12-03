@@ -1,4 +1,4 @@
-export const GENDERS = ["male", "female", "other"];
+export const GENDERS = ["male", "female"];
 export const USER_ROLES = ["admin", "user"];
 export const USER_STATUSES = ["active", "suspended", "deleted"];
 export const REACTIONS = ["like", "viewed"];

@@ -13,7 +13,7 @@ const createUserSchema = z.object({
 	email: z.string().email(),
 	name: z.string().min(1),
 	role: z.enum(["admin", "user"]).default("user"),
-	gender: z.enum(["male", "female", "other"]).optional(),
+	gender: z.enum(["male", "female"]).optional(),
 	school: z.string().optional(),
 });
 
@@ -240,6 +240,11 @@ export const POST = withAdminSession(async ({ request, supabase }) => {
 		const { data: profile, error: profileError } = await supabase
 			.from("profiles")
 			.insert({
+				// Assuming 'id' is a required UUID column, often linked to auth.users.id.
+				// Since auth user creation is commented out, we'll generate a new UUID.
+				// If the intention is to link to an existing or newly created auth user,
+				// the 'id' should come from that user's ID.
+				id: crypto.randomUUID(),
 				email,
 				name,
 				role,

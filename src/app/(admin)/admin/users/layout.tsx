@@ -5,6 +5,7 @@ import { ProfileDropdown } from "@/components/profile-dropdown";
 import { Header } from "@/features/admin/components/layout/header";
 import { Main } from "@/features/admin/components/layout/main";
 import { Search } from "@/features/admin/components/search";
+import { ThemeSwitch } from "@/features/admin/components/theme-switch";
 // import { ThemeSwitch } from "@/features/admin/components/theme-switch";
 import { UsersDialogs } from "@/features/admin/pages/users/components/dialog/user-dialogs";
 import { UsersProvider } from "@/features/admin/pages/users/context/user-context";
@@ -19,7 +20,7 @@ export default function UsersLayout({
 			<Header fixed>
 				<Search />
 				<div className="ms-auto flex items-center space-x-4">
-					{/* <ThemeSwitch /> */}
+					<ThemeSwitch />
 					{/* <ConfigDrawer /> */}
 					<ProfileDropdown />
 				</div>

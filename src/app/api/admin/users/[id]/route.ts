@@ -8,7 +8,7 @@ import { withAdminSession } from "@/lib/middleware/with-admin-session";
 const updateUserSchema = z.object({
 	email: z.string().email().optional(),
 	name: z.string().min(1).optional(),
-	gender: z.enum(["male", "female", "other"]).optional(),
+	gender: z.enum(["male", "female"]).optional(),
 	role: z.enum(["admin", "user"]).optional(),
 	school: z.string().optional(),
 });

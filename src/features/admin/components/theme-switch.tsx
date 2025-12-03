@@ -9,7 +9,7 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useTheme } from "@/features/admin/context/theme-provider";
+import { useTheme } from "@/contexts/theme-context";
 import { cn } from "@/lib/utils";
 
 export function ThemeSwitch() {

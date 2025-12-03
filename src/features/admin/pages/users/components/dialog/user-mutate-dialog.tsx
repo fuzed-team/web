@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { SelectDropdown } from "@/components/select-dropdown";
@@ -121,7 +122,6 @@ export function UserMutateDialog({ currentRow, open, onOpenChange }: Props) {
 	const genderOptions = [
 		{ label: "Male", value: "male" },
 		{ label: "Female", value: "female" },
-		{ label: "Other", value: "other" },
 	];
 
 	return (
@@ -255,11 +255,16 @@ export function UserMutateDialog({ currentRow, open, onOpenChange }: Props) {
 						form="user-form"
 						disabled={createUserMutation.isPending}
 					>
-						{createUserMutation.isPending
-							? "Creating..."
-							: isEdit
-								? "Update"
-								: "Create"}
+						{createUserMutation.isPending ? (
+							<>
+								<Loader className="h-4 w-4 animate-spin" />
+								Creating
+							</>
+						) : isEdit ? (
+							"Update"
+						) : (
+							"Create"
+						)}
 					</Button>
 				</DialogFooter>
 			</DialogContent>
