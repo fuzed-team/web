@@ -1,7 +1,12 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
-import { CheckCircle, Clock, MoreHorizontal, XCircle } from "lucide-react";
+import {
+	CheckCircle,
+	CircleDashed,
+	MoreHorizontal,
+	XCircle,
+} from "lucide-react";
 import { useState } from "react";
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +19,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { formatDate } from "@/lib/utils/date";
 import type { UserFlag } from "@/types/api";
+import { flagStatusOptions } from "../../constants/flag-options";
 import { FlagReviewDialog } from "../dialog/flag-review-dialog";
 
 export const useFlagsColumns = (): ColumnDef<UserFlag>[] => {
@@ -21,7 +27,7 @@ export const useFlagsColumns = (): ColumnDef<UserFlag>[] => {
 		{
 			accessorKey: "reporter",
 			header: ({ column }) => (
-				<DataTableColumnHeader column={column} title="Reporter" />
+				<DataTableColumnHeader column={column} label="Reporter" />
 			),
 			cell: ({ row }) => (
 				<div className="flex flex-col">
@@ -35,7 +41,7 @@ export const useFlagsColumns = (): ColumnDef<UserFlag>[] => {
 		{
 			accessorKey: "reported_user",
 			header: ({ column }) => (
-				<DataTableColumnHeader column={column} title="Reported User" />
+				<DataTableColumnHeader column={column} label="Reported User" />
 			),
 			cell: ({ row }) => (
 				<div className="flex flex-col">
@@ -49,7 +55,7 @@ export const useFlagsColumns = (): ColumnDef<UserFlag>[] => {
 		{
 			accessorKey: "reason",
 			header: ({ column }) => (
-				<DataTableColumnHeader column={column} title="Reason" />
+				<DataTableColumnHeader column={column} label="Reason" />
 			),
 			cell: ({ row }) => (
 				<div className="max-w-[300px] truncate" title={row.original.reason}>
@@ -58,9 +64,10 @@ export const useFlagsColumns = (): ColumnDef<UserFlag>[] => {
 			),
 		},
 		{
+			id: "status",
 			accessorKey: "status",
 			header: ({ column }) => (
-				<DataTableColumnHeader column={column} title="Status" />
+				<DataTableColumnHeader column={column} label="Status" />
 			),
 			cell: ({ row }) => {
 				const status = row.original.status;
@@ -75,20 +82,29 @@ export const useFlagsColumns = (): ColumnDef<UserFlag>[] => {
 
 				return <Badge variant="destructive">Pending</Badge>;
 			},
-			filterFn: (row, id, value) => {
-				return value.includes(row.getValue(id));
+			meta: {
+				label: "Status",
+				variant: "select",
+				options: flagStatusOptions.map((status) => ({
+					label: status.label,
+					value: status.value,
+					icon: status.icon,
+				})),
+				icon: CircleDashed,
 			},
+			enableColumnFilter: true,
 		},
 		{
 			accessorKey: "created_at",
 			header: ({ column }) => (
-				<DataTableColumnHeader column={column} title="Date" />
+				<DataTableColumnHeader column={column} label="Date" />
 			),
 			cell: ({ row }) => <div>{formatDate(row.getValue("created_at"))}</div>,
 		},
 		{
 			id: "actions",
 			cell: ({ row }) => <FlagActionsRow row={row.original} />,
+			size: 40,
 		},
 	];
 };

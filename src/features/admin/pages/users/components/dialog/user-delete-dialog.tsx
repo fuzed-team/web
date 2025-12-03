@@ -1,6 +1,5 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
@@ -8,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { ConfirmDialog } from "@/features/admin/components/confirm-dialog";
 import type { UserApi } from "@/types/api";
 import { useDeleteUser } from "../../api/delete-user";
-import type { UsersInput } from "../../api/get-users";
+import { useUsersSearchParams } from "../../utils/search-params";
 
 interface Props {
 	open: boolean;
@@ -18,32 +17,10 @@ interface Props {
 
 export function UserDeleteDialog({ open, onOpenChange, currentRow }: Props) {
 	const [value, setValue] = useState("");
-	const searchParams = useSearchParams();
-
-	const page = Number(searchParams.get("page")) || 1;
-	const limit = Number(searchParams.get("limit")) || 10;
-	const name = searchParams.get("name") || undefined;
-	const role = searchParams.get("role") || undefined;
-	const sort = searchParams.get("sort") || undefined;
-	const createdAtFrom = searchParams.get("createdAtFrom")
-		? new Date(searchParams.get("createdAtFrom")!)
-		: undefined;
-	const createdAtTo = searchParams.get("createdAtTo")
-		? new Date(searchParams.get("createdAtTo")!)
-		: undefined;
-
-	const usersInput: UsersInput = {
-		page,
-		limit,
-		name,
-		role: role ? [role as any] : undefined,
-		createdAtFrom: createdAtFrom?.toISOString(),
-		createdAtTo: createdAtTo?.toISOString(),
-		sort,
-	};
+	const urlParams = useUsersSearchParams();
 
 	const deleteUserMutation = useDeleteUser({
-		inputQuery: usersInput,
+		inputQuery: urlParams,
 		mutationConfig: {
 			onSuccess: () => {
 				onOpenChange(false);

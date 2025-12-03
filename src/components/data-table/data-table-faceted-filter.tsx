@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/a11y/useKeyWithClickEvents: no need check */
 "use client";
 
 import type { Column } from "@tanstack/react-table";

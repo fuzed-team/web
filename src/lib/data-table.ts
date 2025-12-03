@@ -75,3 +75,35 @@ export function getValidFilters<TData>(
 					filter.value !== undefined),
 	);
 }
+
+export function getValidQuery<T extends Record<string, any>>(
+	query: T,
+): Partial<T> {
+	return Object.entries(query).reduce<Partial<T>>((acc, [key, value]) => {
+		// Always include page and limit
+		if (key === "page" || key === "limit") {
+			acc[key as keyof T] = value as T[keyof T];
+			return acc;
+		}
+
+		// Keep sort if it has at least one item
+		if (key === "sort" && Array.isArray(value) && value.length > 0) {
+			acc[key as keyof T] = value as T[keyof T];
+			return acc;
+		}
+
+		// Skip empty strings
+		if (value === "" || value === null || value === undefined) {
+			return acc;
+		}
+
+		// Skip empty arrays
+		if (Array.isArray(value) && value.length === 0) {
+			return acc;
+		}
+
+		// Include all other valid values
+		acc[key as keyof T] = value as T[keyof T];
+		return acc;
+	}, {});
+}

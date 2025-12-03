@@ -5,6 +5,7 @@ import {
 	parseAsString,
 	parseAsStringEnum,
 } from "nuqs/server";
+import { getValidQuery } from "@/lib/data-table";
 import { getSortingStateParser } from "@/lib/parsers";
 import { USER_ROLES, USER_STATUSES, type UserApi } from "@/types/api";
 import type { UsersInput } from "../api/get-users";
@@ -24,5 +25,6 @@ export const searchParamsParsers = {
 
 export function useUsersSearchParams() {
 	const [urlParams] = useQueryStates(searchParamsParsers);
-	return urlParams as UsersInput;
+	const validQuery = getValidQuery(urlParams);
+	return validQuery as UsersInput;
 }

@@ -1,7 +1,6 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { SelectDropdown } from "@/components/select-dropdown";
@@ -25,10 +24,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { GENDERS, type Gender, type UserApi } from "@/types/api";
 import { useCreateUser } from "../../api/create-user";
-import type { UsersInput } from "../../api/get-users";
 import { useUpdateUser } from "../../api/update-user";
 import { USER_ROLES } from "../../constants/user-constants";
 import { userRoleOptions } from "../../constants/user-options";
+import { useUsersSearchParams } from "../../utils/search-params";
 
 const formSchema = z.object({
 	name: z
@@ -54,37 +53,17 @@ interface Props {
 }
 
 export function UserMutateDialog({ currentRow, open, onOpenChange }: Props) {
-	const searchParams = useSearchParams();
 	const isEdit = !!currentRow;
-
-	const page = Number(searchParams.get("page")) || 1;
-	const limit = Number(searchParams.get("limit")) || 10;
-	const name = searchParams.get("q") || undefined;
-	const role = searchParams.get("role") || undefined;
-	const createdAtFrom = searchParams.get("createdAtFrom")
-		? new Date(searchParams.get("createdAtFrom")!)
-		: undefined;
-	const createdAtTo = searchParams.get("createdAtTo")
-		? new Date(searchParams.get("createdAtTo")!)
-		: undefined;
-
-	const usersInput: UsersInput = {
-		page,
-		limit,
-		name,
-		role: role ? [role as any] : undefined,
-		createdAtFrom: createdAtFrom?.toISOString(),
-		createdAtTo: createdAtTo?.toISOString(),
-	};
+	const urlParams = useUsersSearchParams();
 
 	const createUserMutation = useCreateUser({
-		inputQuery: usersInput,
+		inputQuery: urlParams,
 		mutationConfig: {
 			onSuccess: handleResetForm,
 		},
 	});
 	const updateUserMutation = useUpdateUser({
-		inputQuery: usersInput,
+		inputQuery: urlParams,
 		mutationConfig: {
 			onSuccess: handleResetForm,
 		},

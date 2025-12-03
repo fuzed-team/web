@@ -1,38 +1,29 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
 import { DataTable } from "@/components/data-table/data-table";
+import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
 import { useDataTable } from "@/hooks/use-data-table";
-import type { FlagsInput } from "../../api/get-flags";
 import { useFlags } from "../../api/get-flags";
+import { useFlagsSearchParams } from "../../utils/search-params";
 import { useFlagsColumns } from "./flags-columns";
-import { FlagsTableToolbar } from "./flags-table-toolbar";
+import { FlagsTableActionBar } from "./flags-table-action-bar";
 
 export function FlagsTable() {
 	const columns = useFlagsColumns();
-	const searchParams = useSearchParams();
-
-	const page = Number(searchParams.get("page")) || 1;
-	const limit = Number(searchParams.get("limit")) || 10;
-	const status = searchParams.get("status") as FlagsInput["status"];
-
-	const flagsInput: FlagsInput = {
-		page,
-		limit,
-		status,
-	};
+	const urlParams = useFlagsSearchParams();
 
 	const { data, isLoading, error } = useFlags({
-		input: flagsInput,
+		input: urlParams,
 	});
 	const flags = data?.data ?? [];
-	const total = data?.pagination?.totalRecords ?? 0;
+	const totalPages = data?.pagination?.totalPages ?? 0;
 
 	const { table } = useDataTable({
 		isLoading,
 		data: flags,
 		columns,
-		rowCount: total,
+		pageCount: totalPages,
+		getRowId: (originalRow) => originalRow.id,
 	});
 
 	if (error) {
@@ -44,9 +35,8 @@ export function FlagsTable() {
 	}
 
 	return (
-		<div className="space-y-4">
-			<FlagsTableToolbar table={table} />
-			<DataTable table={table} />
-		</div>
+		<DataTable table={table} actionBar={<FlagsTableActionBar table={table} />}>
+			<DataTableToolbar table={table} />
+		</DataTable>
 	);
 }

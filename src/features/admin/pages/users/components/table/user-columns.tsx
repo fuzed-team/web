@@ -17,7 +17,13 @@ import { UsersTableRowActions } from "./user-table-row-actions";
 export const checkboxClass =
 	"sticky md:table-cell left-0 z-10 rounded-tl bg-background transition-colors duration-200 group-hover/row:bg-muted group-data-[state=selected]/row:bg-muted w-12";
 
-export const useUserColumns = (): ColumnDef<UserApi>[] => {
+export const getUserColumns = ({
+	statusCounts,
+	roleCounts,
+}: {
+	statusCounts?: Record<string, number>;
+	roleCounts?: Record<string, number>;
+} = {}): ColumnDef<UserApi>[] => {
 	return [
 		{
 			id: "select",
@@ -109,8 +115,7 @@ export const useUserColumns = (): ColumnDef<UserApi>[] => {
 				options: userRoleOptions.map((role) => ({
 					label: role.label,
 					value: role.value,
-					// count: statusCounts[role],
-					count: 1,
+					count: roleCounts?.[role.value] ?? 0,
 					icon: role.icon,
 				})),
 				icon: CircleDashed,
@@ -144,8 +149,7 @@ export const useUserColumns = (): ColumnDef<UserApi>[] => {
 				options: userStatusOptions.map((status) => ({
 					label: status.label,
 					value: status.value,
-					// count: statusCounts[role],
-					count: 1,
+					count: statusCounts?.[status.value] ?? 0,
 					icon: status.icon,
 				})),
 				icon: CircleDashed,

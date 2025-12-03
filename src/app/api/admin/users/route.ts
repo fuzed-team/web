@@ -54,6 +54,7 @@ export const GET = withAdminSession(async ({ request, supabase }) => {
 
 		const { page, limit, name, role, status, createdAt, sort } =
 			validation.data;
+		console.log("🚀 ~ validation.data:", validation.data);
 
 		// Calculate pagination
 		const from = (page - 1) * limit;
@@ -87,11 +88,7 @@ export const GET = withAdminSession(async ({ request, supabase }) => {
 		}
 
 		// Build query
-		let query = supabase
-			.from("profiles")
-			.select("*", { count: "exact" })
-			.range(from, to)
-			.order(sortColumn, { ascending });
+		let query = supabase.from("profiles").select("*", { count: "exact" });
 
 		// Apply filters
 		if (name) {
@@ -125,7 +122,14 @@ export const GET = withAdminSession(async ({ request, supabase }) => {
 			query = query.lte("created_at", endDate);
 		}
 
+		// Apply primary sort and secondary sort by id for stable pagination
+		query = query
+			.order(sortColumn, { ascending })
+			.order("id", { ascending: true })
+			.range(from, to);
+
 		const { data: users, error, count } = await query;
+		console.log("🚀 ~ users:", users);
 
 		if (error) {
 			console.error("Error fetching users:", error);

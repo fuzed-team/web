@@ -1,14 +1,25 @@
 "use client";
 
+import React from "react";
 import { DataTable } from "@/components/data-table/data-table";
 import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
 import { useDataTable } from "@/hooks/use-data-table";
+import { useUserStats } from "../../api/get-user-stats";
 import { useUsers } from "../../api/get-users";
 import { useUsersSearchParams } from "../../utils/search-params";
-import { useUserColumns } from "./user-columns";
+import { getUserColumns } from "./user-columns";
+import { UsersTableActionBar } from "./user-table-action-bar";
 
 export function UsersTable() {
-	const columns = useUserColumns();
+	const { data: stats } = useUserStats();
+	const columns = React.useMemo(
+		() =>
+			getUserColumns({
+				roleCounts: stats?.role,
+				statusCounts: stats?.status,
+			}),
+		[stats?.role, stats?.status],
+	);
 	const urlParams = useUsersSearchParams();
 
 	const { data, isLoading, error } = useUsers({
@@ -19,6 +30,7 @@ export function UsersTable() {
 		isLoading,
 		data: data?.data ?? [],
 		columns,
+		getRowId: (originalRow) => originalRow.id,
 		pageCount: data?.pagination?.totalPages ?? 0,
 	});
 
@@ -31,7 +43,7 @@ export function UsersTable() {
 	}
 
 	return (
-		<DataTable table={table}>
+		<DataTable table={table} actionBar={<UsersTableActionBar table={table} />}>
 			<DataTableToolbar table={table} />
 		</DataTable>
 	);
