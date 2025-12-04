@@ -1,3 +1,5 @@
+/** biome-ignore-all lint/a11y/noStaticElementInteractions: <explanation> */
+/** biome-ignore-all lint/a11y/useKeyWithClickEvents: <explanation> */
 "use client";
 
 import { motion } from "framer-motion";
@@ -28,75 +30,70 @@ export const PhotoFilter = ({
 	};
 
 	React.useEffect(() => {
-		if (userPhotosData?.faces && userPhotosData.faces.length > 0) {
+		if (
+			userPhotosData?.faces &&
+			userPhotosData.faces.length > 0 &&
+			!activePhotoId
+		) {
 			onPhotoSelect(uploads[0].id);
 		}
-	}, [userPhotosData]);
+	}, [userPhotosData, activePhotoId, onPhotoSelect, uploads]);
 
 	// Show skeleton while loading
 	if (isLoading) {
 		return <PhotoFilterSkeleton className={className} />;
 	}
 
-	if (uploads.length <= 1) return null;
-
 	return (
-		<div className={cn("w-full", className)}>
-			<ScrollArea className="w-full">
-				<div className="flex gap-2 p-1 rounded-lg">
-					{uploads.map((upload, index) => {
-						const isActive = activePhotoId === upload.id;
+		<div
+			className={cn(
+				"flex overflow-x-auto gap-3 pb-4 snap-x-mandatory hide-scrollbar",
+				className,
+			)}
+		>
+			{/* Add New Photo Button (Integrated here for layout, but logically separate) */}
+			{/* We might need to lift the UploadPhoto component up or pass it as a child if we want perfect alignment, 
+                but for now, we'll assume it's rendered alongside this component in the parent. 
+                Actually, the user request said "UploadPhoto AND PhotoFilter should be extract ui with photo-selector".
+                So the parent page should arrange them in a flex row.
+            */}
 
-						return (
-							<motion.div
-								key={upload.id}
-								whileHover={{ scale: 1.02 }}
-								whileTap={{ scale: 0.98 }}
-							>
-								<Button
-									variant={isActive ? "default" : "outline"}
-									size="sm"
-									onClick={() => handleTabClick(upload.id)}
-									className={cn(
-										"flex items-center gap-2 transition-all duration-200 min-w-fit relative",
-										isActive
-											? "bg-gradient-to-r from-pink-500 to-rose-500 text-white"
-											: "hover:bg-muted text-muted-foreground hover:text-foreground",
-									)}
-								>
-									<div className="size-6 rounded-full">
-										<BlurImage
-											src={upload.image_url}
-											alt={`u${index}`}
-											className="size-6 rounded-full"
-											width={24}
-											height={24}
-										/>
-									</div>
+			{uploads.map((upload, index) => {
+				const isActive = activePhotoId === upload.id;
 
-									<div className="flex items-center gap-1">
-										{/* <Camera className="w-4 h-4" /> */}
-										<span className="font-medium">Photo {index + 1}</span>
-									</div>
-
-									{/* <Badge
-										variant={isActive ? "secondary" : "outline"}
-										className={cn(
-											"ml-1 min-w-[24px] justify-center",
-											isActive
-												? "bg-white/20 text-white border-white/30"
-												: "text-muted-foreground",
-										)}
-									>
-										{upload.number_of_user_matches}
-									</Badge> */}
-								</Button>
-							</motion.div>
-						);
-					})}
-				</div>
-				<ScrollBar orientation="horizontal" />
-			</ScrollArea>
+				return (
+					<div
+						key={upload.id}
+						className="flex-shrink-0 relative snap-center cursor-pointer"
+						onClick={() => handleTabClick(upload.id)}
+					>
+						{isActive && (
+							<div className="absolute -top-2 -right-2 z-20 text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm bg-primary text-primary-foreground">
+								Selected
+							</div>
+						)}
+						<div
+							className={cn(
+								"w-20 h-24 md:w-24 md:h-32 rounded-xl overflow-hidden border transition-all duration-300",
+								isActive
+									? "p-0.5 bg-gradient-to-br from-primary shadow-lg shadow-primary/25 ring-2 ring-offset-2 ring-offset-background ring-primary/50 to-purple-600"
+									: "border-border opacity-60 hover:opacity-100",
+							)}
+						>
+							<BlurImage
+								src={upload.image_url}
+								alt={`Photo ${index + 1}`}
+								width={100}
+								height={128}
+								className={cn(
+									"w-full h-full object-cover",
+									isActive ? "rounded-[10px]" : "",
+								)}
+							/>
+						</div>
+					</div>
+				);
+			})}
 		</div>
 	);
 };

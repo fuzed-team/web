@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { BlurImage } from "@/components/blur-image";
 import { Badge } from "@/components/ui/badge";
@@ -113,58 +114,58 @@ export function CelebrityOfTheDayCard({
 	const matchPercentage = calculateMatchPercentage(data.similarity_score);
 
 	return (
-		<Card
+		<motion.div
+			initial={{ opacity: 0, y: 20, filter: "blur(5px)" }}
+			animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+			transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
 			className={cn(
-				"py-0 bg-gradient-to-r from-purple-50 via-pink-50 to-purple-50 border-2 border-purple-300 shadow-lg hover:shadow-xl transition-shadow duration-300",
+				"md:p-10 overflow-hidden group bg-gradient-to-r w-full rounded-3xl mb-10 pt-8 pr-8 pb-8 pl-8 relative shadow-2xl shadow-purple-900/20 text-white from-violet-900 via-purple-800 to-blue-800",
 				className,
 			)}
 		>
-			<div className="p-4">
-				{/* Header Badge - Top left */}
-				<div className="mb-3">
-					<Badge className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-3 py-1 text-xs font-semibold shadow-md">
-						⭐ Celebrity of the Day
-					</Badge>
+			<div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/30 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+
+			<div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+				<div className="max-w-xl space-y-4 text-center md:text-left">
+					<div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/20 border text-xs font-medium border-purple-400/30 text-purple-100">
+						<span className="w-2 h-2 rounded-full animate-pulse bg-pink-400" />
+						Top Pick for Selected Photo
+					</div>
+					<h3 className="text-3xl md:text-4xl font-semibold tracking-tight leading-tight">
+						Match of the Day
+					</h3>
+					<p className="text-base md:text-lg font-light leading-relaxed max-w-md mx-auto md:mx-0 text-purple-100">
+						Highest overall compatibility based on your selected portrait.
+						{data.celebrity.bio && (
+							<span className="block mt-2 text-sm opacity-80 line-clamp-2">
+								{data.celebrity.bio}
+							</span>
+						)}
+					</p>
 				</div>
 
-				{/* Content - Horizontal layout */}
-				<div className="flex gap-4 items-start">
-					{/* Celebrity Image */}
-					<div className="relative w-20 h-20 flex-shrink-0 rounded-full overflow-hidden border-4 border-white shadow-xl">
+				<div className="flex-shrink-0 relative">
+					<div className="absolute -top-4 -right-4 z-20 text-center animate-bounce duration-1000">
+						<span className="inline-block px-3 py-1 font-bold rounded-lg shadow-lg text-lg bg-white text-purple-900">
+							{matchPercentage}%
+						</span>
+					</div>
+					<div className="relative w-48 h-48 md:w-56 md:h-56">
 						<BlurImage
 							src={data.celebrity.image_url}
 							alt={data.celebrity.name}
-							fill
-							className="object-cover"
+							width={224}
+							height={224}
+							className="w-full h-full object-cover rounded-2xl shadow-2xl border-4 border-white/10"
 						/>
-					</div>
-
-					{/* Info */}
-					<div className="flex-1 min-w-0">
-						<h3 className="text-lg font-bold text-gray-900 mb-0.5">
-							{data.celebrity.name}
-						</h3>
-						<p className="text-xs text-purple-600 font-medium capitalize mb-2">
-							{data.celebrity.category}
-						</p>
-
-						{/* Match Score */}
-						<div className="flex items-baseline gap-1.5 mb-2">
-							<span className="text-3xl font-bold text-purple-600">
-								{matchPercentage}%
-							</span>
-							<span className="text-xs text-gray-600 uppercase">Match</span>
-						</div>
-
-						{/* Bio */}
-						{data.celebrity.bio && (
-							<p className="text-xs text-gray-600 line-clamp-2 leading-relaxed">
-								{data.celebrity.bio}
+						<div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/60 to-transparent rounded-b-2xl">
+							<p className="text-center font-semibold text-sm">
+								{data.celebrity.name}
 							</p>
-						)}
+						</div>
 					</div>
 				</div>
 			</div>
-		</Card>
+		</motion.div>
 	);
 }

@@ -40,7 +40,7 @@ export function NavGroup({ title, items }: NavGroupProps) {
 	const href = usePathname() || "";
 	return (
 		<SidebarGroup>
-			<SidebarGroupLabel>{title}</SidebarGroupLabel>
+			{!!title && <SidebarGroupLabel>{title}</SidebarGroupLabel>}
 			<SidebarMenu>
 				{items.map((item) => {
 					const key = `${item.title}-${item.url}`;
@@ -78,9 +78,10 @@ export function SidebarMenuLink({
 				asChild
 				isActive={checkIsActive(href, item)}
 				tooltip={item.title}
+				size="lg"
 			>
 				<Link href={item.url} onClick={() => setOpenMobile(false)}>
-					{item.icon && <item.icon />}
+					{item.icon && <item.icon className="size-5!" />}
 					<span>{item.title}</span>
 					{item.badge && <NavBadge>{item.badge}</NavBadge>}
 				</Link>
