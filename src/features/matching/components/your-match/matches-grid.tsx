@@ -54,10 +54,11 @@ export function MatchesGrid({ activePhotoId }: MatchesGridProps) {
 		return (
 			<div className="text-center py-12">
 				<h3 className="text-xl font-semibold text-gray-600 mb-2">
-					No Matches Found
+					Processing Matches...
 				</h3>
 				<p className="text-gray-500">
-					Select a photo to see your matches or check back later.
+					We're currently analyzing your photo to find your suitable matches.
+					This usually takes just a few minutes.
 				</p>
 			</div>
 		);

@@ -24,9 +24,9 @@ export function UserPhoto({ className }: UserPhotoProps) {
 					<h3 className="font-medium text-base text-sidebar-foreground h-6">
 						{user?.name || ""}
 					</h3>
-					<div className="w-32 h-1.5 bg-sidebar-accent rounded-full mt-1.5 overflow-hidden">
+					{/* <div className="w-32 h-1.5 bg-sidebar-accent rounded-full mt-1.5 overflow-hidden">
 						<div className="h-full bg-gradient-to-r from-primary w-[110%] rounded-full to-purple-600" />
-					</div>
+					</div> */}
 					<p className="text-xs text-muted-foreground mt-1">
 						{/* TODO: add photos count */}
 						12 Photos Uploaded

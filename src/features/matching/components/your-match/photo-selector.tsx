@@ -1,8 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Plus } from "lucide-react";
+import { Loader, Plus } from "lucide-react";
 import React from "react";
+import { BorderBeam } from "@/app/(landing-page)/_components/ui/border-beam";
 import { BlurImage } from "@/components/blur-image";
 import {
 	FileUpload,
@@ -29,17 +30,17 @@ export function PhotoSelector({
 	const fileUploadRef = React.useRef<FileUploadRef>(null);
 	const { data: userPhotosData, isLoading } = useUserPhotos();
 	const uploads = userPhotosData?.faces ?? [];
+	console.log("🚀 ~ PhotoSelector ~ uploads:", uploads);
 
-	const [isUploading, setIsUploading] = React.useState<boolean>(false);
 	const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
 	const [showCropDialog, setShowCropDialog] = React.useState(false);
 
 	const uploadFaceMutation = useUploadFace({
 		mutationConfig: {
-			onSuccess: () => {
-				setIsUploading(false);
+			onSuccess: (data) => {
 				setSelectedFile(null);
 				fileUploadRef.current?.reset();
+				onPhotoSelect(data.id);
 			},
 			onError: () => {
 				setSelectedFile(null);
@@ -47,6 +48,7 @@ export function PhotoSelector({
 			},
 		},
 	});
+	const isUploading = uploadFaceMutation.isPending;
 
 	const handleFileSelected = (file: File) => {
 		setSelectedFile(file);
@@ -75,7 +77,6 @@ export function PhotoSelector({
 	const handleCancelCrop = () => {
 		setShowCropDialog(false);
 		setSelectedFile(null);
-		setIsUploading(false);
 		fileUploadRef.current?.reset();
 	};
 
@@ -83,9 +84,7 @@ export function PhotoSelector({
 		fileUploadRef.current?.triggerFileInput();
 	};
 
-	const handleSelectFile = () => {
-		setIsUploading(true);
-	};
+	const handleSelectFile = () => {};
 
 	const handleTabClick = (photoId: string | null) => {
 		onPhotoSelect(photoId);
@@ -147,13 +146,27 @@ export function PhotoSelector({
 					<div className="flex-shrink-0 snap-center">
 						<button
 							type="button"
-							className="w-20 h-24 md:w-24 md:h-32 rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center gap-2 text-muted-foreground hover:border-primary hover:text-primary hover:bg-primary/10 transition-all group-hover:scale-100"
+							disabled={isUploading}
+							className={cn(
+								"w-20 h-24 md:w-24 md:h-32 rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center gap-2 text-muted-foreground transition-all group-hover:scale-100",
+								isUploading
+									? "opacity-50 cursor-not-allowed"
+									: "hover:border-primary hover:text-primary hover:bg-primary/10",
+							)}
 							onClick={handleChangePhoto}
 						>
 							<Plus className="w-6 h-6" />
 							<span className="text-xs font-medium">Add Photo</span>
 						</button>
 					</div>
+					{isUploading && (
+						<div className="flex-shrink-0 snap-center">
+							<div className="relative w-20 h-24 md:w-24 md:h-32 rounded-xl border border-border flex items-center justify-center bg-muted/50 animate-pulse">
+								<Loader className="w-6 h-6 animate-spin text-muted-foreground" />
+								<BorderBeam size={40} duration={2} borderWidth={1} />
+							</div>
+						</div>
+					)}
 					<FileUpload
 						ref={fileUploadRef}
 						onUploadSuccess={handleFileSelected}
@@ -171,7 +184,7 @@ export function PhotoSelector({
 							// biome-ignore lint/a11y/noStaticElementInteractions: <explanation>
 							// biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
 							<div
-								key={i}
+								key={upload.id}
 								className={cn(
 									"flex-shrink-0 relative snap-center cursor-pointer  hover:opacity-100 transition-opacity",
 									isActive ? "opacity-100" : "opacity-60",
