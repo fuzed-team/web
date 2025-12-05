@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
+import { BlurImage } from "@/components/blur-image";
 import { useUserMatchInfinite } from "@/features/matching/api/get-user-match";
 import type { UniversityMatch } from "@/features/matching/components/user-match/university-match/university-match-tab";
 import { PAGINATION } from "@/lib/constants/constant";
@@ -66,7 +67,6 @@ export function MatchesGrid({ activePhotoId }: MatchesGridProps) {
 		<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
 			{matches.map((match, i) => (
 				<motion.div
-					// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
 					key={`${match.id}-${i}`}
 					initial={{ opacity: 0, y: 20, filter: "blur(5px)" }}
 					animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
@@ -75,14 +75,16 @@ export function MatchesGrid({ activePhotoId }: MatchesGridProps) {
 						delay: 0.1 + (i % 3) * 0.1,
 						ease: [0.16, 1, 0.3, 1],
 					}}
-					className="group bg-card border border-border rounded-2xl p-4 shadow-sm hover:shadow-xl hover:border-primary/50 transition-all duration-300 flex flex-col h-full"
+					className="group bg-card border border-border rounded-2xl p-4 shadow-sm hover:shadow-xl dark:hover:border-gray-700 hover:border-gray-300 transition-all duration-300 flex flex-col h-full"
 				>
 					{/* Main Match Image */}
 					<div className="relative aspect-[4/5] overflow-hidden rounded-xl mb-3 bg-muted group-hover:ring-2 ring-primary/50 transition-all">
-						<img
+						<BlurImage
 							src={match.other.image}
 							className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
 							alt={match.other.name}
+							width={248}
+							height={310}
 						/>
 						<div className="absolute top-2 right-2 bg-background/80 backdrop-blur-md px-2 py-1 rounded-md text-xs font-bold shadow-sm text-pink-600 border border-border">
 							{match.matchPercentage}%
@@ -99,7 +101,7 @@ export function MatchesGrid({ activePhotoId }: MatchesGridProps) {
 
 					{/* Alternate Matches Row */}
 					<div className="mt-auto pt-3 border-t border-border">
-						{match.matches.length === 0 ? (
+						{match.numberOfMatches === 1 ? (
 							<p className="text-[10px] uppercase font-semibold mb-2 tracking-wide opacity-50 text-muted-foreground">
 								Single strong match
 							</p>
@@ -111,14 +113,15 @@ export function MatchesGrid({ activePhotoId }: MatchesGridProps) {
 								<div className="flex items-center gap-2">
 									{match.matches.slice(0, 3).map((other, j) => (
 										<div
-											// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
 											key={j}
 											className="relative w-10 h-10 rounded-lg overflow-hidden border border-border cursor-pointer hover:border-primary transition-colors"
 										>
-											<img
+											<BlurImage
 												src={other.image}
 												className="w-full h-full object-cover opacity-80 hover:opacity-100"
 												alt="Other match"
+												width={248}
+												height={310}
 											/>
 											<div className="absolute bottom-0 w-full text-[8px] text-center font-medium py-0.5 bg-black/60 text-white">
 												{other.matchPercentage}%
@@ -136,13 +139,14 @@ export function MatchesGrid({ activePhotoId }: MatchesGridProps) {
 					</div>
 				</motion.div>
 			))}
-			<div ref={ref} className="col-span-full h-10 flex justify-center">
+			<div ref={ref} className="col-span-full h-10">
 				{isFetchingNextPage && (
-					<div className="flex gap-4 w-full">
+					<div className="grid grid-cols-4 gap-4 w-full">
 						<MatchesGridSkeleton />
 						<MatchesGridSkeleton />
 						<MatchesGridSkeleton />
 						<MatchesGridSkeleton />
+						<div className="col-span-full h-10" />
 					</div>
 				)}
 			</div>

@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 import { useUploadFace } from "../../api/upload-face";
 import { base64ToFile } from "../../utils";
 import { ImageCropDialog } from "../upload-photo/image-crop-dialog";
-import { PhotoFilterSkeleton } from "./photo-filter-skeleton";
+import { PhotoFilterSkeleton } from "../user-match/photo-filter-skeleton";
 
 interface PhotoSelectorProps {
 	activePhotoId: string | null;

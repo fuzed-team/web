@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { BlurImage } from "@/components/blur-image";
-import { Card } from "@/components/ui/card";
+
 import { cn } from "@/lib/utils";
 import { calculateMatchPercentage } from "@/lib/utils/match-percentage";
 
@@ -82,28 +82,23 @@ export function CelebrityOfTheDayCard({
 
 	if (isLoading) {
 		return (
-			<Card className="py-0 animate-pulse bg-gradient-to-r from-purple-50 via-pink-50 to-purple-50 border-2 border-purple-300">
-				<div className="p-4">
-					{/* Badge skeleton */}
-					<div className="mb-3">
-						<div className="h-6 w-40 bg-purple-200 rounded-full"></div>
-					</div>
-
-					{/* Content skeleton */}
-					<div className="flex gap-4 items-start">
-						{/* Image skeleton */}
-						<div className="w-20 h-20 flex-shrink-0 rounded-full bg-purple-200"></div>
-
-						{/* Info skeleton */}
-						<div className="flex-1 space-y-2">
-							<div className="h-5 bg-purple-200 rounded w-3/4"></div>
-							<div className="h-4 bg-purple-200 rounded w-1/3"></div>
-							<div className="h-8 bg-purple-200 rounded w-1/2"></div>
-							<div className="h-4 bg-purple-200 rounded w-full"></div>
+			<div className="md:p-10 overflow-hidden w-full rounded-3xl mb-10 pt-8 pr-8 pb-8 pl-8 relative shadow-2xl shadow-purple-900/20 text-white bg-gradient-to-r from-violet-900 via-purple-800 to-blue-800 animate-pulse">
+				<div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+					<div className="max-w-xl w-full space-y-6 text-center md:text-left flex flex-col items-center md:items-start">
+						<div className="h-7 w-48 bg-white/10 rounded-full" />
+						<div className="h-10 w-72 bg-white/10 rounded-lg" />
+						<div className="space-y-3 w-full max-w-md">
+							<div className="h-5 w-full bg-white/10 rounded" />
+							<div className="h-4 w-3/4 bg-white/10 rounded" />
+							<div className="h-10 w-5/6 bg-white/10 rounded mt-2" />
 						</div>
 					</div>
+
+					<div className="flex-shrink-0 relative">
+						<div className="w-48 h-48 md:w-56 md:h-56 bg-white/10 rounded-2xl border-4 border-white/5" />
+					</div>
 				</div>
-			</Card>
+			</div>
 		);
 	}
 
@@ -128,13 +123,13 @@ export function CelebrityOfTheDayCard({
 				<div className="max-w-xl space-y-4 text-center md:text-left">
 					<div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/20 border text-xs font-medium border-purple-400/30 text-purple-100">
 						<span className="w-2 h-2 rounded-full animate-pulse bg-pink-400" />
-						Top Pick for Selected Photo
+						Daily Featured Match
 					</div>
 					<h3 className="text-3xl md:text-4xl font-semibold tracking-tight leading-tight">
-						Match of the Day
+						Celebrity Match of the Day
 					</h3>
 					<p className="text-base md:text-lg font-light leading-relaxed max-w-md mx-auto md:mx-0 text-purple-100">
-						Highest overall compatibility based on your selected portrait.
+						Discover the daily featured celebrity similarity match.
 						{data.celebrity.bio && (
 							<span className="block mt-2 text-sm opacity-80 line-clamp-2">
 								{data.celebrity.bio}

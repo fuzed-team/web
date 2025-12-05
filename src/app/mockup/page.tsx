@@ -2,8 +2,8 @@
 
 import { motion } from "framer-motion";
 import { Menu } from "lucide-react";
+import { MatchesGrid } from "../../features/matching/components/your-match/matches-grid";
 import { MatchHero } from "./components/match-hero";
-import { MatchesGrid } from "./components/matches-grid";
 import { MockupSidebar } from "./components/mockup-sidebar";
 import { PhotoSelector } from "./components/photo-selector";
 
