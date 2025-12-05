@@ -4,7 +4,6 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { BlurImage } from "@/components/blur-image";
-import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { calculateMatchPercentage } from "@/lib/utils/match-percentage";

@@ -16,7 +16,7 @@ export default function YourMatchesPage() {
 				onPhotoSelect={setActivePhotoId}
 			/>
 			<CelebrityOfTheDayCard faceId={activePhotoId} />
-			<MatchesGrid />
+			<MatchesGrid activePhotoId={activePhotoId} />
 			<MatchDialog />
 		</section>
 	);

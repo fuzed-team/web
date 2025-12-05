@@ -4,8 +4,15 @@ import { motion } from "framer-motion";
 import { Plus } from "lucide-react";
 import React from "react";
 import { BlurImage } from "@/components/blur-image";
+import {
+	FileUpload,
+	type FileUploadRef,
+} from "@/components/kokonutui/file-upload";
 import { useUserPhotos } from "@/features/matching/api/get-user-photos";
 import { cn } from "@/lib/utils";
+import { useUploadFace } from "../../api/upload-face";
+import { base64ToFile } from "../../utils";
+import { ImageCropDialog } from "../upload-photo/image-crop-dialog";
 import { PhotoFilterSkeleton } from "./photo-filter-skeleton";
 
 interface PhotoSelectorProps {
@@ -19,8 +26,66 @@ export function PhotoSelector({
 	onPhotoSelect,
 	className,
 }: PhotoSelectorProps) {
+	const fileUploadRef = React.useRef<FileUploadRef>(null);
 	const { data: userPhotosData, isLoading } = useUserPhotos();
 	const uploads = userPhotosData?.faces ?? [];
+
+	const [isUploading, setIsUploading] = React.useState<boolean>(false);
+	const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
+	const [showCropDialog, setShowCropDialog] = React.useState(false);
+
+	const uploadFaceMutation = useUploadFace({
+		mutationConfig: {
+			onSuccess: () => {
+				setIsUploading(false);
+				setSelectedFile(null);
+				fileUploadRef.current?.reset();
+			},
+			onError: () => {
+				setSelectedFile(null);
+				fileUploadRef.current?.reset();
+			},
+		},
+	});
+
+	const handleFileSelected = (file: File) => {
+		setSelectedFile(file);
+		setShowCropDialog(true);
+	};
+
+	const handleCropComplete = async (croppedImageBase64: string) => {
+		if (uploadFaceMutation.isPending) return;
+
+		try {
+			const croppedFile = await base64ToFile(
+				croppedImageBase64,
+				selectedFile?.name || "cropped-image.png",
+			);
+
+			setShowCropDialog(false);
+			uploadFaceMutation.mutate({ file: croppedFile });
+		} catch (error) {
+			console.error("Failed to process cropped image:", error);
+			setShowCropDialog(false);
+			setSelectedFile(null);
+			fileUploadRef.current?.reset();
+			// TODO: Show error toast to user
+		}
+	};
+	const handleCancelCrop = () => {
+		setShowCropDialog(false);
+		setSelectedFile(null);
+		setIsUploading(false);
+		fileUploadRef.current?.reset();
+	};
+
+	const handleChangePhoto = () => {
+		fileUploadRef.current?.triggerFileInput();
+	};
+
+	const handleSelectFile = () => {
+		setIsUploading(true);
+	};
 
 	const handleTabClick = (photoId: string | null) => {
 		onPhotoSelect(photoId);
@@ -83,11 +148,22 @@ export function PhotoSelector({
 						<button
 							type="button"
 							className="w-20 h-24 md:w-24 md:h-32 rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center gap-2 text-muted-foreground hover:border-primary hover:text-primary hover:bg-primary/10 transition-all group-hover:scale-100"
+							onClick={handleChangePhoto}
 						>
 							<Plus className="w-6 h-6" />
 							<span className="text-xs font-medium">Add Photo</span>
 						</button>
 					</div>
+					<FileUpload
+						ref={fileUploadRef}
+						onUploadSuccess={handleFileSelected}
+						onSelectFile={handleSelectFile}
+						acceptedFileTypes={["image/*"]}
+						maxFileSize={10 * 1024 * 1024} // 10MB
+						uploadDelay={100}
+						validateFile={() => null}
+						classes={{ container: "hidden" }}
+					/>
 
 					{uploads.map((upload, i) => {
 						const isActive = activePhotoId === upload.id;
@@ -128,6 +204,13 @@ export function PhotoSelector({
 					})}
 				</div>
 			</motion.div>
+			<ImageCropDialog
+				open={showCropDialog}
+				file={selectedFile}
+				onCancelCrop={handleCancelCrop}
+				onCrop={handleCropComplete}
+				onOpenChange={setShowCropDialog}
+			/>
 		</motion.header>
 	);
 }

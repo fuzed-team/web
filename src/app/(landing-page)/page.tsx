@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import { HomeContent } from "@/components/home-content";
 import { Header } from "@/components/layout/header";
 import { createClient } from "@/lib/supabase/server";
 import Footer from "./_components/navigations/footer";
@@ -27,7 +26,7 @@ const HomePage = async () => {
 			return redirect("/onboarding");
 		}
 
-		return <HomeContent />;
+		return redirect("/your-matches");
 	}
 
 	return (
