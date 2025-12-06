@@ -191,11 +191,11 @@ export function PhotoSelector({
 								)}
 								onClick={() => handleTabClick(upload.id)}
 							>
-								{isActive && (
+								{/* {isActive && (
 									<div className="absolute -top-2 -right-2 z-20 text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm bg-primary text-primary-foreground">
 										Selected
 									</div>
-								)}
+								)} */}
 								<div
 									className={cn(
 										"w-20 h-24 md:w-24 md:h-32 rounded-xl overflow-hidden border border-border",
