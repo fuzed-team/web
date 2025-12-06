@@ -17,7 +17,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import type { SortByOption } from "@/features/matching/api/get-user-match";
-import { useUserPhotos } from "@/features/matching/api/get-user-photos";
+
 import { cn } from "@/lib/utils";
 import { useUploadFace } from "../../api/upload-face";
 import { base64ToFile } from "../../utils";
@@ -37,6 +37,8 @@ interface PhotoSelectorProps {
 	sortBy: SortByOption;
 	onSortChange: (sortBy: SortByOption) => void;
 	className?: string;
+	userPhotos: any[];
+	isLoading: boolean;
 }
 
 export function PhotoSelector({
@@ -45,10 +47,12 @@ export function PhotoSelector({
 	sortBy,
 	onSortChange,
 	className,
+	userPhotos,
+	isLoading,
 }: PhotoSelectorProps) {
 	const fileUploadRef = React.useRef<FileUploadRef>(null);
-	const { data: userPhotosData, isLoading } = useUserPhotos();
-	const uploads = userPhotosData?.faces ?? [];
+	// const { data: userPhotosData, isLoading } = useUserPhotos();
+	const uploads = userPhotos ?? [];
 
 	const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
 	const [showCropDialog, setShowCropDialog] = React.useState(false);
@@ -108,16 +112,6 @@ export function PhotoSelector({
 		onPhotoSelect(photoId);
 	};
 
-	React.useEffect(() => {
-		if (
-			userPhotosData?.faces &&
-			userPhotosData.faces.length > 0 &&
-			!activePhotoId
-		) {
-			onPhotoSelect(uploads[0].id);
-		}
-	}, [userPhotosData, activePhotoId, onPhotoSelect, uploads]);
-
 	// Show skeleton while loading
 	if (isLoading) {
 		return <PhotoFilterSkeleton className={className} />;
@@ -135,7 +129,8 @@ export function PhotoSelector({
 					<h2 className="md:text-2xl text-xl font-semibold tracking-tight text-foreground">
 						Matches for{" "}
 						<span className="bg-gradient-to-r bg-clip-text text-transparent from-primary to-purple-600">
-							Portrait #{uploads.findIndex((u) => u.id === activePhotoId) + 1}
+							Portrait #
+							{uploads.findIndex((u: any) => u.id === activePhotoId) + 1}
 						</span>
 					</h2>
 					<p className="text-muted-foreground mt-1">

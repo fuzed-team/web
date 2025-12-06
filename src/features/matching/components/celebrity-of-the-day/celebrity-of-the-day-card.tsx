@@ -25,6 +25,7 @@ interface FeaturedCelebrity {
 interface CelebrityOfTheDayCardProps {
 	faceId: string | null;
 	className?: string;
+	initialLoading?: boolean;
 }
 
 async function fetchFeaturedCelebrity(
@@ -45,6 +46,7 @@ async function fetchFeaturedCelebrity(
 export function CelebrityOfTheDayCard({
 	faceId,
 	className,
+	initialLoading,
 }: CelebrityOfTheDayCardProps) {
 	const [timeLeft, setTimeLeft] = useState("");
 
@@ -80,7 +82,7 @@ export function CelebrityOfTheDayCard({
 		return () => clearInterval(interval);
 	}, [data]);
 
-	if (isLoading) {
+	if (isLoading || initialLoading) {
 		return (
 			<div className="md:p-10 overflow-hidden w-full rounded-3xl mb-10 pt-8 pr-8 pb-8 pl-8 relative shadow-2xl shadow-purple-900/20 text-white bg-gradient-to-r from-violet-900 via-purple-800 to-blue-800 animate-pulse">
 				<div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">

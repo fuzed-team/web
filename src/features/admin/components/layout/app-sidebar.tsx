@@ -25,7 +25,7 @@ import type { NavItem } from "./types";
 const footerItems = [
 	{
 		title: "Back to Home",
-		url: "/",
+		url: "/your-matches",
 		icon: Home,
 	},
 ] as NavItem[];

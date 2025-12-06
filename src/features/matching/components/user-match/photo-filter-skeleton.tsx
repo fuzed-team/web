@@ -1,4 +1,3 @@
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
@@ -10,27 +9,33 @@ export const PhotoFilterSkeleton = ({
 	className,
 }: PhotoFilterSkeletonProps) => {
 	return (
-		<div className={cn("w-full", className)}>
-			<ScrollArea className="w-full">
-				<div className="flex gap-2 p-1 rounded-lg">
-					{/* Generate 2-3 skeleton photo tabs */}
-					{Array.from({ length: 3 }).map((_, index) => (
-						<Skeleton
-							key={index}
-							className="flex items-center gap-2 transition-all duration-200 min-w-fit relative h-9 px-3 rounded-md"
-						>
-							{/* Photo thumbnail skeleton */}
-							<div className="size-6 bg-muted-foreground/20 rounded-full" />
+		<div className={cn("mb-6", className)}>
+			<div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-2">
+				<div className="space-y-2">
+					<Skeleton className="h-8 w-64" />
+					<Skeleton className="h-4 w-80" />
+				</div>
+				<div className="flex items-center gap-2">
+					<Skeleton className="h-4 w-12" />
+					<Skeleton className="h-8 w-[130px]" />
+				</div>
+			</div>
 
-							{/* Photo label skeleton */}
-							<div className="flex items-center gap-1">
-								<div className="h-4 w-14 bg-muted-foreground/20 rounded" />
-							</div>
-						</Skeleton>
+			<div className="relative group mb-6">
+				<div className="flex overflow-x-auto gap-3 py-4 snap-x-mandatory hide-scrollbar">
+					{/* Add Photo Button Skeleton */}
+					<div className="flex-shrink-0 snap-center">
+						<Skeleton className="w-20 h-24 md:w-24 md:h-32 rounded-xl" />
+					</div>
+
+					{/* Photo Card Skeletons */}
+					{Array.from({ length: 4 }).map((_, i) => (
+						<div key={i} className="flex-shrink-0 snap-center">
+							<Skeleton className="w-20 h-24 md:w-24 md:h-32 rounded-xl" />
+						</div>
 					))}
 				</div>
-				<ScrollBar orientation="horizontal" />
-			</ScrollArea>
+			</div>
 		</div>
 	);
 };
