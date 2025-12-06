@@ -9,6 +9,14 @@ import {
 	FileUpload,
 	type FileUploadRef,
 } from "@/components/kokonutui/file-upload";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import type { SortByOption } from "@/features/matching/api/get-user-match";
 import { useUserPhotos } from "@/features/matching/api/get-user-photos";
 import { cn } from "@/lib/utils";
 import { useUploadFace } from "../../api/upload-face";
@@ -16,21 +24,31 @@ import { base64ToFile } from "../../utils";
 import { ImageCropDialog } from "../upload-photo/image-crop-dialog";
 import { PhotoFilterSkeleton } from "../user-match/photo-filter-skeleton";
 
+const SORT_OPTIONS: { value: SortByOption; label: string }[] = [
+	{ value: "highest_percentage", label: "Highest %" },
+	{ value: "lowest_percentage", label: "Lowest %" },
+	{ value: "newest", label: "Newest" },
+	{ value: "oldest", label: "Oldest" },
+];
+
 interface PhotoSelectorProps {
 	activePhotoId: string | null;
 	onPhotoSelect: (photoId: string | null) => void;
+	sortBy: SortByOption;
+	onSortChange: (sortBy: SortByOption) => void;
 	className?: string;
 }
 
 export function PhotoSelector({
 	activePhotoId,
 	onPhotoSelect,
+	sortBy,
+	onSortChange,
 	className,
 }: PhotoSelectorProps) {
 	const fileUploadRef = React.useRef<FileUploadRef>(null);
 	const { data: userPhotosData, isLoading } = useUserPhotos();
 	const uploads = userPhotosData?.faces ?? [];
-	console.log("🚀 ~ PhotoSelector ~ uploads:", uploads);
 
 	const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
 	const [showCropDialog, setShowCropDialog] = React.useState(false);
@@ -117,7 +135,7 @@ export function PhotoSelector({
 					<h2 className="md:text-2xl text-xl font-semibold tracking-tight text-foreground">
 						Matches for{" "}
 						<span className="bg-gradient-to-r bg-clip-text text-transparent from-primary to-purple-600">
-							Portrait #1
+							Portrait #{uploads.findIndex((u) => u.id === activePhotoId) + 1}
 						</span>
 					</h2>
 					<p className="text-muted-foreground mt-1">
@@ -125,14 +143,24 @@ export function PhotoSelector({
 					</p>
 				</div>
 				<div className="flex items-center gap-2">
-					<span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+					<span className="relative top-[1px] text-xs font-medium text-muted-foreground uppercase tracking-wide">
 						Sort by:
 					</span>
-					<select className="bg-transparent text-sm font-medium border-none outline-none cursor-pointer focus:ring-0 text-foreground">
-						<option>Highest %</option>
-						<option>Newest</option>
-						<option>Nearby</option>
-					</select>
+					<Select
+						value={sortBy}
+						onValueChange={(value) => onSortChange(value as SortByOption)}
+					>
+						<SelectTrigger className="w-[130px] h-8 text-sm border-none bg-transparent shadow-none">
+							<SelectValue />
+						</SelectTrigger>
+						<SelectContent>
+							{SORT_OPTIONS.map((option) => (
+								<SelectItem key={option.value} value={option.value}>
+									{option.label}
+								</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
 				</div>
 			</div>
 			<motion.div

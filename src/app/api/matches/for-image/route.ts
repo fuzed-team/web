@@ -18,11 +18,13 @@ import { calculateMatchPercentage } from "@/lib/utils/match-percentage";
  *   - face_id (required): UUID of the user's face to fetch matches for
  *   - limit (optional): Number of matches to return (default: 50)
  *   - skip (optional): Pagination offset (default: 0)
+ *   - sort_by (optional): Sort option - highest_percentage, lowest_percentage, newest, oldest (default: highest_percentage)
  */
 export const GET = withSession(async ({ searchParams, supabase, session }) => {
 	const faceId = searchParams.face_id;
 	const limit = parseInt(searchParams.limit || "50", 10);
 	const skip = parseInt(searchParams.skip || "0", 10);
+	const sortBy = searchParams.sort_by || "highest_percentage";
 
 	// Validate required parameters
 	if (!faceId) {
@@ -96,9 +98,33 @@ export const GET = withSession(async ({ searchParams, supabase, session }) => {
 		)
 		.or(`face_a_id.eq.${faceId},face_b_id.eq.${faceId}`);
 
+	// Determine sort order based on sort_by parameter
+	let orderColumn: "similarity_score" | "created_at";
+	let ascending: boolean;
+
+	switch (sortBy) {
+		case "lowest_percentage":
+			orderColumn = "similarity_score";
+			ascending = true; // Lower score first
+			break;
+		case "newest":
+			orderColumn = "created_at";
+			ascending = false;
+			break;
+		case "oldest":
+			orderColumn = "created_at";
+			ascending = true;
+			break;
+		case "highest_percentage":
+		default:
+			orderColumn = "similarity_score";
+			ascending = false; // Higher score first
+			break;
+	}
+
 	const { data: matchRecords, error: matchError } = await query.order(
-		"created_at",
-		{ ascending: false },
+		orderColumn,
+		{ ascending },
 	);
 
 	if (matchError) {

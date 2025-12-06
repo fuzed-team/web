@@ -9,10 +9,17 @@ import type { QueryConfig } from "@/lib/react-query";
 import type { Reaction, UserMatchApi } from "@/types/api";
 import { transformApiUserMatchesToDisplayData } from "../utils/transform-api-data";
 
+export type SortByOption =
+	| "highest_percentage"
+	| "lowest_percentage"
+	| "newest"
+	| "oldest";
+
 export type UserMatchInput = {
 	faceId: string;
 	limit: number;
 	skip: number;
+	sortBy?: SortByOption;
 	reaction?: Reaction;
 	signal?: AbortSignal;
 };
@@ -20,7 +27,7 @@ export type UserMatchInput = {
 export const getUserMatchApi = async (
 	input: UserMatchInput,
 ): Promise<UserMatchApi[]> => {
-	const { signal, skip, faceId, limit } = input;
+	const { signal, skip, faceId, limit, sortBy } = input;
 
 	const response = await api.get<{ matches: UserMatchApi[]; total: number }>(
 		"/matches/for-image",
@@ -29,6 +36,7 @@ export const getUserMatchApi = async (
 				face_id: faceId,
 				skip: skip,
 				limit: limit,
+				sort_by: sortBy,
 			},
 			signal,
 		},
@@ -72,7 +80,7 @@ export const useUserMatchInfinite = ({
 		string[],
 		number
 	>({
-		queryKey: ["matching", "user", "infinite", input.faceId],
+		queryKey: ["matching", "user", "infinite", input.faceId, input.sortBy],
 		queryFn: ({ pageParam, signal }) =>
 			getUserMatchApi({
 				...input,

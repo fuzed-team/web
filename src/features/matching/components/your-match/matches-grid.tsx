@@ -2,7 +2,10 @@
 
 import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
-import { useUserMatchInfinite } from "@/features/matching/api/get-user-match";
+import {
+	type SortByOption,
+	useUserMatchInfinite,
+} from "@/features/matching/api/get-user-match";
 import type { UniversityMatch } from "@/features/matching/components/user-match/university-match/university-match-tab";
 import { PAGINATION } from "@/lib/constants/constant";
 import { MatchCard } from "./match-card";
@@ -10,9 +13,13 @@ import { MatchesGridSkeleton } from "./matches-grid-skeleton";
 
 interface MatchesGridProps {
 	activePhotoId?: string | null;
+	sortBy?: SortByOption;
 }
 
-export function MatchesGrid({ activePhotoId }: MatchesGridProps) {
+export function MatchesGrid({
+	activePhotoId,
+	sortBy = "highest_percentage",
+}: MatchesGridProps) {
 	const { ref, inView } = useInView();
 
 	const {
@@ -20,10 +27,12 @@ export function MatchesGrid({ activePhotoId }: MatchesGridProps) {
 		isLoading,
 		isFetchingNextPage,
 		fetchNextPage,
+		hasNextPage,
 	} = useUserMatchInfinite({
 		input: {
 			faceId: activePhotoId!,
 			limit: PAGINATION.DEFAULT_LIMIT,
+			sortBy,
 		},
 		queryConfig: {
 			enabled: !!activePhotoId,
@@ -34,10 +43,10 @@ export function MatchesGrid({ activePhotoId }: MatchesGridProps) {
 		userMatches && userMatches.length > 0 ? userMatches : [];
 
 	useEffect(() => {
-		if (inView) {
+		if (inView && hasNextPage) {
 			fetchNextPage();
 		}
-	}, [fetchNextPage, inView]);
+	}, [fetchNextPage, inView, hasNextPage]);
 
 	if (isLoading) {
 		return (
@@ -68,17 +77,19 @@ export function MatchesGrid({ activePhotoId }: MatchesGridProps) {
 			{matches.map((match, i) => (
 				<MatchCard key={`${match.id}-${i}`} match={match} index={i} />
 			))}
-			<div ref={ref} className="col-span-full h-10">
-				{isFetchingNextPage && (
-					<div className="grid grid-cols-4 gap-4 w-full">
-						<MatchesGridSkeleton />
-						<MatchesGridSkeleton />
-						<MatchesGridSkeleton />
-						<MatchesGridSkeleton />
-						<div className="col-span-full h-10" />
-					</div>
-				)}
-			</div>
+			{hasNextPage && (
+				<div ref={ref} className="col-span-full h-10">
+					{isFetchingNextPage && (
+						<div className="grid grid-cols-4 gap-4 w-full">
+							<MatchesGridSkeleton />
+							<MatchesGridSkeleton />
+							<MatchesGridSkeleton />
+							<MatchesGridSkeleton />
+							<div className="col-span-full h-10" />
+						</div>
+					)}
+				</div>
+			)}
 		</div>
 	);
 }

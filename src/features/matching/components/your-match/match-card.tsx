@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Sparkles } from "lucide-react";
+import { Clock, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import { BlurImage } from "@/components/blur-image";
 import {
@@ -26,8 +26,6 @@ export function MatchCard({
 	const [api, setApi] = useState<CarouselApi>();
 	const [current, setCurrent] = useState(0);
 	const [count, setCount] = useState(0);
-
-	console.log(match);
 
 	useEffect(() => {
 		if (!api) {
@@ -104,14 +102,20 @@ export function MatchCard({
 				</Carousel>
 			</div>
 
-			<div className="flex justify-between items-start mb-2">
-				<div>
-					<h4 className="text-lg font-semibold text-card-foreground leading-tight mb-1">
-						{match.other.name}
-					</h4>
-					<p className="text-sm text-muted-foreground">
-						Matched with {match.numberOfMatches} of your photos
-					</p>
+			<div className="mb-4">
+				<h4 className="text-lg font-semibold text-card-foreground leading-tight">
+					{match.other.name}
+				</h4>
+				<div className="flex items-center justify-between gap-2 text-xs text-muted-foreground mt-1">
+					<span className="flex items-center gap-1 text-muted-foreground/70">
+						<Clock className="size-3" />
+						{match.timestamp}
+					</span>
+					{match.numberOfMatches > 1 && (
+						<span className="flex items-center gap-1 text-muted-foreground/70">
+							Matched {match.numberOfMatches} photos
+						</span>
+					)}
 				</div>
 			</div>
 

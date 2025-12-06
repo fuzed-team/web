@@ -1,16 +1,13 @@
 "use client";
 
 import { Home } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { usePathname } from "next/navigation";
 import {
 	Sidebar,
 	SidebarContent,
 	SidebarFooter,
 	SidebarHeader,
 	SidebarMenu,
-	SidebarMenuButton,
-	SidebarMenuItem,
 	SidebarRail,
 	useSidebar,
 } from "@/components/ui/sidebar";
