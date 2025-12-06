@@ -46,11 +46,16 @@ function DrawerOverlay({
 function DrawerContent({
 	className,
 	children,
+	classes,
 	...props
-}: React.ComponentProps<typeof DrawerPrimitive.Content>) {
+}: React.ComponentProps<typeof DrawerPrimitive.Content> & {
+	classes?: {
+		overlay?: string;
+	};
+}) {
 	return (
 		<DrawerPortal data-slot="drawer-portal">
-			<DrawerOverlay />
+			<DrawerOverlay className={classes?.overlay} />
 			<DrawerPrimitive.Content
 				data-slot="drawer-content"
 				className={cn(

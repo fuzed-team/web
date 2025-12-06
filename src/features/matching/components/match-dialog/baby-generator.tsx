@@ -1,19 +1,19 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import {
-	Baby,
+	Dna,
 	Download,
-	Heart,
-	MessageCircle,
+	Loader,
+	Lock,
 	Share2,
-	Zap,
+	Sparkles,
+	Wand2,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { BlurImage } from "@/components/blur-image";
-import SiriOrb from "@/components/smoothui/siri-orb";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -45,7 +45,7 @@ export const BabyGenerator = ({
 	matchPhoto,
 	userName,
 	matchName,
-	mode = "own-match",
+	// mode = "own-match", // Unused in new design
 	onBack,
 }: BabyGeneratorProps) => {
 	const router = useRouter();
@@ -55,14 +55,11 @@ export const BabyGenerator = ({
 		icebreaker: string;
 	} | null>(null);
 	const [showMutualDialog, setShowMutualDialog] = useState(false);
-	const isLiveMatch = mode === "live-match";
 
-	// Fetch match details with commonalities
+	// Fetch match details
 	const { data: matchDetails } = useMatchDetails({
 		matchId,
-		queryConfig: {
-			enabled: !!matchId,
-		},
+		queryConfig: { enabled: !!matchId },
 	});
 
 	const generateBabyMutation = useGenerateBaby({
@@ -74,12 +71,9 @@ export const BabyGenerator = ({
 				}
 				setBabyImage(data.image_url);
 
-				// Check if mutual connection was created
 				if (data.mutual_connection) {
 					setMutualConnection(data.mutual_connection);
 					setShowMutualDialog(true);
-
-					// Generate personalized match message based on commonalities
 					const matchMessage = generateMatchMessage(
 						matchDetails?.commonalities || [],
 					);
@@ -91,15 +85,12 @@ export const BabyGenerator = ({
 		},
 	});
 
-	// Fetch existing baby for this match
+	// Fetch existing baby
 	const { data: existingBaby, isLoading: loadingExisting } = useBabyForMatch({
 		matchId,
-		queryConfig: {
-			enabled: !!matchId,
-		},
+		queryConfig: { enabled: !!matchId },
 	});
 
-	// Load existing baby image when available
 	useEffect(() => {
 		if (existingBaby?.image_url) {
 			setBabyImage(existingBaby.image_url);
@@ -112,20 +103,17 @@ export const BabyGenerator = ({
 			toast.error("Match ID is required to generate baby! 📸");
 			return;
 		}
-
 		setBabyImage("");
 		generateBabyMutation.mutate(matchId);
 	};
 
 	const shareBaby = async () => {
 		if (!babyImage) return;
-
 		const shareData = {
 			title: `Our Future Baby! 👶`,
 			text: `${matchName || "My match"} and I would make beautiful babies! 💕 #Fuzed`,
 			url: window.location.href,
 		};
-
 		try {
 			if (
 				navigator.share &&
@@ -147,369 +135,312 @@ export const BabyGenerator = ({
 
 	const saveBaby = async () => {
 		if (!babyImage) return;
-
 		try {
-			// Fetch the image as blob
 			const response = await fetch(babyImage);
 			const blob = await response.blob();
-
-			// Create download link
 			const link = document.createElement("a");
 			link.download = `fuzed-baby-${matchName || "match"}.jpg`;
 			link.href = URL.createObjectURL(blob);
 			link.click();
-
-			// Clean up
 			URL.revokeObjectURL(link.href);
-
 			toast.success("Baby image saved! 💾");
 		} catch (_error) {
 			toast.error("Unable to save image");
 		}
 	};
 
-	// const retryGeneration = () => {
-	// 	setBabyImage("");
-	// 	handleGenerate();
-	// };
-
-	const canGenerate = userPhoto && matchPhoto && matchId;
+	const isGenerating = generateBabyMutation.isPending || loadingExisting;
 
 	return (
-		<div className="w-full p-6 md:p-8 text-white">
-			<motion.div
-				initial={{ opacity: 0, y: 20 }}
-				animate={{ opacity: 1, y: 0 }}
-				className="space-y-8"
-			>
-				{/* Header */}
-				<div className="text-center">
-					<h3 className="text-xl font-semibold flex items-center justify-center gap-2">
-						<Baby className="w-6 h-6" />
-						{isLiveMatch ? "Baby Preview" : "Baby Generator"}
-					</h3>
-					{isLiveMatch && userName && matchName ? (
-						<p className="text-white/90 text-sm mt-1">
-							{userName} & {matchName}
+		<>
+			<div className="relative w-full flex flex-col items-center transition-all duration-300 overflow-hidden font-sans">
+				{/* Top Gradient Accents */}
+				<div className="absolute top-0 inset-x-0 h-40 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-background/0 to-background/0 pointer-events-none"></div>
+
+				{/* Close Button */}
+				{/* {onBack && (
+					<button
+						type="button"
+						onClick={onBack}
+						className="absolute top-5 right-5 p-2 rounded-full text-gray-400 hover:text-gray-900 hover:bg-gray-100 border border-transparent transition-all z-30"
+					>
+						<X className="w-4 h-4" />
+					</button>
+				)} */}
+
+				{/* Card Content */}
+				<div className="relative z-10 w-full flex flex-col">
+					{/* Header */}
+					<div className="px-6 sm:px-8 pt-8 pb-10 sm:pb-6 text-center">
+						<div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[11px] font-semibold tracking-wider uppercase mb-3">
+							<Sparkles className="w-3 h-3" /> AI Prediction 2.0
+						</div>
+						<h2 className="text-2xl font-bold tracking-tight text-foreground mb-1">
+							Future Generator
+						</h2>
+						<p className="text-muted-foreground text-sm">
+							Combining genetic features to predict your future.
 						</p>
-					) : (
-						matchName && (
-							<p className="text-white/90 text-sm mt-1">You & {matchName}</p>
-						)
-					)}
-				</div>
-
-				{/* Baby Result - Prominent Center Position */}
-				<div className="flex justify-center items-center gap-6">
-					{/* Baby Circle */}
-					<div className="text-center relative">
-						<AnimatePresence mode="wait">
-							{babyImage ? (
-								<motion.div
-									initial={{ scale: 0, rotate: -180, opacity: 0 }}
-									animate={{ scale: 1, rotate: 0, opacity: 1 }}
-									transition={{
-										type: "spring",
-										stiffness: 260,
-										damping: 20,
-										duration: 0.6,
-									}}
-									className="relative"
-								>
-									{/* Sparkle burst effect */}
-									<motion.div
-										initial={{ scale: 0 }}
-										animate={{ scale: [0, 2, 0], opacity: [0, 1, 0] }}
-										transition={{ duration: 0.8 }}
-										className="absolute inset-0 flex items-center justify-center text-4xl"
-									>
-										✨
-									</motion.div>
-
-									{/* Baby image with glow */}
-									<div className="relative">
-										<div className="absolute -inset-2 bg-gradient-to-r from-pink-400 to-purple-400 rounded-full blur-lg opacity-60" />
-										<BlurImage
-											src={babyImage}
-											alt="Your baby"
-											width={112}
-											height={112}
-											className="relative w-24 h-24 md:w-28 md:h-28 rounded-full border-4 border-white shadow-2xl"
-										/>
-									</div>
-
-									{/* Success label */}
-									<div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2">
-										<p className="font-bold text-white text-sm whitespace-nowrap">
-											{isLiveMatch ? "Their Baby!" : "Your Baby!"}
-										</p>
-									</div>
-								</motion.div>
-							) : generateBabyMutation.isPending || loadingExisting ? (
-								<SiriOrb size="96px" animationDuration={5} />
-							) : (
-								<div className="relative w-24 h-24 md:w-28 md:h-28">
-									{/* Animated glow ring */}
-									<motion.div
-										className="absolute inset-0 rounded-full bg-gradient-to-r from-pink-400/30 to-purple-400/30 blur-xl"
-										animate={{
-											scale: [1, 1.2, 1],
-											opacity: [0.5, 0.8, 0.5],
-										}}
-										transition={{
-											duration: 2,
-											repeat: Number.POSITIVE_INFINITY,
-										}}
-									/>
-									{/* Question mark with shimmer */}
-									<div className="relative w-full h-full rounded-full bg-white/30 backdrop-blur-sm border-2 border-white/50 flex items-center justify-center">
-										<span className="text-4xl md:text-5xl">❓</span>
-									</div>
-									<div className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-white/90 text-xs text-center whitespace-nowrap">
-										{isLiveMatch ? "No baby yet" : "Generate to see!"}
-									</div>
-								</div>
-							)}
-						</AnimatePresence>
 					</div>
-				</div>
 
-				{/* Photo Preview Row */}
-				<div className="flex justify-center items-center gap-6">
-					{/* User Photo */}
-					<motion.div
-						whileHover={{ scale: 1.1, y: -4 }}
-						transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
-						className="text-center relative group/avatar cursor-pointer"
-					>
-						<div className="relative">
-							<div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full blur-[2px] opacity-60 group-hover/avatar:opacity-100 transition-opacity duration-200" />
-							{userPhoto ? (
-								<BlurImage
-									src={userPhoto}
-									alt="You"
-									width={80}
-									height={80}
-									className="relative w-16 h-16 md:w-20 md:h-20 rounded-full border-3 border-white shadow-lg"
-								/>
-							) : (
-								<div className="relative w-16 h-16 md:w-20 md:h-20 rounded-full bg-white/20 flex items-center justify-center border-3 border-white shadow-lg">
-									<span className="text-3xl">👤</span>
-								</div>
-							)}
-						</div>
-						<p className="text-xs text-white/80 mt-2 font-medium">
-							{isLiveMatch && userName ? userName : "You"}
-						</p>
-					</motion.div>
-
-					{/* Heart Connector */}
-					<motion.div
-						animate={{
-							scale: [1, 1.2, 1],
-							opacity: [0.6, 1, 0.6],
-						}}
-						transition={{
-							duration: 2,
-							repeat: Number.POSITIVE_INFINITY,
-						}}
-					>
-						<Heart className="w-6 h-6 text-white/80 fill-white/30" />
-					</motion.div>
-
-					{/* Match Photo */}
-					<motion.div
-						whileHover={{ scale: 1.1, y: -4 }}
-						transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
-						className="text-center relative group/avatar cursor-pointer"
-					>
-						<div className="relative">
-							<div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full blur-[2px] opacity-60 group-hover/avatar:opacity-100 transition-opacity duration-200" />
-							{matchPhoto ? (
-								<BlurImage
-									src={matchPhoto}
-									alt={matchName || "Match"}
-									width={80}
-									height={80}
-									className="relative w-16 h-16 md:w-20 md:h-20 rounded-full border-3 border-white shadow-lg"
-								/>
-							) : (
-								<div className="relative w-16 h-16 md:w-20 md:h-20 rounded-full bg-white/20 flex items-center justify-center border-3 border-white shadow-lg">
-									<span className="text-3xl">👤</span>
-								</div>
-							)}
-						</div>
-						<p className="text-xs text-white/80 mt-2 font-medium">
-							{matchName || "Match"}
-						</p>
-					</motion.div>
-				</div>
-
-				{/* Primary Action Button - Centered & Prominent */}
-				{!babyImage && !generateBabyMutation.isPending && !isLiveMatch && (
-					<motion.div
-						initial={{ opacity: 0, y: 20 }}
-						animate={{ opacity: 1, y: 0 }}
-						className="flex justify-center"
-					>
-						<Button
-							onClick={handleGenerate}
-							disabled={!canGenerate || generateBabyMutation.isPending}
-							size="lg"
-							className="bg-white text-primary hover:bg-white/95 font-bold py-4 px-6 md:px-8 gap-2 shadow-xl hover:shadow-2xl transition-all duration-200 hover:scale-105 relative group text-sm md:text-base"
+					{/* The "Mixing Chamber" Visualization */}
+					<div className="relative px-4 pb-8 w-full sm:w-[440px] mx-auto">
+						{/* Connecting Lines (SVG) */}
+						<svg
+							className="absolute top-[28px] left-0 w-full h-[120px] z-0 pointer-events-none stroke-gray-200"
+							fill="none"
+							viewBox="0 0 440 120"
+							preserveAspectRatio="none"
 						>
-							<motion.div
-								animate={{ scale: [1, 1.2, 1] }}
-								transition={{
-									duration: 2,
-									repeat: Number.POSITIVE_INFINITY,
-								}}
-							>
-								<Zap className="w-5 h-5 group-hover:text-yellow-500 transition-colors" />
-							</motion.div>
-							<span>Generate Our Baby's Face</span>
+							{/* Left path to center */}
+							<path
+								d="M 80 20 C 80 50, 220 20, 220 90"
+								strokeWidth="1.5"
+								strokeDasharray="4 4"
+								className="opacity-80"
+							></path>
+							{/* Right path to center */}
+							<path
+								d="M 360 20 C 360 50, 220 20, 220 90"
+								strokeWidth="1.5"
+								strokeDasharray="4 4"
+								className="opacity-80"
+							></path>
 
-							{/* Pulse effect */}
-							<motion.div
-								className="absolute inset-0 rounded-md bg-white/20"
-								animate={{
-									scale: [1, 1.05, 1],
-									opacity: [0, 0.5, 0],
-								}}
-								transition={{
-									duration: 2,
-									repeat: Number.POSITIVE_INFINITY,
-								}}
-							/>
-						</Button>
-					</motion.div>
-				)}
-
-				{/* Secondary Actions - Grouped Pills */}
-				{babyImage && !generateBabyMutation.isPending && (
-					<motion.div
-						initial={{ opacity: 0, y: 10 }}
-						animate={{ opacity: 1, y: 0 }}
-						className="flex justify-center gap-2"
-					>
-						<div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full p-1.5">
-							<Button
-								onClick={shareBaby}
-								variant="ghost"
-								size="sm"
-								className="gap-2 px-4 py-2 hover:bg-white/30 text-white rounded-full transition-all"
-							>
-								<Share2 className="w-4 h-4" />
-								<span className="font-medium">Share</span>
-							</Button>
-
-							<div className="w-px h-6 bg-white/30" />
-
-							<Button
-								onClick={saveBaby}
-								variant="ghost"
-								size="sm"
-								className="gap-2 px-4 py-2 hover:bg-white/30 text-white rounded-full transition-all"
-							>
-								<Download className="w-4 h-4" />
-								<span className="font-medium">Save</span>
-							</Button>
-
-							{/* {!isLiveMatch && (
+							{/* Animated Flow (Only when generating) */}
+							{isGenerating && (
 								<>
-									<div className="w-px h-6 bg-white/30" />
-
-									<Button
-										onClick={retryGeneration}
-										variant="ghost"
-										size="sm"
-										className="gap-2 px-4 py-2 hover:bg-white/30 text-white rounded-full transition-all"
-									>
-										<Sparkles className="w-4 h-4" />
-										<span className="font-medium">Retry</span>
-									</Button>
+									<path
+										d="M 80 20 C 80 50, 220 20, 220 90"
+										strokeWidth="1.5"
+										strokeDasharray="4 4"
+										className="stroke-blue-500 opacity-60 animate-[dash_1s_linear_infinite]"
+									></path>
+									<path
+										d="M 360 20 C 360 50, 220 20, 220 90"
+										strokeWidth="1.5"
+										strokeDasharray="4 4"
+										className="stroke-pink-500 opacity-60 animate-[dash_1s_linear_infinite]"
+									></path>
 								</>
-							)} */}
-						</div>
-					</motion.div>
-				)}
+							)}
+						</svg>
 
-				{/* Helper Text */}
-				{!canGenerate &&
-					!generateBabyMutation.isPending &&
-					!loadingExisting && (
-						<motion.div
-							initial={{ opacity: 0 }}
-							animate={{ opacity: 1 }}
-							className="text-center text-white/70 text-sm"
-						>
-							{!matchId
-								? "💡 Match information required to generate baby"
-								: "💡 Upload both photos to generate your baby"}
-						</motion.div>
-					)}
+						<div className="flex flex-col items-center gap-6 relative z-10">
+							{/* Parents Row */}
+							<div className="flex items-center justify-between w-full px-4 sm:px-8">
+								{/* User */}
+								<div className="flex flex-col items-center gap-2">
+									<div className="w-16 h-16 rounded-full p-0.5 bg-gradient-to-b from-blue-500 to-indigo-600 shadow-lg shadow-indigo-500/20">
+										<div className="w-full h-full rounded-full p-[2px] bg-card overflow-hidden">
+											{userPhoto ? (
+												<BlurImage
+													src={userPhoto}
+													alt="You"
+													width={64}
+													height={64}
+													className="w-full h-full rounded-full object-cover"
+												/>
+											) : (
+												<div className="w-full h-full bg-muted rounded-full" />
+											)}
+										</div>
+									</div>
+									<span
+										className="max-w-16 w-full truncate block text-center text-xs font-medium text-muted-foreground"
+										title={userName || "You"}
+									>
+										{userName || "You"}
+									</span>
+								</div>
 
-				{/* Back Button - Visually Separated */}
-				{onBack && (
-					<div className="relative pt-4 hidden md:block">
-						<div className="w-full h-px bg-white/20 mb-4" />
-						<div className="text-center">
-							<Button
-								onClick={() => {
-									onBack();
+								{/* DNA Icon in Center */}
+								<div className="w-8 h-8 rounded-full bg-card border border-border flex items-center justify-center text-muted-foreground shadow-sm mt-[-20px] z-20">
+									<Dna className="w-4 h-4" />
+								</div>
+
+								{/* Match */}
+								<div className="flex flex-col items-center gap-2">
+									<div className="w-16 h-16 rounded-full p-0.5 bg-gradient-to-b from-fuchsia-500 to-pink-600 shadow-lg shadow-pink-500/20">
+										<div className="w-full h-full rounded-full p-[2px] bg-card overflow-hidden">
+											{matchPhoto ? (
+												<BlurImage
+													src={matchPhoto}
+													alt="Match"
+													width={64}
+													height={64}
+													className="w-full h-full rounded-full object-cover"
+												/>
+											) : (
+												<div className="w-full h-full bg-muted rounded-full" />
+											)}
+										</div>
+									</div>
+									<span
+										className="max-w-16 w-full truncate block text-center text-xs font-medium text-muted-foreground"
+										title={matchName || "Match"}
+									>
+										{matchName || "Match"}
+									</span>
+								</div>
+							</div>
+
+							{/* Result Placeholder / Actual Result */}
+							<div
+								className="relative group cursor-pointer mt-2"
+								onClick={babyImage ? undefined : handleGenerate}
+								onKeyDown={(e) => {
+									if (e.key === "Enter" || e.key === " ") {
+										if (!babyImage) handleGenerate();
+									}
 								}}
-								variant="ghost"
-								size="sm"
-								className="text-white/80 hover:text-white hover:bg-white/10 gap-2 transition-all"
+								role="button"
+								tabIndex={0}
 							>
-								← Back to Matches
-							</Button>
+								{/* Glowing background behind result */}
+								<div
+									className={`absolute -inset-4 bg-gradient-to-r from-indigo-500/10 to-fuchsia-500/10 rounded-full blur-xl transition-opacity ${babyImage ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
+								></div>
+
+								{babyImage ? (
+									<motion.div
+										initial={{ scale: 0.8, opacity: 0 }}
+										animate={{ scale: 1, opacity: 1 }}
+										className="relative w-32 h-32 rounded-2xl p-1 bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 shadow-xl"
+									>
+										<div className="w-full h-full rounded-xl overflow-hidden bg-white relative">
+											<BlurImage
+												src={babyImage}
+												alt="Predicted Baby"
+												width={128}
+												height={128}
+												className="w-full h-full object-cover"
+											/>
+										</div>
+										{/* Sparkle decoration */}
+										<div className="absolute -top-2 -right-2 bg-card rounded-full p-1 shadow-md text-yellow-500 animate-bounce">
+											<Sparkles className="w-4 h-4 fill-current" />
+										</div>
+									</motion.div>
+								) : (
+									/* Scanner Effect Border (Empty State) */
+									<div
+										className={`w-24 h-24 rounded-2xl bg-muted/50 border border-border flex items-center justify-center relative overflow-hidden transition-colors shadow-inner ${isGenerating ? "border-primary" : "group-hover:border-primary/50"}`}
+									>
+										{/* Animated Scan Line */}
+										<div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-primary/20 to-transparent animate-[scan_2s_ease-in-out_infinite]"></div>
+
+										{/* Icon */}
+										<div className="flex flex-col items-center gap-1 opacity-50">
+											{isGenerating ? (
+												<div className="flex flex-col items-center animate-pulse">
+													<Loader className="w-6 h-6 text-primary animate-spin" />
+													<span className="text-[9px] font-bold uppercase tracking-widest text-primary mt-1">
+														Scanning
+													</span>
+												</div>
+											) : (
+												<>
+													<Lock className="w-6 h-6 text-muted-foreground" />
+													<span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
+														Hidden
+													</span>
+												</>
+											)}
+										</div>
+									</div>
+								)}
+							</div>
 						</div>
 					</div>
-				)}
-			</motion.div>
 
-			{/* Mutual Connection Celebration Dialog */}
+					{/* Action Footer */}
+					<div className="p-5 bg-muted/30 border-t border-border">
+						{babyImage ? (
+							<div className="flex gap-3">
+								<Button
+									type="button"
+									variant="card"
+									onClick={shareBaby}
+									className="flex-1 py-3 rounded-xl h-auto"
+								>
+									<Share2 className="w-4 h-4" />
+									Share
+								</Button>
+								<Button
+									type="button"
+									variant="primary"
+									onClick={saveBaby}
+									className="flex-1 py-3 rounded-xl h-auto"
+								>
+									<Download className="w-4 h-4" />
+									Save
+								</Button>
+							</div>
+						) : (
+							<button
+								type="button"
+								onClick={handleGenerate}
+								disabled={isGenerating}
+								className="group w-full py-3.5 relative rounded-xl overflow-hidden font-medium text-sm text-primary-foreground shadow-lg shadow-primary/20 transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
+							>
+								{/* Button Background Gradient with Animation */}
+								<div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/80 to-pink-600 animate-beam"></div>
+
+								{/* Content */}
+								<span className="relative z-10 flex items-center justify-center gap-2">
+									{isGenerating ? (
+										<>
+											<Loader className="w-4 h-4 animate-spin" />
+											Generating genetic prediction...
+										</>
+									) : (
+										<>
+											<Wand2 className="w-4 h-4 text-white/90" />
+											Reveal Predicted Child
+										</>
+									)}
+								</span>
+							</button>
+						)}
+						<p className="text-[10px] text-muted-foreground text-center mt-3">
+							Generative AI output is simulated for entertainment purposes.
+						</p>
+					</div>
+				</div>
+			</div>
+
+			{/* Mutual Connection Celebration Dialog - kept from original */}
 			<Dialog open={showMutualDialog} onOpenChange={setShowMutualDialog}>
-				<DialogContent className="sm:max-w-md">
+				<DialogContent className="sm:max-w-md bg-white">
 					<DialogHeader>
-						<DialogTitle className="text-center text-2xl">
+						<DialogTitle className="text-center text-2xl text-gray-900">
 							<motion.div
 								initial={{ scale: 0 }}
 								animate={{ scale: 1 }}
 								transition={{ type: "spring", stiffness: 200 }}
 								className="flex flex-col items-center gap-2"
 							>
-								<Heart className="w-12 h-12 text-red-500 fill-red-500" />
+								<div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mb-2">
+									<span className="text-3xl">❤️</span>
+								</div>
 								<span>It's a Match!</span>
 							</motion.div>
 						</DialogTitle>
 						<DialogDescription className="text-center space-y-4 pt-4">
-							{/* Commonality Message */}
-							<motion.p
+							<motion.div
 								initial={{ opacity: 0, y: 10 }}
 								animate={{ opacity: 1, y: 0 }}
 								transition={{ delay: 0.2 }}
-								className="text-base text-gray-700 font-medium"
+								className="space-y-2"
 							>
-								{generateMatchMessage(matchDetails?.commonalities || [])}
-							</motion.p>
-							<motion.p
-								initial={{ opacity: 0, y: 10 }}
-								animate={{ opacity: 1, y: 0 }}
-								transition={{ delay: 0.2 }}
-								className="text-base"
-							>
-								You both generated a baby together! 🎉
-							</motion.p>
-							<motion.p
-								initial={{ opacity: 0, y: 10 }}
-								animate={{ opacity: 1, y: 0 }}
-								transition={{ delay: 0.3 }}
-								className="text-sm text-muted-foreground"
-							>
-								Chat is now unlocked. Start your conversation!
-							</motion.p>
+								<p className="text-base text-gray-700 font-medium">
+									{generateMatchMessage(matchDetails?.commonalities || [])}
+								</p>
+								<p className="text-sm text-gray-500">
+									You both generated a baby together! 🎉 Chat unlocked.
+								</p>
+							</motion.div>
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter className="flex flex-col gap-2 sm:flex-col">
@@ -519,22 +450,16 @@ export const BabyGenerator = ({
 									router.push(`/chat/${mutualConnection.id}`);
 								}
 							}}
-							className="w-full"
 							size="lg"
 						>
-							<MessageCircle className="w-4 h-4 mr-2" />
 							Start Chatting
 						</Button>
-						<Button
-							variant="outline"
-							onClick={() => setShowMutualDialog(false)}
-							className="w-full"
-						>
+						<Button variant="ghost" onClick={() => setShowMutualDialog(false)}>
 							Maybe Later
 						</Button>
 					</DialogFooter>
 				</DialogContent>
 			</Dialog>
-		</div>
+		</>
 	);
 };

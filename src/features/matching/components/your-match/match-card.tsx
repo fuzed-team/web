@@ -75,7 +75,7 @@ export function MatchCard({
 										width={248}
 										height={310}
 									/>
-									<div className="absolute top-2 right-2 bg-background/80 backdrop-blur-md px-2 py-1 rounded-md text-xs font-bold shadow-sm text-pink-600 border border-border">
+									<div className="absolute top-2 right-2 bg-background/80 backdrop-blur-md px-2 py-1 rounded-md text-xs font-bold shadow-sm text-love border border-border">
 										{item.matchPercentage}%
 									</div>
 								</div>
@@ -119,7 +119,7 @@ export function MatchCard({
 			<div className="mt-auto space-y-2">
 				<button
 					type="button"
-					className="w-full py-2 rounded-lg bg-gradient-to-r dark:from-pink-900/30 dark:to-purple-900/30 from-pink-50 to-purple-50 text-pink-600 dark:text-pink-300 border border-pink-200 dark:border-pink-800/50 text-xs font-medium flex items-center justify-center gap-2 hover:brightness-95 transition-all"
+					className="w-full py-2 rounded-lg bg-gradient-to-r dark:from-love/30 dark:to-primary/30 from-love/10 to-primary/10 text-love dark:text-love/90 border border-love/20 dark:border-love/50 text-xs font-medium flex items-center justify-center gap-2 hover:brightness-95 transition-all"
 					onClick={() => {
 						onOpen(
 							{

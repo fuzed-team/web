@@ -36,6 +36,7 @@ interface ResponsiveDialogProps {
 		content?: string;
 		drawer?: string;
 		trigger?: string;
+		overlay?: string;
 	};
 	drawerProps?: React.ComponentProps<typeof DrawerPrimitive.Root>;
 }
@@ -74,6 +75,7 @@ export function ResponsiveDialog({
 				<DialogContent
 					className={cn("sm:max-w-6xl", classes?.container)}
 					showCloseButton={showCloseButton}
+					classes={{ overlay: classes?.overlay }}
 				>
 					{title ? (
 						<DialogHeader>
@@ -105,7 +107,10 @@ export function ResponsiveDialog({
 					{trigger}
 				</DrawerTrigger>
 			)}
-			<DrawerContent className={classes?.container}>
+			<DrawerContent
+				className={classes?.container}
+				classes={{ overlay: classes?.overlay }}
+			>
 				{title ? (
 					<DrawerHeader className="text-left">
 						<DrawerTitle>{title}</DrawerTitle>

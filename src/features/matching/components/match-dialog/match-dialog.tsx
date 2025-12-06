@@ -21,7 +21,8 @@ export function MatchDialog() {
 			onOpenChange={onOpenChange}
 			classes={{
 				container:
-					"sm:max-w-lg p-0 shadow-match bg-gradient-primary border-none",
+					"sm:max-w-[440px] p-0 shadow-match border-none overflow-hidden rounded-none sm:rounded-3xl",
+				overlay: "bg-black/60 backdrop-blur-xl",
 			}}
 			showCloseButton={false}
 		>
