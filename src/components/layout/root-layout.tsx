@@ -11,7 +11,7 @@ import { SidebarInset, SidebarProvider } from "../ui/sidebar";
 import { AppSidebar } from "./app-sidebar";
 import { Header } from "./header";
 
-export function RootLayout({ children }: { children: React.ReactNode }) {
+function RootLayoutContent({ children }: { children: React.ReactNode }) {
 	const isMobile = useIsMobile();
 	// Enable Supabase realtime for ALL new matches at app level
 	// This keeps the connection alive even when user uploads photos
@@ -19,7 +19,7 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
 	usePresenceTracker();
 
 	return (
-		<LayoutProvider>
+		<>
 			<SidebarProvider open={true}>
 				<NavigationProgress />
 				<AppSidebar />
@@ -42,6 +42,14 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
 				</SidebarInset>
 			</SidebarProvider>
 			{isMobile && <Header />}
+		</>
+	);
+}
+
+export function RootLayout({ children }: { children: React.ReactNode }) {
+	return (
+		<LayoutProvider>
+			<RootLayoutContent>{children}</RootLayoutContent>
 		</LayoutProvider>
 	);
 }

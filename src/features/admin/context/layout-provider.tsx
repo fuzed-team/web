@@ -25,9 +25,12 @@ type LayoutContextType = {
 	defaultVariant: Variant;
 	variant: Variant;
 	setVariant: (variant: Variant) => void;
+
+	headerVisible: boolean;
+	setHeaderVisible: (visible: boolean) => void;
 };
 
-const LayoutContext = createContext<LayoutContextType | null>(null);
+export const LayoutContext = createContext<LayoutContextType | null>(null);
 
 type LayoutProviderProps = {
 	children: React.ReactNode;
@@ -58,9 +61,12 @@ export function LayoutProvider({ children }: LayoutProviderProps) {
 		setCookie(LAYOUT_VARIANT_COOKIE_NAME, newVariant, LAYOUT_COOKIE_MAX_AGE);
 	};
 
+	const [headerVisible, setHeaderVisible] = useState(true);
+
 	const resetLayout = () => {
 		setCollapsible(DEFAULT_COLLAPSIBLE);
 		setVariant(DEFAULT_VARIANT);
+		setHeaderVisible(true);
 	};
 
 	const contextValue: LayoutContextType = {
@@ -71,6 +77,8 @@ export function LayoutProvider({ children }: LayoutProviderProps) {
 		defaultVariant: DEFAULT_VARIANT,
 		variant,
 		setVariant,
+		headerVisible,
+		setHeaderVisible,
 	};
 
 	return <LayoutContext value={contextValue}>{children}</LayoutContext>;

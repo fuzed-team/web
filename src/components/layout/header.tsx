@@ -3,7 +3,8 @@
 import { AnimatePresence, easeInOut, motion } from "framer-motion";
 import { Heart, Menu, X } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { LayoutContext } from "@/features/admin/context/layout-provider";
 import { useUser } from "@/features/auth/api/get-me";
 import { SignOutButton } from "@/features/auth/components/signout-button";
 import { SignUpButton } from "@/features/auth/components/signup-button";
@@ -45,6 +46,14 @@ export function Header({ loading = false }: { loading?: boolean }) {
 		window.addEventListener("scroll", handleScroll);
 		return () => window.removeEventListener("scroll", handleScroll);
 	}, []);
+
+	// Safely access LayoutContext. If null (e.g. on landing page), default to visible.
+	const layoutContext = useContext(LayoutContext);
+	const headerVisible = layoutContext ? layoutContext.headerVisible : true;
+
+	if (!headerVisible) {
+		return null;
+	}
 
 	const containerVariants = {
 		hidden: { opacity: 0, y: -20 },

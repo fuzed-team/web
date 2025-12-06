@@ -2,6 +2,7 @@
 
 import { MessagesSquare } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useLayout } from "@/features/admin/context/layout-provider";
 import { cn } from "@/lib/utils";
 import { useConnections } from "../api/get-connections";
 import type { MutualConnection } from "../types";
@@ -20,9 +21,20 @@ export function ChatContainer({ defaultConnectionId }: ChatContainerProps) {
 		useState<MutualConnection | null>(null);
 	const [mobileSelectedConnection, setMobileSelectedConnection] =
 		useState<MutualConnection | null>(null);
+	const { setHeaderVisible } = useLayout();
 
 	const { data } = useConnections();
 	const connections = data?.connections || [];
+
+	useEffect(() => {
+		if (mobileSelectedConnection) {
+			setHeaderVisible(false);
+		} else {
+			setHeaderVisible(true);
+		}
+		// Reset when unmounting or changing state excessively
+		return () => setHeaderVisible(true);
+	}, [mobileSelectedConnection, setHeaderVisible]);
 
 	// Set the default connection when data is loaded
 	useEffect(() => {
@@ -43,7 +55,7 @@ export function ChatContainer({ defaultConnectionId }: ChatContainerProps) {
 	};
 
 	return (
-		<section className="flex h-screen gap-6 pt-24 max-w-6xl mx-auto px-4 lg:px-8 py-6">
+		<section className="flex h-full gap-6 max-w-6xl w-full mx-auto px-4 lg:px-8 py-6">
 			{/* Left Side - Conversation List */}
 			<ChatList
 				connections={connections}
