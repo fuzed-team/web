@@ -122,7 +122,7 @@ export function ChatMessage({
 					className={cn(
 						"chat-box max-w-72 px-3 py-2 break-words shadow-lg",
 						isOwn
-							? "bg-foreground text-background self-end rounded-[16px_16px_0_16px]"
+							? "bg-primary text-primary-foreground self-end rounded-[16px_16px_0_16px]"
 							: "bg-muted self-start rounded-[16px_16px_16px_0]",
 					)}
 				>

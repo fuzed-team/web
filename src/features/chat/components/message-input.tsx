@@ -99,7 +99,7 @@ export function MessageInput({
 					onClick={handleSend}
 					disabled={disabled || !message.trim()}
 					size="icon"
-					className="shrink-0 h-[44px] w-[44px] bg-gradient-to-br disabled:opacity-50 transition-all"
+					className="shrink-0 size-[44px] transition-all"
 					aria-label="Send message"
 				>
 					<Send className="h-5 w-5" />

@@ -26,6 +26,8 @@ export function MatchDialog() {
 			}}
 			showCloseButton={false}
 		>
+			{/* Light mode: subtle purple glow, Dark mode: deeper indigo glow */}
+			<div className="absolute top-0 inset-x-0 h-40 bg-[radial-gradient(ellipse_at_top,_rgba(192,132,252,0.15),_transparent,_transparent)] dark:bg-[radial-gradient(ellipse_at_top,_rgba(49,46,129,0.4),_transparent,_transparent)] pointer-events-none"></div>
 			<BabyGenerator
 				matchId={matchId || undefined}
 				userPhoto={userMatches?.user1.photo}

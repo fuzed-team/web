@@ -37,7 +37,7 @@ export function useMarkMessageNotificationsRead() {
 		onMutate: async ({ connection_id }) => {
 			// Cancel any outgoing refetches
 			await queryClient.cancelQueries({
-				queryKey: ["notifications", "messages", "count"],
+				queryKey: ["messages", "count"],
 			});
 			await queryClient.cancelQueries({
 				queryKey: ["connections"],
@@ -46,7 +46,6 @@ export function useMarkMessageNotificationsRead() {
 			// Snapshot previous values for rollback
 			const previousMessageCount =
 				queryClient.getQueryData<MessageNotificationsCountResponse>([
-					"notifications",
 					"messages",
 					"count",
 				]);
@@ -78,7 +77,7 @@ export function useMarkMessageNotificationsRead() {
 
 			// Optimistically update message notification count
 			queryClient.setQueryData<MessageNotificationsCountResponse>(
-				["notifications", "messages", "count"],
+				["messages", "count"],
 				(old) => {
 					if (!old) return old;
 					return {
@@ -98,7 +97,7 @@ export function useMarkMessageNotificationsRead() {
 		onError: (_error, _params, context) => {
 			if (context?.previousMessageCount) {
 				queryClient.setQueryData(
-					["notifications", "messages", "count"],
+					["messages", "count"],
 					context.previousMessageCount,
 				);
 			}
@@ -112,7 +111,7 @@ export function useMarkMessageNotificationsRead() {
 		// Always refetch after error or success
 		onSettled: () => {
 			queryClient.invalidateQueries({
-				queryKey: ["notifications", "messages", "count"],
+				queryKey: ["messages", "count"],
 			});
 			queryClient.invalidateQueries({
 				queryKey: ["connections"],

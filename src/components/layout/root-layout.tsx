@@ -1,6 +1,7 @@
 "use client";
 
 import type React from "react";
+import { ThemeSwitch } from "@/features/admin/components/theme-switch";
 import { LayoutProvider } from "@/features/admin/context/layout-provider";
 import { useMatchRealtime } from "@/features/matching/hooks/use-live-match-realtime";
 import { NotificationCenter } from "@/features/notifications/components/notification-center";
@@ -12,6 +13,7 @@ import { NavigationProgress } from "../navigation-progress";
 import { SidebarInset, SidebarProvider } from "../ui/sidebar";
 import { AppSidebar } from "./app-sidebar";
 import { Header } from "./header";
+import { NavHeader } from "./nav-header";
 
 function RootLayoutContent({ children }: { children: React.ReactNode }) {
 	const isMobile = useIsMobile();
@@ -42,9 +44,10 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
 				>
 					{isMobile && <div className="h-16" />}
 					{!isMobile && (
-						<header className="sticky top-0 z-10 flex h-14 items-center justify-end gap-2 bg-background/95 max-w-7xl mx-auto w-full px-6 md:px-10 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+						<NavHeader>
+							<ThemeSwitch />
 							<NotificationCenter />
-						</header>
+						</NavHeader>
 					)}
 					{children}
 				</SidebarInset>

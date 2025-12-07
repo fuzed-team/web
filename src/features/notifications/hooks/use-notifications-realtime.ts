@@ -34,6 +34,9 @@ export function useNotificationsRealtime() {
 				queryClient.invalidateQueries({
 					queryKey: ["notifications"],
 				});
+				queryClient.invalidateQueries({
+					queryKey: ["messages", "count"],
+				});
 			})
 			.subscribe((status) => {
 				if (status === "CHANNEL_ERROR") {

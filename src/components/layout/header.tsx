@@ -25,8 +25,9 @@ const navItems: NavItem[] = [
 ];
 
 const navItemsMobile: NavItem[] = [
-	{ name: "Your Matches", href: "/your-matches" },
-	{ name: "Message", href: "/chat" },
+	{ name: "Discover Matches", href: "/your-matches" },
+	{ name: "My Chats", href: "/chat" },
+	{ name: "Baby History", href: "/baby-history" },
 	{ name: "Profile", href: "/profile" },
 ];
 
@@ -181,7 +182,7 @@ export function Header({ loading = false }: { loading?: boolean }) {
 							>
 								{user ? (
 									<>
-										<NotificationCenter userId={user.id} />
+										<NotificationCenter />
 										<ProfileDropdown />
 									</>
 								) : (
@@ -194,7 +195,7 @@ export function Header({ loading = false }: { loading?: boolean }) {
 						)}
 
 						<div className="flex items-center space-x-2 lg:hidden">
-							{user && <NotificationCenter userId={user.id} />}
+							{user && <NotificationCenter />}
 							<motion.button
 								className="text-foreground hover:bg-muted rounded-lg p-2 transition-colors duration-200"
 								onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}

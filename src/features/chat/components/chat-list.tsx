@@ -76,7 +76,9 @@ export function ChatList({
 			<div className="sticky top-0 z-10 -mx-4 px-4 pb-3 shadow-md sm:static sm:z-auto sm:mx-0 sm:p-0 sm:shadow-none">
 				<div className="flex items-center justify-between py-2">
 					<div className="flex gap-2">
-						<h1 className="text-2xl font-bold">Inbox</h1>
+						<h2 className="md:text-2xl text-xl font-semibold tracking-tight text-foreground">
+							Inbox
+						</h2>
 					</div>
 				</div>
 

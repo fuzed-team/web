@@ -17,7 +17,7 @@ export const getMessageNotificationsCountApi = async (
 
 export const getMessageNotificationsCountQueryOptions = () => {
 	return queryOptions({
-		queryKey: ["notifications", "messages", "count"],
+		queryKey: ["messages", "count"],
 		queryFn: ({ signal }) => getMessageNotificationsCountApi(signal),
 		staleTime: 1000 * 30, // 30 seconds
 	});

@@ -1,4 +1,4 @@
-import { LayoutGrid, MessageCircle } from "lucide-react";
+import { Baby, LayoutGrid, MessageCircle, User } from "lucide-react";
 import type { SidebarData } from "../types";
 
 export const sidebarData: SidebarData = {
@@ -15,11 +15,16 @@ export const sidebarData: SidebarData = {
 					url: "/chat",
 					icon: MessageCircle,
 				},
-				// {
-				// 	title: "History",
-				// 	url: "/history",
-				// 	icon: History,
-				// },
+				{
+					title: "Baby History",
+					url: "/baby-history",
+					icon: Baby,
+				},
+				{
+					title: "Profile",
+					url: "/profile",
+					icon: User,
+				},
 			],
 		},
 	],

@@ -187,7 +187,7 @@ export const BabyGenerator = ({
 					<div className="relative px-4 pb-8 w-full sm:w-[440px] mx-auto">
 						{/* Connecting Lines (SVG) */}
 						<svg
-							className="absolute top-[28px] left-0 w-full h-[120px] z-0 pointer-events-none stroke-gray-200"
+							className="absolute top-[28px] left-0 w-full h-[120px] z-0 pointer-events-none stroke-gray-200 dark:stroke-gray-700"
 							fill="none"
 							viewBox="0 0 440 120"
 							preserveAspectRatio="none"
@@ -325,7 +325,7 @@ export const BabyGenerator = ({
 								) : (
 									/* Scanner Effect Border (Empty State) */
 									<div
-										className={`w-24 h-24 rounded-2xl bg-muted/50 border border-border flex items-center justify-center relative overflow-hidden transition-colors shadow-inner ${isGenerating ? "border-primary" : "group-hover:border-primary/50"}`}
+										className={`w-24 h-24 rounded-2xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center relative overflow-hidden transition-colors shadow-inner ${isGenerating ? "border-indigo-400 dark:border-indigo-500" : "group-hover:border-indigo-200 dark:group-hover:border-indigo-600"}`}
 									>
 										{/* Animated Scan Line */}
 										<div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-primary/20 to-transparent animate-[scan_2s_ease-in-out_infinite]"></div>
@@ -341,8 +341,8 @@ export const BabyGenerator = ({
 												</div>
 											) : (
 												<>
-													<Lock className="w-6 h-6 text-muted-foreground" />
-													<span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
+													<Lock className="w-6 h-6 text-gray-400" />
+													<span className="text-[9px] font-bold uppercase tracking-widest text-gray-400">
 														Hidden
 													</span>
 												</>
@@ -369,7 +369,6 @@ export const BabyGenerator = ({
 								</Button>
 								<Button
 									type="button"
-									variant="primary"
 									onClick={saveBaby}
 									className="flex-1 py-3 rounded-xl h-auto"
 								>
@@ -396,7 +395,7 @@ export const BabyGenerator = ({
 										</>
 									) : (
 										<>
-											<Wand2 className="w-4 h-4 text-white/90" />
+											<Wand2 className="w-4 h-4" />
 											Reveal Predicted Child
 										</>
 									)}
