@@ -168,19 +168,19 @@ Welcome to the AI Face Matching Application (Fuzed) documentation. This folder c
 
 ### Backend Architecture
 
-**Framework:** Python Flask + Celery
+**Framework:** Next.js API Routes (TypeScript)
 
-**AI/ML:**
-- **InsightFace:** Face recognition (512D embeddings)
-- **FAL.AI:** AI image generation for baby feature
+**AI/ML Services:**
+- **Replicate:** Custom Cog model for face recognition (15+ attributes, embeddings)
+- **FAL.AI:** AI baby image generation (`fal-ai/nano-banana/edit`)
 
 **Databases:**
-- **PostgreSQL (Supabase):** User data, matches, reactions, babies
-- **Qdrant (Vector DB):** Face embeddings for similarity search
+- **PostgreSQL (Supabase):** User data, matches, reactions, babies, notifications
+- **Supabase Storage:** Photo and image storage with signed URLs
 
-**Authentication:** Supabase Auth (Magic Link) + Legacy OAuth
+**Authentication:** Supabase Auth (Magic Link) with `@supabase/ssr`
 
-**Background Jobs:** Celery + Redis for async tasks
+**Real-time:** Supabase Realtime for presence, chat, and notifications
 
 ### Key Features
 
@@ -207,10 +207,35 @@ Welcome to the AI Face Matching Application (Fuzed) documentation. This folder c
    - Baby gallery with filtering
    - Multiple generations per match supported
 
-6. **Profile Management**
+6. **Real-time Chat** 💬
+   - Direct messaging between matched users
+   - Real-time message delivery via Supabase Realtime
+   - Message read receipts and typing indicators
+   - Conversation list with unread counts
+
+7. **Notifications** 🔔
+   - In-app notification center
+   - Match notifications, message alerts
+   - Unread count badges
+   - Mark as read functionality
+
+8. **Online/Offline Presence** 🟢
+   - Real-time presence tracking
+   - Green/gray status indicators
+   - "Last seen X ago" display
+   - Automatic status updates
+
+9. **Profile Management**
    - Edit user info (name, gender, school)
    - Manage uploaded photos
    - View match history
+
+10. **Admin Dashboard** 🛠️
+    - User management and moderation
+    - Live match monitoring
+    - Content flagging and review
+    - System settings configuration
+    - Dashboard statistics and analytics
 
 ---
 
@@ -292,59 +317,128 @@ FAL_BABY_MODEL_ID=fal-ai/flux/dev  # Optional, defaults to flux/dev
 ### Frontend Structure
 ```
 src/
-├── app/                   # Next.js App Router
-│   ├── layout.tsx        # Root layout
-│   ├── page.tsx          # Home page
-│   ├── (authenticated)/  # Protected routes
-│   │   ├── layout.tsx    # Auth guard
-│   │   ├── live-matches/
-│   │   ├── your-matches/
-│   │   └── profile/
-│   └── auth/             # Auth pages
-│       ├── sign-in/
-│       ├── sign-up/
-│       └── callback/
-├── features/          # Feature modules (auth, matching)
-│   └── matching/
-│       ├── api/       # API calls + hooks
-│       ├── components/# Feature UI
-│       ├── hooks/     # Custom hooks
-│       └── store/     # Feature state
-├── stores/            # Global Zustand stores
-├── lib/               # Utilities & configs
-│   ├── api-client.ts # Axios instance
-│   ├── supabase.ts   # Supabase client
-│   └── react-query.ts# Query config
-├── components/        # Shared components
-│   └── ui/           # Radix UI primitives
-└── types/            # TypeScript types
+├── app/                        # Next.js App Router
+│   ├── layout.tsx             # Root layout
+│   ├── providers.tsx          # App providers (Query, Theme, etc.)
+│   ├── error.tsx              # Error boundary
+│   ├── not-found.tsx          # 404 page
+│   ├── (authenticated)/       # Protected routes (requires auth)
+│   │   ├── layout.tsx         # Auth guard layout
+│   │   ├── live-matches/      # Real-time match feed
+│   │   ├── your-matches/      # User's match history
+│   │   ├── profile/           # User profile management
+│   │   ├── chat/              # Real-time messaging
+│   │   ├── baby-history/      # AI baby generation history
+│   │   ├── 401/               # Unauthorized page
+│   │   └── 403/               # Forbidden page
+│   ├── (admin)/               # Admin dashboard
+│   │   └── admin/
+│   │       ├── layout.tsx     # Admin layout
+│   │       ├── page.tsx       # Dashboard home
+│   │       ├── users/         # User management
+│   │       ├── live-matches/  # Live match monitoring
+│   │       ├── flags/         # Content moderation
+│   │       └── settings/      # System settings
+│   ├── (landing-page)/        # Public marketing pages
+│   │   ├── layout.tsx         # Landing layout
+│   │   ├── page.tsx           # Home landing
+│   │   ├── how-it-works/      # Feature explanation
+│   │   ├── privacy/           # Privacy policy
+│   │   └── terms/             # Terms of service
+│   ├── auth/                  # Authentication pages
+│   │   ├── sign-in/
+│   │   ├── sign-up/
+│   │   ├── callback/
+│   │   └── confirm/
+│   ├── onboarding/            # User onboarding flow
+│   └── 503/                   # Service unavailable
+├── features/                  # Feature modules (domain-driven)
+│   ├── admin/                 # Admin dashboard features (96 files)
+│   │   ├── api/              # Admin API calls
+│   │   ├── components/       # Admin UI components
+│   │   ├── pages/            # Admin page components
+│   │   └── hooks/            # Admin-specific hooks
+│   ├── auth/                  # Authentication (13 files)
+│   │   ├── api/              # Auth API calls
+│   │   ├── components/       # Login/signup forms
+│   │   └── hooks/            # useUser, useSession
+│   ├── chat/                  # Real-time messaging (20 files)
+│   │   ├── api/              # Message API calls
+│   │   ├── components/       # Chat UI (list, box, input)
+│   │   └── hooks/            # Chat-specific hooks
+│   ├── matching/              # Core matching features (51 files)
+│   │   ├── api/              # Match/baby API calls
+│   │   ├── components/       # Match cards, baby generator
+│   │   ├── hooks/            # Match-related hooks
+│   │   └── store/            # Match state (Zustand)
+│   ├── notifications/         # Notification system (14 files)
+│   │   ├── api/              # Notification API calls
+│   │   └── components/       # Notification center, badges
+│   └── presence/              # Online/offline status (7 files)
+│       ├── api/              # Presence API
+│       └── hooks/            # usePresence, useOnlineStatus
+├── components/                # Shared components (99 files)
+│   ├── ui/                   # Radix UI primitives (49 components)
+│   ├── layout/               # App layout components
+│   ├── data-table/           # Table components
+│   ├── errors/               # Error displays
+│   └── confirm/              # Confirmation dialogs
+├── hooks/                     # Global hooks
+│   ├── use-mobile.ts         # Mobile detection
+│   ├── use-debounce.tsx      # Debounce utility
+│   ├── use-data-table.tsx    # Table state management
+│   ├── use-media-query.ts    # Responsive helpers
+│   └── use-supabase-realtime.ts # Realtime subscriptions
+├── lib/                       # Core utilities (30 files)
+│   ├── api-client.ts         # Axios instance with auth
+│   ├── react-query.ts        # Query client config
+│   ├── supabase/             # Supabase clients (6 files)
+│   │   ├── client.ts         # Browser client
+│   │   ├── server.ts         # Server-side client
+│   │   └── middleware.ts     # Auth middleware
+│   ├── middleware/           # API middleware (3 files)
+│   │   ├── with-session.ts   # Auth + profile fetching
+│   │   └── error-handler.ts  # Centralized error handling
+│   ├── services/             # Shared services (2 files)
+│   └── utils/                # Utility functions (8 files)
+├── config/                    # Configuration
+│   ├── env.ts                # Type-safe env vars (@t3-oss)
+│   └── data-table.ts         # Table configuration
+├── stores/                    # Global Zustand stores
+├── styles/                    # Global styles (2 files)
+└── types/                     # TypeScript types (6 files)
 ```
 
 ### Backend Structure (Next.js API Routes)
 ```
 src/app/api/
-├── auth/
-│   └── me/
-│       └── route.ts      # GET/PATCH user profile
-├── baby/
-│   ├── route.ts          # POST/GET baby generation
-│   └── list/
-│       └── route.ts      # GET baby list
-├── faces/
-│   ├── route.ts          # GET/POST faces
-│   └── [id]/
-│       └── route.ts      # DELETE face by ID
-└── matches/
-    ├── top/
-    │   └── route.ts      # GET top matches
-    ├── celebrity/
-    │   └── route.ts      # GET celebrity matches
-    ├── user/
-    │   └── [userId]/
-    │       └── route.ts  # GET user matches
-    └── [matchId]/
-        └── react/
-            └── route.ts  # POST/DELETE reactions
+├── admin/                     # Admin endpoints (7 routes)
+│   ├── users/                # User management
+│   ├── matches/              # Match monitoring
+│   ├── stats/                # Dashboard statistics
+│   └── settings/             # System configuration
+├── auth/                      # Authentication (2 routes)
+│   └── me/                   # GET/PATCH user profile
+├── baby/                      # AI Baby generation (2 routes)
+│   ├── route.ts              # POST generate, GET existing
+│   └── list/                 # GET all babies
+├── config/                    # App configuration (1 route)
+├── connections/               # User connections (3 routes)
+├── faces/                     # Face management (2 routes)
+│   ├── route.ts              # GET/POST faces
+│   └── [id]/                 # DELETE face by ID
+├── flags/                     # Content flagging (2 routes)
+├── matches/                   # Match endpoints (8 routes)
+│   ├── top/                  # GET top matches
+│   ├── celebrity/            # GET celebrity matches
+│   ├── user/[userId]/        # GET user matches
+│   └── [matchId]/react/      # POST/DELETE reactions
+├── messages/                  # Chat messages (3 routes)
+├── notifications/             # Notification system (7 routes)
+│   ├── route.ts              # GET/POST notifications
+│   ├── count/                # GET unread count
+│   └── mark-read/            # POST mark as read
+└── presence/                  # Online status (1 route)
 ```
 
 ---
@@ -853,6 +947,6 @@ const apiKey = env.FAL_AI_API_KEY;        // Type: string, validated
 
 ---
 
-**Last Updated:** 2025-10-28
+**Last Updated:** 2025-12-07
 
 **Maintained By:** Engineering Team
