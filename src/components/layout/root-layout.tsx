@@ -3,6 +3,8 @@
 import type React from "react";
 import { LayoutProvider } from "@/features/admin/context/layout-provider";
 import { useMatchRealtime } from "@/features/matching/hooks/use-live-match-realtime";
+import { NotificationCenter } from "@/features/notifications/components/notification-center";
+import { useNotificationsRealtime } from "@/features/notifications/hooks/use-notifications-realtime";
 import { usePresenceTracker } from "@/features/presence/hooks/use-presence-tracker";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
@@ -17,6 +19,7 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
 	// This keeps the connection alive even when user uploads photos
 	useMatchRealtime();
 	usePresenceTracker();
+	useNotificationsRealtime();
 
 	return (
 		<>
@@ -38,6 +41,11 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
 					)}
 				>
 					{isMobile && <div className="h-16" />}
+					{!isMobile && (
+						<header className="sticky top-0 z-10 flex h-14 items-center justify-end gap-2 bg-background/95 max-w-7xl mx-auto w-full px-6 md:px-10 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+							<NotificationCenter />
+						</header>
+					)}
 					{children}
 				</SidebarInset>
 			</SidebarProvider>

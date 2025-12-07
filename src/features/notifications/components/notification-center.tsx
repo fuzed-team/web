@@ -15,33 +15,23 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useClearAllNotifications } from "../api/clear-all-notifications";
 import { useNotifications } from "../api/get-notifications";
 import { useMarkAllNotificationsRead } from "../api/mark-all-read";
-import { useNotificationsRealtime } from "../hooks/use-notifications-realtime";
 import { BellIcon } from "../icons/bell-icon";
 import { NotificationList } from "./notification-list";
-
-interface NotificationCenterProps {
-	userId: string;
-}
 
 /**
  * Notification center with bell icon and dropdown
  *
  * Shows unread notification count and displays notification list on click
  */
-export function NotificationCenter({ userId }: NotificationCenterProps) {
+export function NotificationCenter() {
 	const [filter, setFilter] = useState<"all" | "unread">("all");
 
 	const { data, isLoading } = useNotifications({
 		input: {
 			limit: 20,
 			unread_only: filter === "unread",
+			exclude_types: ["new_message"],
 		},
-	});
-
-	// Subscribe to real-time notifications
-	useNotificationsRealtime({
-		userId,
-		enabled: true,
 	});
 
 	const markAllAsReadMutation = useMarkAllNotificationsRead();

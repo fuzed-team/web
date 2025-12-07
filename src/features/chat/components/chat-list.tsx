@@ -4,6 +4,7 @@ import { MessageCircle, Search as SearchIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useMarkMessageNotificationsRead } from "@/features/notifications/api/mark-message-notifications-read";
 import { cn } from "@/lib/utils";
 import type { MutualConnection } from "../types";
 import { ConnectionItem } from "./connection-item";
@@ -23,6 +24,7 @@ export function ChatList({
 }: ChatListProps) {
 	const router = useRouter();
 	const [searchQuery, setSearchQuery] = useState("");
+	const markAsReadMutation = useMarkMessageNotificationsRead();
 
 	// Filter connections by search query
 	const filteredConnections = connections.filter((conn) =>
@@ -32,6 +34,11 @@ export function ChatList({
 	);
 
 	const handleConnectionClick = (connection: MutualConnection) => {
+		// Mark notifications as read if there are unread messages
+		if (connection.unread_count > 0) {
+			markAsReadMutation.mutate({ connection_id: connection.id });
+		}
+
 		if (onConnectionSelect) {
 			onConnectionSelect(connection);
 		} else {

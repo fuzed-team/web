@@ -61,7 +61,11 @@ export function NavGroup({ title, items }: NavGroupProps) {
 }
 
 function NavBadge({ children }: { children: ReactNode }) {
-	return <Badge className="rounded-full px-1 py-0 text-xs">{children}</Badge>;
+	return (
+		<Badge className="rounded-full px-1 py-0 text-xs size-4.5 bg-destructive">
+			{children}
+		</Badge>
+	);
 }
 
 export function SidebarMenuLink({
@@ -72,6 +76,7 @@ export function SidebarMenuLink({
 	href: string;
 }) {
 	const { setOpenMobile } = useSidebar();
+
 	return (
 		<SidebarMenuItem>
 			<SidebarMenuButton

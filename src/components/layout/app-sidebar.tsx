@@ -18,6 +18,7 @@ import { NavGroup } from "@/features/admin/components/layout/nav-group";
 import { useLayout } from "@/features/admin/context/layout-provider";
 import { useUser } from "@/features/auth/api/get-me";
 import { useSignOut } from "@/features/auth/api/sign-out";
+import { useMessageNotificationsCount } from "@/features/notifications/api/get-message-notifications-count";
 import { sidebarData } from "./data/sidebar-data";
 import { UserPhoto } from "./user-photo";
 
@@ -31,6 +32,7 @@ export function AppSidebar() {
 	const user = useUser();
 	const { collapsible, variant } = useLayout();
 	const signOutMutation = useSignOut();
+	const { data: messageNotifications } = useMessageNotificationsCount();
 
 	const handleSignOut = () => {
 		confirm({
@@ -42,14 +44,27 @@ export function AppSidebar() {
 		});
 	};
 
+	const messageCount = messageNotifications?.unread_count || 0;
+
 	const navGroups = sidebarData.navGroups.map((group, index) => {
+		// Update items to add badge for chat
+		const items = group.items.map((item) => {
+			if (item.url === "/chat" && messageCount > 0) {
+				return {
+					...item,
+					badge: messageCount > 99 ? "99+" : String(messageCount),
+				};
+			}
+			return item;
+		});
+
 		if (index === 0 && user?.role === "admin") {
 			return {
 				...group,
-				items: [adminNavItem, ...group.items],
+				items: [adminNavItem, ...items],
 			};
 		}
-		return group;
+		return { ...group, items };
 	});
 
 	return (

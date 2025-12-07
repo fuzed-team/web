@@ -87,7 +87,7 @@ export function useSendMessage() {
 			}
 
 			// Invalidate connections to update last message preview
-			queryClient.invalidateQueries({ queryKey: ["connections"] });
+			// queryClient.invalidateQueries({ queryKey: ["connections"] });
 		},
 		// On error, rollback to previous state
 		onError: (error, variables, context) => {

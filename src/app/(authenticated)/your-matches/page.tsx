@@ -28,7 +28,7 @@ export default function YourMatchesPage() {
 		isLoadingPhotos || (photos.length > 0 && !activePhotoId);
 
 	return (
-		<section className="max-w-7xl w-full mx-auto px-6 py-8 md:px-10 md:py-10">
+		<section className="max-w-7xl w-full mx-auto px-6 py-8 md:px-10 md:pb-10 md:pt-0">
 			<PhotoSelector
 				activePhotoId={activePhotoId}
 				onPhotoSelect={setActivePhotoId}

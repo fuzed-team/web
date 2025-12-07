@@ -42,4 +42,5 @@ export interface GetNotificationsParams {
 	unread_only?: boolean;
 	limit?: number;
 	offset?: number;
+	exclude_types?: NotificationType[];
 }

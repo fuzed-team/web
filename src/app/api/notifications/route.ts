@@ -17,6 +17,9 @@ export const GET = withSession(async ({ supabase, session, searchParams }) => {
 		const unreadOnly = searchParams.unread_only === "true";
 		const limit = Math.min(Number(searchParams.limit) || 50, 100);
 		const offset = Number(searchParams.offset) || 0;
+		const excludeTypes = searchParams.exclude_types
+			? searchParams.exclude_types.split(",")
+			: [];
 
 		// Build query for notifications
 		let query = supabase
@@ -31,18 +34,33 @@ export const GET = withSession(async ({ supabase, session, searchParams }) => {
 			query = query.is("read_at", null);
 		}
 
+		// Exclude specific types if requested
+		if (excludeTypes.length > 0) {
+			for (const type of excludeTypes) {
+				query = query.neq("type", type);
+			}
+		}
+
 		const { data: notifications, error, count } = await query;
 
 		if (error) {
 			throw error;
 		}
 
-		// Get unread count
-		const { count: unreadCount } = await supabase
+		// Get unread count (also excluding specified types)
+		let unreadQuery = supabase
 			.from("notifications")
 			.select("*", { count: "exact", head: true })
 			.eq("user_id", session.user.id)
 			.is("read_at", null);
+
+		if (excludeTypes.length > 0) {
+			for (const type of excludeTypes) {
+				unreadQuery = unreadQuery.neq("type", type);
+			}
+		}
+
+		const { count: unreadCount } = await unreadQuery;
 
 		return NextResponse.json({
 			notifications: notifications || [],

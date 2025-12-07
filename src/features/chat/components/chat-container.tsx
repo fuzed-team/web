@@ -55,7 +55,7 @@ export function ChatContainer({ defaultConnectionId }: ChatContainerProps) {
 	};
 
 	return (
-		<section className="flex h-full gap-6 max-w-6xl w-full mx-auto px-4 lg:px-8 py-6">
+		<section className="flex h-full sm:h-[calc(100svh-56px)] gap-6 max-w-7xl w-full mx-auto px-4 py-6 md:px-10 md:pb-10 md:pt-0">
 			{/* Left Side - Conversation List */}
 			<ChatList
 				connections={connections}

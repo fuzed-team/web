@@ -25,6 +25,8 @@ export function ConnectionItem({
 		connection.other_user.last_seen,
 	);
 
+	const hasUnread = connection.unread_count > 0;
+
 	return (
 		<div>
 			<button
@@ -55,9 +57,18 @@ export function ConnectionItem({
 					<div className="flex-1 min-w-0">
 						{/* Name and status */}
 						<div className="flex items-baseline gap-2">
-							<span className="font-medium truncate">
+							<span
+								className={cn(
+									"truncate",
+									hasUnread ? "font-semibold" : "font-medium",
+								)}
+							>
 								{connection.other_user.name}
 							</span>
+							{/* Unread badge */}
+							{hasUnread && (
+								<span className="flex-shrink-0 size-2 rounded-full bg-primary" />
+							)}
 						</div>
 
 						{/* Online status text */}
@@ -72,7 +83,15 @@ export function ConnectionItem({
 
 						{/* Last message preview */}
 						{connection.last_message && (
-							<div className="text-muted-foreground group-hover:text-accent-foreground/90 text-sm line-clamp-1 text-ellipsis">
+							<div
+								className={cn(
+									"text-sm line-clamp-1 text-ellipsis",
+									"group-hover:text-accent-foreground/90",
+									hasUnread
+										? "text-foreground font-medium"
+										: "text-muted-foreground",
+								)}
+							>
 								{connection.last_message.is_mine && "You: "}
 								{connection.last_message.content}
 							</div>

@@ -18,6 +18,9 @@ export const getNotificationsApi = async (
 	if (input.offset !== undefined) {
 		searchParams.append("offset", String(input.offset));
 	}
+	if (input.exclude_types && input.exclude_types.length > 0) {
+		searchParams.append("exclude_types", input.exclude_types.join(","));
+	}
 
 	return api.get<NotificationsResponse>(
 		`/notifications?${searchParams.toString()}`,
