@@ -77,7 +77,7 @@ export default function AITextLoading({
 							},
 						}}
 						className={cn(
-							"flex justify-center text-3xl font-bold font-[Poppins] bg-gradient-to-r from-pink-500 via-rose-500 to-pink-500 dark:from-pink-400 dark:via-rose-400 dark:to-pink-400 bg-[length:200%_100%] bg-clip-text text-transparent whitespace-nowrap min-w-max",
+							"flex justify-center text-3xl font-bold font-[Poppins] bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_100%] bg-clip-text text-transparent whitespace-nowrap min-w-max",
 							className,
 						)}
 					>

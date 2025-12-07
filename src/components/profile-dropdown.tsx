@@ -54,14 +54,10 @@ export function ProfileDropdown({ className }: { className?: string }) {
 				<DropdownMenuSeparator />
 				<DropdownMenuGroup>
 					<DropdownMenuItem asChild>
-						<Link href="/profile">Profile</Link>
+						<Link href="/chat">Discover Matches</Link>
 					</DropdownMenuItem>
 					<DropdownMenuItem asChild>
-						<Link href="/chat">Messages</Link>
-					</DropdownMenuItem>
-
-					<DropdownMenuItem asChild disabled>
-						<div>Settings</div>
+						<Link href="/profile">Profile</Link>
 					</DropdownMenuItem>
 				</DropdownMenuGroup>
 				<DropdownMenuSeparator />

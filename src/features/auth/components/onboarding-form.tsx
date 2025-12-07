@@ -245,7 +245,7 @@ export function OnboardingForm() {
 		(currentStep === TOTAL_ONBOARDING_STEPS && !uploadedFilePreview);
 
 	return (
-		<div className="min-h-screen flex flex-col gap-4 items-stretch justify-center bg-transparent sm:bg-gradient-subtle px-4">
+		<div className="min-h-screen flex flex-col gap-4 items-stretch justify-center bg-transparent px-4">
 			<div className="text-center">
 				<h2 className="text-2xl font-bold">Welcome!</h2>
 				<p className="text-muted-foreground">
@@ -265,11 +265,6 @@ export function OnboardingForm() {
 						nextButtonText="Next"
 						nextButtonProps={{
 							disabled: nextButtonDisabled,
-							className: `duration-350 flex items-center justify-center rounded-full py-1.5 px-3.5 font-medium tracking-tight text-white transition ${
-								nextButtonDisabled
-									? "bg-gray-300 cursor-not-allowed opacity-50"
-									: "bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-400 hover:to-rose-400 active:from-pink-600 active:to-rose-600"
-							}`,
 						}}
 						className="p-0 sm:p-4"
 					>

@@ -31,7 +31,7 @@ export function HomeContent() {
 
 	return (
 		<RootLayout>
-			<main className="pt-24 min-h-screen bg-gradient-subtle px-4 sm:px-6 lg:px-8">
+			<main className="pt-24 min-h-screen px-4 sm:px-6 lg:px-8">
 				<div className="container mx-auto pb-4 sm:pb-6 lg:pb-8">
 					<div className="grid grid-cols-1 gap-4 max-w-4xl mx-auto">
 						<div className="space-y-8 mx-0 sm:mx-4">
