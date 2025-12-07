@@ -1,6 +1,6 @@
 "use client";
 
-import { LogOut, Settings } from "lucide-react";
+import { Heart, LogOut, Settings } from "lucide-react";
 import confirm from "@/components/confirm";
 import {
 	Sidebar,
@@ -72,8 +72,8 @@ export function AppSidebar() {
 			<SidebarHeader className="p-4">
 				{/* Logo */}
 				<div className="flex items-center gap-2">
-					<div className="w-8 h-8 rounded-lg bg-gradient-to-br flex items-center justify-center font-bold text-xl shadow-lg shadow-primary/20 from-primary to-purple-700 text-primary-foreground">
-						F
+					<div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary shadow-lg">
+						<Heart className="h-5 w-5 text-primary-foreground" />
 					</div>
 					<h1 className="text-xl font-semibold tracking-tight text-sidebar-foreground">
 						Fuzed

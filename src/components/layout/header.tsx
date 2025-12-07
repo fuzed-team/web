@@ -4,6 +4,7 @@ import { AnimatePresence, easeInOut, motion } from "framer-motion";
 import { Heart, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useContext, useEffect, useState } from "react";
+import { ThemeSwitch } from "@/features/admin/components/theme-switch";
 import { LayoutContext } from "@/features/admin/context/layout-provider";
 import { useUser } from "@/features/auth/api/get-me";
 import { SignOutButton } from "@/features/auth/components/signout-button";
@@ -120,8 +121,8 @@ export function Header({ loading = false }: { loading?: boolean }) {
 						>
 							<Link href="/" className="flex items-center space-x-3">
 								<div className="relative">
-									<div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-rose-500 via-rose-600 to-rose-700 shadow-lg">
-										<Heart className="h-5 w-5 text-white" />
+									<div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary shadow-lg">
+										<Heart className="h-5 w-5 text-primary-foreground" />
 									</div>
 									<div className="absolute -top-1 -right-1 h-3 w-3 animate-pulse rounded-full bg-green-400"></div>
 								</div>
@@ -195,7 +196,12 @@ export function Header({ loading = false }: { loading?: boolean }) {
 						)}
 
 						<div className="flex items-center space-x-2 lg:hidden">
-							{user && <NotificationCenter />}
+							{user && (
+								<>
+									<ThemeSwitch />
+									<NotificationCenter />
+								</>
+							)}
 							<motion.button
 								className="text-foreground hover:bg-muted rounded-lg p-2 transition-colors duration-200"
 								onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
