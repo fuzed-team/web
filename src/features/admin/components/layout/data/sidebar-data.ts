@@ -3,6 +3,7 @@ import {
 	Command,
 	Monitor,
 	Palette,
+	Radio,
 	Settings,
 	UserCog,
 	Users,
@@ -41,7 +42,7 @@ export const sidebarData: SidebarData = {
 				{
 					title: "Live Matches",
 					url: "/admin/live-matches",
-					icon: Command,
+					icon: Radio,
 				},
 				{
 					title: "Users",

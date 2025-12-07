@@ -9,6 +9,8 @@ export interface MatchStats {
 	total: number; // Total user-to-user matches in database
 	viewed: number | null; // Matches current user has viewed (null if not authenticated)
 	activeUsers: number; // Total number of user profiles in database
+	babiesCount: number; // Total number of generated babies
+	connectionsCount: number; // Total number of mutual connections (users connected to chat)
 }
 
 /**

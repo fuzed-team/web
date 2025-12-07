@@ -43,11 +43,13 @@ export type LiveMatchApi = {
 			id: string;
 			image: string;
 			name: string;
+			school?: string;
 		};
 		b: {
 			id: string;
 			image: string;
 			name: string;
+			school?: string;
 		};
 	};
 };

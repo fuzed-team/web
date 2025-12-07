@@ -61,10 +61,30 @@ export async function GET(_request: NextRequest) {
 			throw activeUsersError;
 		}
 
+		// Query 4: Count total number of generated babies
+		const { count: babiesCount, error: babiesError } = await supabase
+			.from("babies")
+			.select("id", { count: "exact", head: true });
+
+		if (babiesError) {
+			throw babiesError;
+		}
+
+		// Query 5: Count total number of mutual connections (users connected to chat)
+		const { count: connectionsCount, error: connectionsError } = await supabase
+			.from("mutual_connections")
+			.select("id", { count: "exact", head: true });
+
+		if (connectionsError) {
+			throw connectionsError;
+		}
+
 		return NextResponse.json({
 			total: totalCount || 0,
 			viewed: viewedCount,
 			activeUsers: activeUsersCount || 0,
+			babiesCount: babiesCount || 0,
+			connectionsCount: connectionsCount || 0,
 		});
 	} catch (error) {
 		return handleApiError(error);

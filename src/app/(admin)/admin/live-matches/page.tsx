@@ -1,5 +1,5 @@
-import { LiveMatch } from "@/features/matching/components/live-match/live-match";
+import { AdminLiveMatch } from "@/features/admin/pages/live-match/components/admin-live-match";
 
 export default function LiveMatchesPage() {
-	return <LiveMatch />;
+	return <AdminLiveMatch />;
 }

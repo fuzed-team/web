@@ -1,9 +1,12 @@
+import { Separator } from "@/components/ui/separator";
+import { UsersDialogs } from "@/features/admin/pages/users/components/dialog/user-dialogs";
 import { UsersTable } from "@/features/admin/pages/users/components/table/user-table";
 import { UsersPrimaryButtons } from "@/features/admin/pages/users/components/user-primary-buttons";
+import { UsersProvider } from "@/features/admin/pages/users/context/user-context";
 
 export default function UsersPage() {
 	return (
-		<>
+		<UsersProvider>
 			<div className="flex flex-wrap items-end justify-between gap-2">
 				<div>
 					<h1 className="text-2xl font-bold tracking-tight md:text-3xl">
@@ -15,9 +18,11 @@ export default function UsersPage() {
 				</div>
 				<UsersPrimaryButtons />
 			</div>
+			<Separator className="my-4 lg:my-6" />
 			<div className="-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-y-0 lg:space-x-12">
 				<UsersTable />
 			</div>
-		</>
+			<UsersDialogs />
+		</UsersProvider>
 	);
 }

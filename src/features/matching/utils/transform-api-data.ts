@@ -23,10 +23,12 @@ export const transformApiMatchToDisplayData = (
 		user1: {
 			name: apiMatch.users.a.name,
 			image: apiMatch.users.a.image,
+			school: apiMatch.users.a.school,
 		},
 		user2: {
 			name: apiMatch.users.b.name,
 			image: apiMatch.users.b.image,
+			school: apiMatch.users.b.school,
 		},
 		matchPercentage: Math.round(apiMatch.similarity_percentage),
 		timestamp: getTimeAgo(apiMatch.created_at),

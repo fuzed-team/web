@@ -21,10 +21,12 @@ export interface MatchCardProps {
 		user1: {
 			name: string;
 			image: string;
+			school?: string;
 		};
 		user2: {
 			name: string;
 			image: string;
+			school?: string;
 		};
 		matchPercentage: number;
 		timestamp: string;
