@@ -38,10 +38,18 @@ import { z } from "zod";
 
 export const env = createEnv({
   server: {
-    // Server-only variables
+    NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
+    SUPABASE_SIGNED_URL_TTL: z.coerce.number().positive().default(86400),
+    SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
+    REPLICATE_API_TOKEN: z.string().min(1),
+    REPLICATE_MODEL_VERSION: z.string().min(1),
+    FAL_AI_API_KEY: z.string().min(1),
+    FAL_BABY_MODEL_ID: z.string().min(1).default("fal-ai/nano-banana/edit"),
   },
   client: {
-    // Client-side variables (NEXT_PUBLIC_ prefix)
+    NEXT_PUBLIC_BASE_API_URL: z.string().default("/api"),
+    NEXT_PUBLIC_SUPABASE_URL: z.url(),
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1),
   },
   runtimeEnv: {
     // Map process.env to schema
@@ -72,8 +80,8 @@ export const env = createEnv({
 | `NODE_ENV` | enum | `development` | Environment: development/test/production |
 | `SUPABASE_SIGNED_URL_TTL` | number | `86400` | Signed URL TTL in seconds (24 hours) |
 | `SUPABASE_SERVICE_ROLE_KEY` | string | Required | Supabase service role key for admin operations |
-| `PYTHON_AI_SERVICE_URL` | URL | Required | Python AI microservice endpoint |
-| `PYTHON_AI_SERVICE_API_KEY` | string | Required | API key for AI service authentication |
+| `REPLICATE_API_TOKEN` | string | Required | Replicate API token for face analysis |
+| `REPLICATE_MODEL_VERSION` | string | Required | Replicate model version ID |
 | `FAL_AI_API_KEY` | string | Required | FAL.AI API key for baby generation |
 | `FAL_BABY_MODEL_ID` | string | `fal-ai/nano-banana/edit` | FAL.AI model ID |
 
@@ -347,24 +355,25 @@ export const POST = withSession(async ({ supabase }) => {
 - Type-safe number validation
 - Default value ensures always configured
 
-### AI Service Integration
+### Replicate AI Service Integration
 
 ```typescript
-// src/lib/services/ai-service.ts
+// src/lib/services/replicate-client.ts
+import Replicate from "replicate";
 import { env } from "@/config/env";
 
-const AI_SERVICE_URL = env.PYTHON_AI_SERVICE_URL;
-const AI_SERVICE_API_KEY = env.PYTHON_AI_SERVICE_API_KEY;
+const replicate = new Replicate({
+  auth: env.REPLICATE_API_TOKEN,
+});
 
-export async function extractEmbedding(imageBuffer: Buffer) {
-  const response = await fetch(`${AI_SERVICE_URL}/extract-embedding`, {
-    headers: {
-      Authorization: `Bearer ${AI_SERVICE_API_KEY}`,
+export async function extractEmbedding(imageUrl: string) {
+  const output = await replicate.run(env.REPLICATE_MODEL_VERSION, {
+    input: {
+      image: imageUrl,
     },
-    body: formData,
   });
 
-  return response.json();
+  return output;
 }
 ```
 
@@ -416,7 +425,11 @@ NEXT_PUBLIC_BASE_API_URL=/api
 NEXT_PUBLIC_SUPABASE_URL=https://dev-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=dev-anon-key
 SUPABASE_SIGNED_URL_TTL=3600  # 1 hour for dev
-PYTHON_AI_SERVICE_URL=http://localhost:5000
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+REPLICATE_API_TOKEN=r8_your_replicate_token
+REPLICATE_MODEL_VERSION=your_model_version_id
+FAL_AI_API_KEY=your-fal-api-key
+FAL_BABY_MODEL_ID=fal-ai/nano-banana/edit
 ```
 
 ### Production (.env.production)
@@ -427,7 +440,11 @@ NEXT_PUBLIC_BASE_API_URL=/api
 NEXT_PUBLIC_SUPABASE_URL=https://prod-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=prod-anon-key
 SUPABASE_SIGNED_URL_TTL=86400  # 24 hours for prod
-PYTHON_AI_SERVICE_URL=https://ai-service.production.com
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+REPLICATE_API_TOKEN=r8_your_replicate_token
+REPLICATE_MODEL_VERSION=your_model_version_id
+FAL_AI_API_KEY=your-fal-api-key
+FAL_BABY_MODEL_ID=fal-ai/nano-banana/edit
 ```
 
 ---
@@ -673,6 +690,6 @@ const timeout = env.TIMEOUT_MS;            // Auto-converted to number
 
 ---
 
-**Last Updated:** 2025-10-28
+**Last Updated:** 2025-12-08
 
 **Maintained By:** Engineering Team

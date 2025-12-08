@@ -5,7 +5,7 @@
  *
  * This script:
  * 1. Loads celebrity images from ./data/celebrities/ folder
- * 2. Extracts advanced facial analysis (6-factor attributes) using AI service
+ * 2. Extracts advanced facial analysis (15+ attributes) using Replicate AI service
  * 3. Uploads images to Supabase celebrity-images bucket
  * 4. Updates celebrities table with advanced attributes
  *
@@ -14,7 +14,7 @@
  *
  * Requirements:
  *   - Celebrity images in ./data/celebrities/ organized by category
- *   - AI service running (PYTHON_AI_SERVICE_URL)
+ *   - REPLICATE_API_TOKEN and REPLICATE_MODEL_VERSION in .env
  *   - Supabase credentials in .env
  *   - metadata.json with celebrity info (optional)
  *
@@ -347,7 +347,7 @@ async function main() {
 				results.errors.push(result);
 			}
 
-			// Rate limit: wait 500ms between requests to avoid overwhelming AI service
+			// Rate limit: wait 500ms between requests to avoid overwhelming Replicate API
 			await new Promise((resolve) => setTimeout(resolve, 500));
 		}
 	}
