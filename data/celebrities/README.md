@@ -73,8 +73,8 @@ Add an entry for each celebrity:
 ### Step 3: Run the Generator Script
 
 ```bash
-# Make sure your AI service is running
 # Make sure environment variables are set (.env file)
+# Required: REPLICATE_API_TOKEN, REPLICATE_MODEL_VERSION, Supabase credentials
 
 # Run the script
 npx tsx scripts/generate-celebrity-embeddings.ts
@@ -82,7 +82,7 @@ npx tsx scripts/generate-celebrity-embeddings.ts
 
 The script will:
 1. ✅ Read all images from category folders
-2. ✅ Extract face embeddings using InsightFace
+2. ✅ Extract face embeddings using Replicate AI (15+ facial attributes)
 3. ✅ Upload images to Supabase storage
 4. ✅ Insert celebrity records into database
 
@@ -124,9 +124,9 @@ The script will:
 - Try a different photo
 
 ### "Invalid embedding dimension" error
-- AI service may not be running
-- Check PYTHON_AI_SERVICE_URL in .env
-- Verify AI service logs
+- Check REPLICATE_API_TOKEN in .env
+- Verify REPLICATE_MODEL_VERSION is correct
+- Check Replicate API logs
 
 ### Upload failed
 - Check Supabase credentials
@@ -168,7 +168,7 @@ For testing, start with:
 
 If you encounter issues:
 1. Check the script output for detailed error messages
-2. Verify AI service is running: `http://localhost:8000/health`
+2. Verify Replicate API credentials are valid
 3. Check Supabase dashboard for uploaded images
 4. Review database logs in Supabase
 

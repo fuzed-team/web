@@ -16,9 +16,6 @@ export const env = createEnv({
 		// AI Services - Replicate
 		REPLICATE_API_TOKEN: z.string().min(1),
 		REPLICATE_MODEL_VERSION: z.string().min(1),
-		// AI Services - Python (DEPRECATED, use Replicate instead)
-		PYTHON_AI_SERVICE_URL: z.url().optional(),
-		PYTHON_AI_SERVICE_API_KEY: z.string().min(1).optional(),
 		// AI Services - FAL.AI
 		FAL_AI_API_KEY: z.string().min(1),
 		FAL_BABY_MODEL_ID: z.string().min(1).default("fal-ai/nano-banana/edit"),
@@ -48,8 +45,6 @@ export const env = createEnv({
 		SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
 		REPLICATE_API_TOKEN: process.env.REPLICATE_API_TOKEN,
 		REPLICATE_MODEL_VERSION: process.env.REPLICATE_MODEL_VERSION,
-		PYTHON_AI_SERVICE_URL: process.env.PYTHON_AI_SERVICE_URL,
-		PYTHON_AI_SERVICE_API_KEY: process.env.PYTHON_AI_SERVICE_API_KEY,
 		FAL_AI_API_KEY: process.env.FAL_AI_API_KEY,
 		FAL_BABY_MODEL_ID: process.env.FAL_BABY_MODEL_ID,
 

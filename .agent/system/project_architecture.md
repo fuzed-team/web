@@ -10,9 +10,9 @@
 
 **Tech Stack:**
 - **Frontend:** React 19, TypeScript, Next.js 16, TanStack Query
-- **Backend:** Python Flask, Supabase (PostgreSQL), Qdrant (Vector DB), InsightFace (AI)
+- **Backend:** Next.js API Routes, Supabase (PostgreSQL), Replicate (Face AI), FAL.AI (Baby Generation)
 - **Authentication:** Supabase Auth (Magic Link + PKCE)
-- **Infrastructure:** Docker, Celery, Redis
+- **Infrastructure:** Vercel (Serverless), Supabase (Database, Storage, Realtime)
 
 ---
 
@@ -71,16 +71,31 @@ web/
 │   │   ├── confirm/         # Alert confirmation dialogs
 │   │   └── kokonutui/       # Third-party UI components
 │   ├── features/            # Feature-based modules
+│   │   ├── admin/          # Admin dashboard feature
+│   │   │   ├── api/        # Admin API calls
+│   │   │   ├── components/ # Admin UI (tables, forms, dialogs)
+│   │   │   ├── pages/      # Admin page components
+│   │   │   └── hooks/      # Admin-specific hooks
 │   │   ├── auth/           # Authentication feature
 │   │   │   ├── api/        # Auth API calls
 │   │   │   └── components/ # Auth UI components
-│   │   └── matching/       # Face matching feature
-│   │       ├── api/        # Matching API calls
-│   │       ├── components/ # Matching UI components
-│   │       ├── constants/  # Matching constants & data
-│   │       ├── hooks/      # Custom matching hooks
-│   │       ├── store/      # Matching-specific stores
-│   │       └── utils/      # Matching utilities
+│   │   ├── chat/           # Real-time messaging feature
+│   │   │   ├── api/        # Message API calls
+│   │   │   ├── components/ # Chat UI (list, box, input)
+│   │   │   └── hooks/      # Chat-specific hooks
+│   │   ├── matching/       # Face matching feature
+│   │   │   ├── api/        # Matching API calls
+│   │   │   ├── components/ # Matching UI components
+│   │   │   ├── constants/  # Matching constants & data
+│   │   │   ├── hooks/      # Custom matching hooks
+│   │   │   ├── store/      # Matching-specific stores
+│   │   │   └── utils/      # Matching utilities
+│   │   ├── notifications/  # Notification system
+│   │   │   ├── api/        # Notification API calls
+│   │   │   └── components/ # Notification center, badges
+│   │   └── presence/       # Online/offline status
+│   │       ├── api/        # Presence API
+│   │       └── hooks/      # usePresence, useOnlineStatus
 │   ├── stores/             # Global state management (Zustand)
 │   │   └── auth-store.ts   # Authentication state
 │   ├── hooks/              # Shared custom hooks
@@ -347,10 +362,10 @@ export type LiveMatchApi = {
                             │
                             ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                  Backend API (Flask)                         │
+│                  Backend (Next.js API Routes)                │
 │  - Validates auth token                                      │
-│  - Processes face recognition (InsightFace)                 │
-│  - Queries Qdrant vector DB                                 │
+│  - Processes face recognition (Replicate AI)                 │
+│  - Queries PostgreSQL vector search (pgvector)              │
 │  - Updates Supabase PostgreSQL                              │
 └───────────────────────────┬─────────────────────────────────┘
                             │
@@ -425,9 +440,11 @@ The backend is built with **Next.js API Routes** providing a TypeScript-first ba
 | Technology | Purpose |
 |-----------|---------|
 | **Next.js API Routes** | Backend API layer (TypeScript) |
-| FAL.AI | AI image generation for baby feature |
-| Supabase | PostgreSQL database, storage, auth, realtime |
-| @supabase/ssr | Server-side Supabase client for Next.js |
+| **Replicate** | Face analysis AI (custom Cog model with 15+ attributes) |
+| **FAL.AI** | AI image generation for baby feature |
+| **Supabase** | PostgreSQL database, storage, auth, realtime |
+| **pgvector** | Vector similarity search in PostgreSQL |
+| **@supabase/ssr** | Server-side Supabase client for Next.js |
 
 ### Project Structure
 
@@ -435,6 +452,10 @@ The backend is built with **Next.js API Routes** providing a TypeScript-first ba
 
 ```
 web/src/app/api/
+├── admin/                     # Admin endpoints
+│   ├── users/                # User management (CRUD, suspend/unsuspend)
+│   ├── settings/             # System settings
+│   └── schools/              # School list management
 ├── auth/
 │   └── me/
 │       └── route.ts         # GET/PATCH current user profile
@@ -442,10 +463,18 @@ web/src/app/api/
 │   ├── route.ts             # POST/GET baby generation
 │   └── list/
 │       └── route.ts         # GET baby list
+├── config/
+│   └── route.ts             # GET app configuration
+├── connections/               # User connections
+│   └── route.ts             # GET/POST connections
 ├── faces/
 │   ├── route.ts             # GET/POST faces
 │   └── [id]/
 │       └── route.ts         # DELETE face by ID
+├── flags/                     # User reporting system
+│   ├── route.ts             # GET/POST flags
+│   └── [id]/
+│       └── route.ts         # PATCH flag (review)
 ├── matches/
 │   ├── top/
 │   │   └── route.ts         # GET top matches
@@ -457,6 +486,16 @@ web/src/app/api/
 │   └── [matchId]/
 │       └── react/
 │           └── route.ts     # POST/DELETE reactions
+├── messages/                  # Chat messaging
+│   ├── route.ts             # GET/POST messages
+│   └── [id]/
+│       └── route.ts         # PATCH (mark read)
+├── notifications/             # Notification system
+│   ├── route.ts             # GET/POST notifications
+│   ├── count/               # GET unread count
+│   └── mark-read/           # POST mark as read
+└── presence/                  # Online status
+    └── route.ts             # PATCH presence
 ```
 
 **Key Features:**
@@ -725,8 +764,8 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon-key>
 # Server-only variables (never exposed to browser)
 SUPABASE_SIGNED_URL_TTL=86400  # Default: 24 hours (configurable)
 SUPABASE_SERVICE_ROLE_KEY=<service-role-key>
-PYTHON_AI_SERVICE_URL=http://localhost:5000
-PYTHON_AI_SERVICE_API_KEY=<ai-service-key>
+REPLICATE_API_TOKEN=<replicate-api-token>
+REPLICATE_MODEL_VERSION=<replicate-model-version>
 FAL_AI_API_KEY=<fal-api-key>
 FAL_BABY_MODEL_ID=fal-ai/nano-banana/edit  # Optional, has default
 ```
@@ -806,6 +845,31 @@ const apiUrl = env.NEXT_PUBLIC_BASE_API_URL;
 - View match history
 - Set default face for matching
 
+### 6. Real-time Chat 💬
+- Direct messaging between matched users
+- Real-time message delivery via Supabase Realtime
+- Message read receipts
+- Conversation list with unread counts
+
+### 7. Notifications 🔔
+- In-app notification center
+- Match notifications, message alerts
+- Unread count badges
+- Mark as read functionality
+
+### 8. Online/Offline Presence 🟢
+- Real-time presence tracking
+- Green/gray status indicators
+- "Last seen X ago" display
+- Automatic status updates
+
+### 9. Admin Dashboard 🛠️
+- User management and moderation (suspend/unsuspend)
+- Live match monitoring
+- Content flagging and review
+- System settings configuration
+- Daily quotas management
+
 ---
 
 ## Future Considerations
@@ -822,8 +886,8 @@ const apiUrl = env.NEXT_PUBLIC_BASE_API_URL;
 - User behavior analytics
 
 ### Security
-- Implement rate limiting on API routes
-- Content moderation for uploaded images
+- ✅ Rate limiting on API routes (implemented via daily quotas)
+- ✅ Content moderation via user flags system
 - Privacy controls for profile visibility
 - CAPTCHA for sign-up
 
@@ -832,4 +896,9 @@ const apiUrl = env.NEXT_PUBLIC_BASE_API_URL;
 ## Related Documentation
 
 - [Database Schema](./database_schema.md) - Detailed database structure
+- [Environment Variables SOP](../sop/environment-variables.md) - Environment configuration guide
 - [README](./../README.md) - Documentation index
+
+---
+
+**Last Updated:** 2025-12-08

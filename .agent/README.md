@@ -184,28 +184,36 @@ Welcome to the AI Face Matching Application (Fuzed) documentation. This folder c
 
 ### Key Features
 
-1. **Face Upload & Processing**
-   - Upload photos → Extract face embeddings → Store in Qdrant
+1. **Face Upload & Processing** 📸
+   - Upload photos → Replicate AI extracts 15+ facial attributes
+   - Face embeddings stored in PostgreSQL (pgvector)
+   - Auto-queue matching job in background
 
-2. **Live Match Feed**
-   - Real-time display of new matches
+2. **Live Match Feed** (Admin Only) 🔒
+   - Real-time display of all new matches in the system
    - Sorted by similarity score
    - Infinite scroll pagination
+   - Monitor matching activity
 
-3. **User-to-User Matching**
-   - Detailed match comparison
-   - Multiple face matches
-   - Reaction system (favorites)
+3. **University Match** 🎓
+   - Match with users from the same school
+   - Shows match percentage and photo carousel
+   - Multiple photos = multiple match results per user
+   - "Generate Baby" button integration
+   - Match history with timestamps
 
-4. **Celebrity Matching**
-   - Compare faces to celebrity database
-   - Find top lookalikes
+4. **Celebrity of the Day** ⭐
+   - Daily featured celebrity match
+   - Automatic similarity matching with your face
+   - Countdown timer showing time until next celebrity
+   - Powered by daily rotation cron job
 
-5. **AI Baby Generation** 👶 ✨
-   - Generate baby images from two matched faces
+5. **Future Generator (AI Baby)** 👶 ✨
+   - Predict child images from two matched faces
    - Powered by FAL.AI image generation
-   - Baby gallery with filtering
-   - Multiple generations per match supported
+   - Mutual matching: when both users generate → chat unlocks!
+   - Share and save generated images
+   - Daily generation limits per user
 
 6. **Real-time Chat** 💬
    - Direct messaging between matched users
@@ -905,8 +913,8 @@ Migrated to `@t3-oss/env-nextjs` for fully type-safe, validated environment vari
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Supabase public key
    - `SUPABASE_SERVICE_ROLE_KEY` - Supabase service role key for admin operations
    - `SUPABASE_SIGNED_URL_TTL` - Configurable signed URL timeout (default: 86400s / 24 hours)
-   - `PYTHON_AI_SERVICE_URL` - Python AI service endpoint
-   - `PYTHON_AI_SERVICE_API_KEY` - AI service authentication
+   - `REPLICATE_API_TOKEN` - Replicate API token for face analysis
+   - `REPLICATE_MODEL_VERSION` - Replicate model version ID
    - `FAL_AI_API_KEY` - FAL.AI API key
    - `FAL_BABY_MODEL_ID` - FAL.AI model (default: `fal-ai/nano-banana/edit`)
 

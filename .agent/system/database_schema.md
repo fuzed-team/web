@@ -26,8 +26,12 @@ User profile storage. Celebrity profiles are stored in the separate `celebrities
 | `gender` | `text` | | Gender (male, female, other) |
 | `school` | `text` | | User location/school |
 | `role` | `text` | NOT NULL, DEFAULT 'user', CHECK (user, admin) | User role for access control |
+| `status` | `text` | NOT NULL, DEFAULT 'active', CHECK (active, suspended, deleted) | Account status |
 | `default_face_id` | `uuid` | FK → faces(id) | Default face for matching |
 | `last_seen` | `timestamptz` | | Last online timestamp (presence tracking) |
+| `suspended_at` | `timestamptz` | | Timestamp when account was suspended |
+| `suspended_by` | `uuid` | FK → profiles(id) | Admin user who suspended this account |
+| `suspension_reason` | `text` | | Reason provided for account suspension |
 | `created_at` | `timestamptz` | DEFAULT now() | Account creation time |
 | `updated_at` | `timestamptz` | DEFAULT now() | Last update time |
 
@@ -37,12 +41,14 @@ User profile storage. Celebrity profiles are stored in the separate `celebrities
 - `idx_profiles_school_gender` on `(school, gender)` WHERE `school IS NOT NULL AND gender IS NOT NULL`
 - `idx_profiles_last_seen` on `last_seen`
 - `idx_profiles_role` on `role` WHERE `role = 'admin'`
+- `idx_profiles_status` on `status` WHERE `status <> 'active'`
 
 **Usage:**
 - Stores user profile data only (celebrities moved to separate table)
 - Automatically created on Supabase Auth signup (via trigger)
 - `last_seen` tracks online/offline status for real-time presence
 - `default_face_id` references the primary face for matching
+- `status` controls account access (suspended users cannot login)
 
 ---
 
@@ -147,6 +153,10 @@ Celebrity profiles with face embeddings and advanced attributes for lookalike ma
 | `image_hash` | `text` | UNIQUE | MD5 hash for deduplication |
 | `created_at` | `timestamptz` | DEFAULT now() | Creation timestamp |
 | `updated_at` | `timestamptz` | DEFAULT now() | Last update timestamp |
+| **Featured Celebrity** |
+| `is_featured` | `boolean` | DEFAULT false | Whether this celebrity is the "Celebrity of the Day" |
+| `featured_from` | `timestamptz` | | When the feature period started |
+| `featured_until` | `timestamptz` | | When the feature period ends |
 | **Vector Embedding** |
 | `embedding` | `vector(512)` | | 512D InsightFace embedding |
 | **Facial Attributes** |
@@ -178,6 +188,7 @@ Celebrity profiles with face embeddings and advanced attributes for lookalike ma
   - `idx_celebrities_quality` on `quality_score`
   - `idx_celebrities_expression` on `expression`
   - `idx_celebrities_attributes` on `(age, gender, quality_score, expression)`
+  - `idx_celebrities_featured` on `(is_featured, featured_until)` WHERE `is_featured = true`
 
 **RLS Policies:**
 - Public read access (anon can SELECT)
@@ -188,6 +199,7 @@ Celebrity profiles with face embeddings and advanced attributes for lookalike ma
 - IVFFlat index for fast vector similarity search
 - Advanced facial attributes enable attribute-aware matching
 - Image deduplication via `image_hash`
+- Featured celebrities are rotated daily via `rotate_daily_celebrity()` function
 
 ---
 
@@ -313,6 +325,7 @@ Background job queue for automated face matching tasks.
 | `attempts` | `integer` | NOT NULL, DEFAULT 0 | Number of retry attempts |
 | `max_attempts` | `integer` | NOT NULL, DEFAULT 3 | Max retry limit |
 | `error_message` | `text` | | Error details if failed |
+| `next_run_at` | `timestamptz` | DEFAULT now() | Next scheduled run time (for retry backoff) |
 | `created_at` | `timestamptz` | NOT NULL, DEFAULT now() | Job creation time |
 | `started_at` | `timestamptz` | | Processing start time |
 | `completed_at` | `timestamptz` | | Completion time |
@@ -323,6 +336,7 @@ Background job queue for automated face matching tasks.
 - `idx_match_jobs_pending` on `created_at` WHERE `status = 'pending'`
 - `idx_match_jobs_job_type` on `job_type`
 - `idx_match_jobs_status_type_created` on `(status, job_type, created_at)` WHERE `status = 'pending'`
+- `idx_match_jobs_next_run_at` on `next_run_at`
 
 **Job Types:**
 - `user_match` - User-to-user matching only
@@ -510,6 +524,85 @@ Configurable system settings managed by admins.
 
 ---
 
+### Table: `user_daily_quotas`
+
+Tracks daily usage quotas for baby generation and photo uploads per user.
+
+| Column | Type | Constraints | Description |
+|--------|------|-------------|-------------|
+| `id` | `uuid` | PRIMARY KEY, DEFAULT gen_random_uuid() | Unique quota record ID |
+| `user_id` | `uuid` | NOT NULL, FK → profiles(id) | User this quota belongs to |
+| `date` | `date` | NOT NULL | UTC date for this quota (resets at midnight UTC) |
+| `baby_generations_count` | `integer` | NOT NULL, DEFAULT 0, CHECK >= 0 | Number of babies generated today |
+| `photo_uploads_count` | `integer` | NOT NULL, DEFAULT 0, CHECK >= 0 | Number of photos uploaded today |
+| `created_at` | `timestamptz` | NOT NULL, DEFAULT now() | Record creation time |
+| `updated_at` | `timestamptz` | NOT NULL, DEFAULT now() | Last update time |
+
+**Indexes:**
+- `user_daily_quotas_pkey` (UNIQUE) on `id`
+- `user_daily_quotas_user_id_date_key` (UNIQUE) on `(user_id, date)`
+- `idx_user_daily_quotas_date` on `date`
+- `idx_user_daily_quotas_user_date` on `(user_id, date)`
+
+**RLS Policies:**
+- Users can view own quotas
+- Admins can view all quotas
+
+**Usage:**
+- Enforces daily limits on baby generations and photo uploads
+- Limits configured in `system_settings` table (e.g., `daily_baby_limit`, `daily_photo_limit`)
+- Functions: `check_daily_limit()`, `increment_daily_usage()`
+- Cleanup function: `cleanup_old_daily_quotas()` removes records older than 90 days
+
+**Relationships:**
+- `user_id` → `profiles.id`
+
+---
+
+### Table: `user_flags`
+
+User-reported flags for inappropriate behavior.
+
+| Column | Type | Constraints | Description |
+|--------|------|-------------|-------------|
+| `id` | `uuid` | PRIMARY KEY, DEFAULT gen_random_uuid() | Unique flag ID |
+| `reporter_id` | `uuid` | NOT NULL, FK → profiles(id) | User who created the flag |
+| `reported_user_id` | `uuid` | NOT NULL, FK → profiles(id) | User being reported |
+| `reason` | `text` | NOT NULL | Reason for flagging this user |
+| `status` | `text` | NOT NULL, DEFAULT 'pending', CHECK (pending, reviewed, dismissed) | Flag status |
+| `reviewed_by` | `uuid` | FK → profiles(id) | Admin user who reviewed this flag |
+| `reviewed_at` | `timestamptz` | | Timestamp when flag was reviewed |
+| `created_at` | `timestamptz` | NOT NULL, DEFAULT now() | Flag creation time |
+
+**Indexes:**
+- `user_flags_pkey` (UNIQUE) on `id`
+- `unique_flag_per_reporter` (UNIQUE) on `(reporter_id, reported_user_id)`
+- `idx_user_flags_created_at` on `created_at DESC`
+- `idx_user_flags_reported_user` on `reported_user_id`
+- `idx_user_flags_status` on `status` WHERE `status = 'pending'`
+
+**Flag Statuses:**
+- `pending` - Needs admin review
+- `reviewed` - Admin has reviewed and taken action
+- `dismissed` - Flag was not valid
+
+**RLS Policies:**
+- Users can create flags for other users (not themselves)
+- Only admins can view and update flags
+
+**Usage:**
+- Users can report inappropriate behavior
+- Admins review flags in admin dashboard
+- One flag per reporter per user (prevents spam)
+- Related functions: `get_user_flag_count()`
+
+**Relationships:**
+- `reporter_id` → `profiles.id`
+- `reported_user_id` → `profiles.id`
+- `reviewed_by` → `profiles.id`
+
+---
+
 ## Entity Relationships
 
 ```
@@ -604,7 +697,7 @@ Configurable system settings managed by admins.
    ↓
 5. Background Worker (polls match_jobs):
    - Picks up pending job
-   - Sends face to Python AI service for embedding extraction
+   - Sends face to Replicate AI service for embedding extraction
    - Receives embedding + advanced facial attributes
    - Updates faces table with embedding and attributes
    - Performs vector similarity search:
@@ -656,7 +749,7 @@ Configurable system settings managed by admins.
 ```
 1. Background worker processes celebrity_match job
    ↓
-2. Python AI Service:
+2. Replicate AI Service:
    - Receives face embedding from faces table
    - Performs vector similarity search:
      SELECT c.id, c.name, c.category, c.image_path,
@@ -823,7 +916,19 @@ The following PostgreSQL extensions are installed:
 - `20251106145302` - Fixed celebrity similarity ambiguity
 - `20251110084540` - Removed embedding column from match_jobs
 
-**Total Migrations:** 40+ migrations applied
+**User Moderation & Quotas (November 2025):**
+- Added `status`, `suspended_at`, `suspended_by`, `suspension_reason` to profiles
+- Created `user_flags` table for user reporting
+- Created `user_daily_quotas` table for rate limiting
+- Added `is_user_suspended()`, `get_user_flag_count()` functions
+- Added `check_daily_limit()`, `increment_daily_usage()` functions
+
+**Featured Celebrities (November 2025):**
+- Added `is_featured`, `featured_from`, `featured_until` to celebrities
+- Added `rotate_daily_celebrity()` function
+- Added `match_users_with_daily_celebrities()` function
+
+**Total Migrations:** 50+ migrations applied
 
 ---
 
@@ -942,6 +1047,6 @@ The following PostgreSQL extensions are installed:
 
 ---
 
-**Last Updated:** 2025-11-11
+**Last Updated:** 2025-12-08
 
-**Schema Version:** 40+ migrations applied (20251029032359 → 20251111070013)
+**Schema Version:** 50+ migrations applied (includes user moderation, daily quotas, featured celebrities)

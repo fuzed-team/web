@@ -22,21 +22,22 @@ import {
  *
  * Workflow:
  * 1. Authenticate user (via withSession)
- * 2. Validate image file
- * 3. Extract face embedding via Python AI service
- * 4. Upload image to Supabase Storage
- * 5. Save face record with embedding to database
- * 6. Update user's profile default_face_id to the newly uploaded face
- * 7. Queue automatic matching job (NEW - background processing via pg_cron + Edge Function)
- * 8. Return face details with signed URL (202 Accepted - async processing)
+ * 2. Validate image file (type, size)
+ * 3. Check daily photo upload limit
+ * 4. Extract face embedding via Replicate AI service (15+ facial attributes)
+ * 5. Upload image to Supabase Storage
+ * 6. Save face record with embedding and attributes to database
+ * 7. Update user's profile default_face_id to the newly uploaded face
+ * 8. Queue automatic matching job (background processing via pgvector)
+ * 9. Return face details with signed URL (202 Accepted - async processing)
  *
  * Auto-Matching Feature:
  * - After upload, a job is queued in match_jobs table
- * - pg_cron triggers Edge Function every minute to process pending jobs
- * - Edge Function searches for similar faces (same school, opposite gender, 50%+ similarity)
- * - Top 20 matches are saved to matches table
+ * - Background worker processes pending jobs
+ * - pgvector searches for similar faces (same school, opposite gender, threshold similarity)
+ * - Top matches are saved to matches table
  * - Supabase Realtime broadcasts new matches to frontend
- * - Users see matches appear in live feed automatically (<10 seconds)
+ * - Users see matches appear in live feed automatically
  */
 export const POST = withSession(async ({ request, session, supabase }) => {
 	const { profile } = session;
@@ -99,7 +100,7 @@ export const POST = withSession(async ({ request, session, supabase }) => {
 	const arrayBuffer = await file.arrayBuffer();
 	const buffer = Buffer.from(arrayBuffer);
 
-	// Extract comprehensive face attributes via Python AI microservice (NEW: Advanced Analysis)
+	// Extract comprehensive face attributes via Replicate AI service
 	let analysis: AdvancedFaceAnalysis;
 	try {
 		analysis = await analyzeAdvancedFace(buffer);
