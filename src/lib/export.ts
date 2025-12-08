@@ -4,7 +4,7 @@ export function exportTableToCSV<TData>(
 	table: Table<TData>,
 	opts: {
 		filename?: string;
-		excludeColumns?: (keyof TData | "select" | "actions")[];
+		excludeColumns?: (keyof TData | "select" | "actions" | "image")[];
 		onlySelected?: boolean;
 	} = {},
 ): void {

@@ -23,6 +23,10 @@ const nextConfig: NextConfig = {
 				protocol: "https",
 				hostname: "v3b.fal.media", // FAL.AI baby images
 			},
+			{
+				protocol: "https",
+				hostname: "image.tmdb.org", // TMDB images
+			},
 		],
 	},
 };

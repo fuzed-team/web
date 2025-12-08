@@ -35,6 +35,7 @@ import { createHash } from "node:crypto";
 import { readdir, readFile } from "node:fs/promises";
 import { basename, extname, join } from "node:path";
 import { createClient } from "@supabase/supabase-js";
+import { STORAGE_BUCKETS } from "@/lib/constants/constant";
 import { analyzeAdvancedFace } from "../src/lib/services/ai-service";
 
 // Configuration
@@ -192,7 +193,7 @@ async function processCelebrityImage(
 		// 4. Upload image to Supabase storage
 		const storagePath = `celebrities/${category}/${filename}`;
 		const { error: uploadError } = await supabase.storage
-			.from("celebrity-images")
+			.from(STORAGE_BUCKETS.CELEBRITY_IMAGES)
 			.upload(storagePath, imageBuffer, {
 				contentType: `image/${extname(filename).slice(1).toLowerCase()}`,
 				upsert: true,

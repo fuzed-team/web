@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { STORAGE_BUCKETS } from "@/lib/constants/constant";
 import { createClient } from "@/lib/supabase/server";
 
 /**
@@ -161,7 +162,7 @@ export async function GET(request: Request) {
 
 	// Get public URL for celebrity image (bucket is public)
 	const { data: imageUrl } = supabase.storage
-		.from("celebrity-images")
+		.from(STORAGE_BUCKETS.CELEBRITY_IMAGES)
 		.getPublicUrl(celebrity.image_path);
 
 	return NextResponse.json({

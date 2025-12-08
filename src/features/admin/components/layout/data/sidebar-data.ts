@@ -1,14 +1,4 @@
-import {
-	Bell,
-	Command,
-	Monitor,
-	Palette,
-	Radio,
-	Settings,
-	UserCog,
-	Users,
-	Wrench,
-} from "lucide-react";
+import { Bell, Command, Radio, Settings, Star, Users } from "lucide-react";
 import type { SidebarData } from "../types";
 
 export const sidebarData: SidebarData = {
@@ -28,17 +18,6 @@ export const sidebarData: SidebarData = {
 		{
 			title: "General",
 			items: [
-				// {
-				// 	title: "Dashboard",
-				// 	url: "/",
-				// 	icon: LayoutDashboard,
-				// },
-				// {
-				// 	title: "Chats",
-				// 	url: "/chats",
-				// 	badge: "3",
-				// 	icon: MessagesSquare,
-				// },
 				{
 					title: "Live Matches",
 					url: "/admin/live-matches",
@@ -48,6 +27,11 @@ export const sidebarData: SidebarData = {
 					title: "Users",
 					url: "/admin/users",
 					icon: Users,
+				},
+				{
+					title: "Celebrities",
+					url: "/admin/celebrities",
+					icon: Star,
 				},
 				{
 					title: "Flags",
@@ -63,18 +47,6 @@ export const sidebarData: SidebarData = {
 					title: "Settings",
 					icon: Settings,
 					url: "/admin/settings",
-					// items: [
-					// 	{
-					// 		title: "Profile",
-					// 		url: "/settings",
-					// 		icon: UserCog,
-					// 	},
-					// 	{
-					// 		title: "Account",
-					// 		url: "/settings/account",
-					// 		icon: Wrench,
-					// 	},
-					// ],
 				},
 			],
 		},

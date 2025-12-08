@@ -125,6 +125,27 @@
 			"bio": "Actor and former WWE wrestler known as The Rock",
 			"category": "actors",
 			"gender": "male"
+		},
+		{
+			"filename": "nell-fisher.jpg",
+			"name": "Nell Fisher",
+			"bio": "Nell Fisher (born November 2, 2011) a British-New Zealander actress, known for Evil Dead Rise (2023), Northspur (2022), Bookworm (2024), and most n...",
+			"category": "actors",
+			"gender": "female"
+		},
+		{
+			"filename": "arian-s-cartaya.jpg",
+			"name": "Arian S. Cartaya",
+			"bio": "Actor known for various film and TV appearances",
+			"category": "actors",
+			"gender": "male"
+		},
+		{
+			"filename": "sara-khorami.jpg",
+			"name": "Sara Khorami",
+			"bio": "Khorami is a Norwegian actress",
+			"category": "actors",
+			"gender": "female"
 		}
 	]
 }
