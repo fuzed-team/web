@@ -189,7 +189,7 @@ export function Header({ loading = false }: { loading?: boolean }) {
 								) : (
 									<>
 										{/* <SignInButton /> */}
-										<SignUpButton />
+										<SignUpButton className="px-4 py-2 rounded-full" />
 									</>
 								)}
 							</motion.div>

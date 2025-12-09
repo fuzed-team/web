@@ -27,6 +27,10 @@ const nextConfig: NextConfig = {
 				protocol: "https",
 				hostname: "image.tmdb.org", // TMDB images
 			},
+			{
+				protocol: "https",
+				hostname: "images.unsplash.com", // Unsplash images
+			},
 		],
 	},
 };

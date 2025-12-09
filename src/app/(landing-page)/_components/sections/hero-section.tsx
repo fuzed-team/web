@@ -65,7 +65,7 @@ export function HeroSection() {
 						className="flex flex-col sm:flex-row w-full gap-3 px-4 sm:px-0 sm:w-auto"
 					>
 						<Link
-							href="/login"
+							href="/auth/sign-in"
 							className="relative overflow-hidden w-full sm:w-auto h-12 px-8 rounded-full flex items-center justify-center gap-2 text-white font-medium text-sm transition-all duration-300 active:scale-95 shadow-xl shadow-indigo-500/25 hover:shadow-indigo-500/40 ring-1 ring-white/20 group"
 							style={{
 								background:
@@ -147,6 +147,12 @@ export function HeroSection() {
 						</Link>
 						<button
 							type="button"
+							onClick={() => {
+								document.getElementById("features")?.scrollIntoView({
+									behavior: "smooth",
+									block: "start",
+								});
+							}}
 							className="w-full sm:w-auto h-12 px-8 rounded-full bg-white border border-slate-200 text-slate-700 text-sm font-medium flex items-center justify-center gap-2 hover:bg-slate-50 active:scale-95 transition-transform"
 						>
 							Explore Features
