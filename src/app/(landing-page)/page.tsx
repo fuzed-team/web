@@ -30,26 +30,15 @@ const HomePage = async () => {
 	}
 
 	return (
-		<div className="min-h-screen w-full bg-white relative">
-			{/* Dual Gradient Overlay (Bottom) Background */}
-			<div
-				className="fixed inset-0 z-0"
-				style={{
-					backgroundImage: `
-        linear-gradient(to right, rgba(229,231,235,0.8) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(229,231,235,0.8) 1px, transparent 1px),
-        radial-gradient(circle 500px at 20% 100%, rgba(244,63,94,0.15), transparent),
-        radial-gradient(circle 500px at 100% 80%, rgba(236,72,153,0.15), transparent)
-      `,
-					backgroundSize: "48px 48px, 48px 48px, 100% 100%, 100% 100%",
-				}}
-			/>
+		<>
 			<Header />
-			<main className="pt-20 mx-auto w-full z-0 relative">
-				<LandingPage />
-			</main>
-			<Footer />
-		</div>
+			<div className="min-h-screen w-full bg-white relative selection:bg-indigo-500/10 selection:text-indigo-600">
+				<main className="w-full z-0 relative">
+					<LandingPage />
+				</main>
+				<Footer />
+			</div>
+		</>
 	);
 };
 

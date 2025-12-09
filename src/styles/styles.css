@@ -163,3 +163,70 @@
 	-ms-overflow-style: none;
 	scrollbar-width: none;
 }
+
+/* Landing Page Animations */
+@keyframes shine-move {
+	0% {
+		transform: translateX(-150%) skewX(-20deg);
+	}
+	40%,
+	100% {
+		transform: translateX(400%) skewX(-20deg);
+	}
+}
+
+.animate-shine {
+	animation: shine-move 3.5s infinite linear;
+}
+
+@keyframes beam-border {
+	from {
+		stroke-dashoffset: 100;
+	}
+	to {
+		stroke-dashoffset: 0;
+	}
+}
+
+.animate-beam-border {
+	animation: beam-border 5s linear infinite;
+}
+
+@keyframes beam-aura {
+	0% {
+		stroke-dashoffset: 360;
+		opacity: 0;
+	}
+	10% {
+		opacity: 1;
+	}
+	90% {
+		opacity: 1;
+	}
+	100% {
+		stroke-dashoffset: 0;
+		opacity: 0;
+	}
+}
+
+.animate-beam-aura {
+	animation: beam-aura 2.5s linear infinite;
+}
+
+.animate-beam-reverse-aura {
+	animation: beam-aura 2.5s linear infinite;
+	animation-delay: 1.25s;
+}
+
+@keyframes floating-points {
+	0% {
+		transform: translateY(0);
+	}
+	85% {
+		opacity: 0;
+	}
+	100% {
+		transform: translateY(-55px);
+		opacity: 0;
+	}
+}

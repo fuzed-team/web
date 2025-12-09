@@ -20,7 +20,7 @@ const AnimationContainer = ({
 			className={className}
 			initial={{ opacity: 0, y: reverse ? -20 : 20 }}
 			whileInView={{ opacity: 1, y: 0 }}
-			viewport={{ once: false }}
+			viewport={{ once: true }}
 			transition={{
 				duration: 0.2,
 				delay: delay,

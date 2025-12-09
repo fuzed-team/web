@@ -1,33 +1,41 @@
-import AnimationContainer from "../global/animation-container";
-import { Icons } from "../global/icons";
+import Link from "next/link";
 
 const Footer = () => {
 	return (
-		<footer className="flex flex-col relative items-center justify-center border-t border-border pt-16 pb-8 px-6 lg:px-8 w-full max-w-6xl mx-auto bg-[radial-gradient(35%_128px_at_50%_0%,theme(backgroundColor.white/8%),transparent)]">
-			<div className="absolute top-0 left-1/2 right-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-1.5 bg-foreground rounded-full"></div>
-
-			<div className="grid gap-8 xl:grid-cols-3 xl:gap-8 w-full">
-				<AnimationContainer delay={0.1}>
-					<div className="flex flex-col items-start justify-start md:max-w-[200px]">
-						<div className="flex items-start">
-							<Icons.logo className="w-7 h-7" />
+		<footer className="bg-white border-t border-slate-100 py-10">
+			<div className="max-w-7xl mx-auto px-6">
+				<div className="flex flex-col md:flex-row justify-between items-center gap-6">
+					<div className="flex flex-col md:flex-row items-center gap-4 md:gap-8">
+						<div className="flex items-center gap-2">
+							<div className="w-6 h-6 rounded bg-slate-900 flex items-center justify-center text-white font-bold text-xs">
+								F
+							</div>
+							<span className="font-bold text-slate-900 text-sm">Fuzzed</span>
 						</div>
-						<p className="text-neutral-400 mt-4 text-sm text-start">
-							Find your face match with AI-powered technology.
+						<p className="text-xs text-slate-400">
+							© {new Date().getFullYear()} Fuzzed Inc. All rights reserved.
 						</p>
-						<span className="mt-4 text-neutral-00 text-sm flex items-center">
-							Made with ❤️ for connecting people
-						</span>
 					</div>
-				</AnimationContainer>
-			</div>
-
-			<div className="mt-8 border-t border-border/40 pt-4 md:pt-8 md:flex md:items-center md:justify-between w-full">
-				<AnimationContainer delay={0.6}>
-					<p className="text-sm text-neutral-600 mt-8 md:mt-0">
-						&copy; {new Date().getFullYear()} Fuzed. All rights reserved.
-					</p>
-				</AnimationContainer>
+					<div className="flex items-center gap-6">
+						<Link
+							href="/privacy"
+							className="text-xs text-slate-500 hover:text-slate-900 transition-colors"
+						>
+							Privacy Policy
+						</Link>
+						<Link
+							href="/terms"
+							className="text-xs text-slate-500 hover:text-slate-900 transition-colors"
+						>
+							Terms of Service
+						</Link>
+						<div className="hidden md:block w-px h-4 bg-slate-200" />
+						<div className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100">
+							<div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+							<span className="text-[10px] font-medium">Systems Normal</span>
+						</div>
+					</div>
+				</div>
 			</div>
 		</footer>
 	);
