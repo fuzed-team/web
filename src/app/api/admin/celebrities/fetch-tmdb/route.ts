@@ -76,7 +76,7 @@ export const GET = withAdminSession(async ({ searchParams, supabase }) => {
 		// Calculate start page based on existing count
 		// Each TMDB page has 20 results, so we skip pages we've already fetched
 		const existingCount = dbCount || 0;
-		const startPage = Math.floor(existingCount / 20) + 1;
+		const startPage = Math.ceil(existingCount / 20) + 1;
 
 		const celebrities: {
 			id: number;

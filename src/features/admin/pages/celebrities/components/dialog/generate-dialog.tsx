@@ -10,7 +10,7 @@ import {
 	Trash2,
 } from "lucide-react";
 import Image from "next/image";
-import React, { useState } from "react";
+import { useState } from "react";
 import { TextLoop } from "@/components/motion-primitives/text-loop";
 import { TextShimmer } from "@/components/motion-primitives/text-shimmer";
 import { AnimatedCircularProgressBar } from "@/components/ui/animated-circular-progress-bar";
@@ -35,6 +35,7 @@ interface ProcessingResult {
 	name: string;
 	status: "success" | "error" | "skipped";
 	error?: string;
+	message?: string;
 }
 
 type StepType = "configure" | "preview" | "processing" | "complete";
@@ -105,17 +106,29 @@ export function GenerateDialog() {
 			const celeb = selected[i];
 
 			try {
-				await processCelebrity.mutateAsync({
+				const result = await processCelebrity.mutateAsync({
 					name: celeb.name,
 					bio: celeb.bio,
 					category: celeb.category,
 					gender: celeb.gender === 1 ? "female" : "male",
 					imageUrl: celeb.imageUrl,
 				});
-				setResults((prev) => [
-					...prev,
-					{ name: celeb.name, status: "success" },
-				]);
+
+				if (result.skipped) {
+					setResults((prev) => [
+						...prev,
+						{
+							name: celeb.name,
+							status: "skipped",
+							message: result.message || "Already exists",
+						},
+					]);
+				} else {
+					setResults((prev) => [
+						...prev,
+						{ name: celeb.name, status: "success" },
+					]);
+				}
 			} catch (err: unknown) {
 				const errorMessage =
 					err instanceof Error ? err.message : "Unknown error";
@@ -136,6 +149,7 @@ export function GenerateDialog() {
 		(celebrities.find((_, i) => i === processingIndex - 1)?.name || "...");
 
 	const successCount = results.filter((r) => r.status === "success").length;
+	const skippedCount = results.filter((r) => r.status === "skipped").length;
 	const errorCount = results.filter((r) => r.status === "error").length;
 
 	return (
@@ -156,7 +170,7 @@ export function GenerateDialog() {
 						{step === "processing" &&
 							`Processing ${processingIndex} of ${selectedCount}`}
 						{step === "complete" &&
-							`${successCount} succeeded, ${errorCount} failed`}
+							`${successCount} succeeded, ${skippedCount} skipped, ${errorCount} failed`}
 					</DialogDescription>
 				</DialogHeader>
 
@@ -308,8 +322,8 @@ export function GenerateDialog() {
 											},
 										}}
 									>
-										<span>Extracting facial features</span>
-										<span>and generating embeddings</span>
+										<span>extracting facial features...</span>
+										<span>generating embeddings...</span>
 									</TextLoop>
 								</p>
 							</div>
@@ -331,6 +345,29 @@ export function GenerateDialog() {
 									new celebrities.
 								</p>
 							</div>
+							{skippedCount > 0 && (
+								<div className="w-full max-w-md rounded-lg border bg-yellow-500/5 p-4 mt-4">
+									<p className="text-sm font-medium text-yellow-600 mb-3 flex items-center gap-2">
+										<AlertCircle className="size-4" />
+										{skippedCount} skipped:
+									</p>
+									<ScrollArea className="h-24 pr-4">
+										<div className="space-y-2">
+											{results
+												.filter((r) => r.status === "skipped")
+												.map((r, i) => (
+													<div
+														key={i}
+														className="text-xs text-yellow-600/80 flex gap-2"
+													>
+														<span className="font-medium">{r.name}:</span>
+														<span>{r.message}</span>
+													</div>
+												))}
+										</div>
+									</ScrollArea>
+								</div>
+							)}
 							{errorCount > 0 && (
 								<div className="w-full max-w-md rounded-lg border bg-destructive/5 p-4 mt-4">
 									<p className="text-sm font-medium text-destructive mb-3 flex items-center gap-2">
