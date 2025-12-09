@@ -9,6 +9,7 @@ import {
 	createMutualConnection,
 } from "@/lib/supabase/services/connections";
 import { createAndBroadcastNotification } from "@/lib/supabase/services/notifications";
+import { buildBabyPrompt } from "@/lib/utils/baby-prompt-builder";
 import {
 	checkDailyLimit,
 	incrementDailyUsage,
@@ -80,6 +81,11 @@ export const POST = withSession(async ({ request, supabase, session }) => {
         face_a:faces!matches_face_a_id_fkey (
           id,
           image_path,
+          skin_tone_lab,
+          geometry_ratios,
+          expression,
+          age,
+          gender,
           profile:profiles!faces_profile_id_fkey (
             id,
             name,
@@ -89,6 +95,11 @@ export const POST = withSession(async ({ request, supabase, session }) => {
         face_b:faces!matches_face_b_id_fkey (
           id,
           image_path,
+          skin_tone_lab,
+          geometry_ratios,
+          expression,
+          age,
+          gender,
           profile:profiles!faces_profile_id_fkey (
             id,
             name,
@@ -129,6 +140,9 @@ export const POST = withSession(async ({ request, supabase, session }) => {
 		);
 	}
 
+	// Generate dynamic prompt
+	const dynamicPrompt = buildBabyPrompt(faceA, faceB);
+
 	// Generate baby image with FAL.AI
 	const falResponse = await fetch(`https://fal.run/${env.FAL_BABY_MODEL_ID}`, {
 		method: "POST",
@@ -137,11 +151,12 @@ export const POST = withSession(async ({ request, supabase, session }) => {
 			"Content-Type": "application/json",
 		},
 		body: JSON.stringify({
-			prompt: `A cute baby face that combines features from both parents. Natural lighting, high quality photo, adorable infant.`,
+			prompt: dynamicPrompt,
 			image_urls: [urlA.data.signedUrl, urlB.data.signedUrl], // Use first parent's face as base
 			num_images: 1,
-			guidance_scale: 7.5,
-			num_inference_steps: 50,
+			guidance_scale: 6.5 + Math.random() * 2, // 6.5-8.5 range
+			num_inference_steps: 45 + Math.floor(Math.random() * 10), // 45-55
+			seed: Math.floor(Math.random() * 1000000), // Random seed
 		}),
 	});
 
