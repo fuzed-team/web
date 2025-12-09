@@ -230,3 +230,8 @@
 		opacity: 0;
 	}
 }
+
+.marquee-group:hover .animate-marquee,
+.marquee-group:hover .animate-marquee-reverse {
+	animation-play-state: paused;
+}

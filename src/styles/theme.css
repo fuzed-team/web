@@ -179,6 +179,7 @@
 	--animate-border-beam: border-beam calc(var(--duration) * 1s) infinite linear;
 	--animate-image-glow: image-glow 4s ease-out 0.6s forwards;
 	--animate-marquee: marquee var(--duration) linear infinite;
+	--animate-marquee-reverse: marquee-reverse var(--duration) linear infinite;
 	--animate-flip: flip 6s infinite steps(2, end);
 	--animate-rotate: rotate 3s linear infinite both;
 	--animate-caret-blink: caret-blink 1.25s ease-out infinite;
@@ -293,7 +294,16 @@
 			transform: translateX(0);
 		}
 		to {
-			transform: translateX(calc(-100% - var(--gap)));
+			transform: translateX(calc(-100% - 1.5rem));
+		}
+	}
+
+	@keyframes marquee-reverse {
+		from {
+			transform: translateX(calc(-100% - 1.5rem));
+		}
+		to {
+			transform: translateX(0);
 		}
 	}
 

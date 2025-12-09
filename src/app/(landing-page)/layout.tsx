@@ -4,8 +4,8 @@ interface Props {
 	children: React.ReactNode;
 }
 
-const MarketingLayout = ({ children }: Props) => {
+const LandingPageLayout = ({ children }: Props) => {
 	return <>{children}</>;
 };
 
-export default MarketingLayout;
+export default LandingPageLayout;
