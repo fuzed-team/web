@@ -22,11 +22,11 @@ export function FeaturedSection() {
 	return (
 		<div className="fade-in">
 			<div className="flex items-center justify-between mb-4">
-				<h3 className="text-sm font-medium text-gray-900 dark:text-zinc-200 flex items-center gap-2">
-					<CalendarHeart className="size-4 text-indigo-500" />
+				<h3 className="text-sm font-medium text-foreground flex items-center gap-2">
+					<CalendarHeart className="size-4 text-primary" />
 					Today's Featured Pair
 				</h3>
-				<span className="text-[10px] uppercase tracking-wider text-gray-400 font-medium">
+				<span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
 					Refreshes in {getRefreshTime()}
 				</span>
 			</div>

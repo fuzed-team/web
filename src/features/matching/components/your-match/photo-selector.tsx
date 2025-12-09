@@ -16,6 +16,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { useUser } from "@/features/auth/api/get-me";
 import type { SortByOption } from "@/features/matching/api/get-user-match";
 
 import { cn } from "@/lib/utils";
@@ -51,6 +52,7 @@ export function PhotoSelector({
 	isLoading,
 }: PhotoSelectorProps) {
 	const fileUploadRef = React.useRef<FileUploadRef>(null);
+	const user = useUser();
 	// const { data: userPhotosData, isLoading } = useUserPhotos();
 	const uploads = userPhotos ?? [];
 
@@ -117,6 +119,8 @@ export function PhotoSelector({
 		return <PhotoFilterSkeleton className={className} />;
 	}
 
+	const schoolName = user?.school || "University";
+
 	return (
 		<motion.header
 			initial={{ opacity: 0, y: 20, filter: "blur(5px)" }}
@@ -127,10 +131,9 @@ export function PhotoSelector({
 			<div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-2">
 				<div>
 					<h2 className="md:text-2xl text-xl font-semibold tracking-tight text-foreground">
-						Matches for{" "}
+						Your Daily Matches at{" "}
 						<span className="bg-gradient-to-r bg-clip-text text-transparent from-primary to-purple-600">
-							Portrait #
-							{uploads.findIndex((u: any) => u.id === activePhotoId) + 1}
+							{schoolName}
 						</span>
 					</h2>
 					<p className="text-muted-foreground mt-1">
