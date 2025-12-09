@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
+import { env } from "@/config/env";
 import { withAdminSession } from "@/lib/middleware/with-admin-session";
 
-const TMDB_API_KEY = process.env.TMDB_API_KEY;
+const TMDB_API_KEY = env.TMDB_API_KEY;
 const BASE_URL = "https://api.themoviedb.org/3";
 const IMAGE_BASE = "https://image.tmdb.org/t/p/w500";
 
@@ -52,7 +53,7 @@ function generateShortBio(biography: string, department: string): string {
 	return departmentBios[department] || "Celebrity and public figure";
 }
 
-export const GET = withAdminSession(async ({ searchParams }) => {
+export const GET = withAdminSession(async ({ searchParams, supabase }) => {
 	if (!TMDB_API_KEY) {
 		return NextResponse.json(
 			{ error: "TMDB_API_KEY not configured" },
@@ -63,6 +64,20 @@ export const GET = withAdminSession(async ({ searchParams }) => {
 	const count = Math.min(Number(searchParams.count) || 20, 100);
 
 	try {
+		// Get count of existing celebrities to calculate start page
+		const { count: dbCount, error: countError } = await supabase
+			.from("celebrities")
+			.select("*", { count: "exact", head: true });
+
+		if (countError) {
+			console.error("Error counting celebrities:", countError);
+		}
+
+		// Calculate start page based on existing count
+		// Each TMDB page has 20 results, so we skip pages we've already fetched
+		const existingCount = dbCount || 0;
+		const startPage = Math.floor(existingCount / 20) + 1;
+
 		const celebrities: {
 			id: number;
 			name: string;
@@ -75,8 +90,8 @@ export const GET = withAdminSession(async ({ searchParams }) => {
 		const pagesNeeded = Math.ceil(count / 20);
 
 		for (
-			let page = 1;
-			page <= pagesNeeded && celebrities.length < count;
+			let page = startPage;
+			page < startPage + pagesNeeded && celebrities.length < count;
 			page++
 		) {
 			const response = await fetch(

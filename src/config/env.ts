@@ -19,7 +19,7 @@ export const env = createEnv({
 		// AI Services - FAL.AI
 		FAL_AI_API_KEY: z.string().min(1),
 		FAL_BABY_MODEL_ID: z.string().min(1).default("fal-ai/nano-banana/edit"),
-		// Note: allow_non_edu_emails is now stored in database (system_settings table)
+		TMDB_API_KEY: z.string().min(1),
 	},
 
 	/**
@@ -47,6 +47,7 @@ export const env = createEnv({
 		REPLICATE_MODEL_VERSION: process.env.REPLICATE_MODEL_VERSION,
 		FAL_AI_API_KEY: process.env.FAL_AI_API_KEY,
 		FAL_BABY_MODEL_ID: process.env.FAL_BABY_MODEL_ID,
+		TMDB_API_KEY: process.env.TMDB_API_KEY,
 
 		// Client-side
 		NEXT_PUBLIC_BASE_API_URL: process.env.NEXT_PUBLIC_BASE_API_URL,

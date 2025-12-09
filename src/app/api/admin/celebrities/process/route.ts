@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { STORAGE_BUCKETS } from "@/lib/constants/constant";
 import { withAdminSession } from "@/lib/middleware/with-admin-session";
 import { analyzeAdvancedFace } from "@/lib/services/ai-service";
+import { sanitizeFilename } from "@/lib/utils/sanitize";
 
 interface ProcessRequest {
 	name: string;
@@ -79,7 +80,7 @@ export const POST = withAdminSession(async ({ request, supabase }) => {
 		}
 
 		// 4. Upload to Supabase Storage
-		const filename = `${name.toLowerCase().replace(/\s+/g, "-")}.jpg`;
+		const filename = `${sanitizeFilename(name)}.jpg`;
 		const storagePath = `celebrities/${category}/${filename}`;
 
 		const { error: uploadError } = await supabase.storage

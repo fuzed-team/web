@@ -5,7 +5,7 @@ import {
 	AlertCircle,
 	CheckCircle2,
 	Download,
-	Loader2,
+	Loader,
 	Sparkles,
 	Trash2,
 } from "lucide-react";
@@ -135,7 +135,7 @@ export function GenerateDialog() {
 
 	return (
 		<Dialog open={isOpen} onOpenChange={(o) => !o && handleClose()}>
-			<DialogContent className="sm:max-w-7xl max-h-[90vh] flex flex-col p-0 gap-0 overflow-hidden">
+			<DialogContent className="sm:max-w-7xl w-fit max-h-[90vh] flex flex-col p-0 gap-0 overflow-hidden">
 				<DialogHeader className="p-6 pb-4 border-b">
 					<DialogTitle>
 						{step === "configure" && "Generate New Celebrities"}
@@ -183,7 +183,7 @@ export function GenerateDialog() {
 					)}
 
 					{step === "preview" && (
-						<>
+						<div className="w-[1268px]">
 							<div className="flex items-center justify-between px-6 py-3 border-b bg-muted/5 sticky top-0 z-10 backdrop-blur-sm">
 								<div className="flex items-center gap-2">
 									<Checkbox
@@ -249,7 +249,7 @@ export function GenerateDialog() {
 									))}
 								</div>
 							</ScrollArea>
-						</>
+						</div>
 					)}
 
 					{step === "processing" && (
@@ -276,7 +276,7 @@ export function GenerateDialog() {
 							<div className="flex flex-col items-center gap-4">
 								<div className="relative">
 									<div className="absolute inset-0 bg-primary/20 blur-xl rounded-full animate-pulse" />
-									<Loader2 className="size-12 animate-spin text-primary relative z-10" />
+									<Loader className="size-12 animate-spin text-primary relative z-10" />
 								</div>
 								<p className="text-xs text-muted-foreground text-center max-w-[200px]">
 									Extracting facial features and generating embeddings...
@@ -336,12 +336,12 @@ export function GenerateDialog() {
 							<Button onClick={handleFetch} disabled={isLoading}>
 								{isLoading ? (
 									<>
-										<Loader2 className="size-4 mr-2 animate-spin" />
+										<Loader className="size-4 animate-spin" />
 										Fetching...
 									</>
 								) : (
 									<>
-										<Download className="size-4 mr-2" />
+										<Download className="size-4" />
 										Fetch from TMDB
 									</>
 								)}
@@ -358,7 +358,7 @@ export function GenerateDialog() {
 								disabled={selectedCount === 0}
 								className="min-w-[200px]"
 							>
-								<Sparkles className="size-4 mr-2" />
+								<Sparkles className="size-4" />
 								Process {selectedCount} Celebrities
 							</Button>
 						</>

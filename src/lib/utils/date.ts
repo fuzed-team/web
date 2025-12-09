@@ -16,7 +16,7 @@ interface FormatDateOptions {
 }
 
 export const formatDate = (
-	date: string | Date,
+	date: string | Date | null,
 	options?: FormatDateOptions,
 ) => {
 	if (!date) return "";
@@ -44,4 +44,11 @@ export const formatDateISO = (date: string | Date) => {
 
 export const formatDateISOFromUnix = (date: string) => {
 	return new Date(parseInt(date, 10)).toISOString();
+};
+
+export const getStartOfTodayUTC = () => {
+	const now = new Date();
+	return new Date(
+		Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
+	);
 };

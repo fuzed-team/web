@@ -13,8 +13,30 @@ import {
 	celebrityCategoryOptions,
 	celebrityGenderOptions,
 } from "../../constants/celebrity-options";
+import { useCelebrity } from "../../context/celebrity-context";
 import { getCelebrityImageUrl } from "../../utils/celebrity-helpers";
 import { CelebritiesTableRowActions } from "./celebrity-table-row-actions";
+
+// Standalone component to use hooks within table cell
+function NameCell({
+	row,
+}: {
+	row: { original: CelebrityApi; getValue: (id: string) => string };
+}) {
+	const { setOpen, setCurrentRow } = useCelebrity();
+	return (
+		<button
+			type="button"
+			className="text-left hover:underline cursor-pointer max-w-36"
+			onClick={() => {
+				setCurrentRow(row.original);
+				setOpen("view");
+			}}
+		>
+			<LongText className="max-w-36">{row.getValue("name")}</LongText>
+		</button>
+	);
+}
 
 export const checkboxClass =
 	"sticky md:table-cell left-0 z-10 rounded-tl bg-background transition-colors duration-200 group-hover/row:bg-muted group-data-[state=selected]/row:bg-muted w-12";
@@ -78,9 +100,7 @@ export const getCelebrityColumns = ({
 			header: ({ column }) => (
 				<DataTableColumnHeader column={column} label="Name" />
 			),
-			cell: ({ row }) => (
-				<LongText className="max-w-36">{row.getValue("name")}</LongText>
-			),
+			cell: NameCell,
 			meta: {
 				label: "Name",
 				placeholder: "Search celebrities...",
