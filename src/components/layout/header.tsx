@@ -10,6 +10,7 @@ import { useUser } from "@/features/auth/api/get-me";
 import { SignOutButton } from "@/features/auth/components/signout-button";
 import { SignUpButton } from "@/features/auth/components/signup-button";
 import { NotificationCenter } from "@/features/notifications/components/notification-center";
+import { QuotaDisplay } from "@/features/quotas/components/quota-display";
 import { ProfileDropdown } from "../profile-dropdown";
 import { Separator } from "../ui/separator";
 
@@ -257,6 +258,9 @@ export function Header({ loading = false }: { loading?: boolean }) {
 													</Link>
 												</motion.div>
 											))}
+										</div>
+										<div className="px-4 pb-4">
+											<QuotaDisplay className="mt-0 pt-0 border-t-0" />
 										</div>
 										<Separator />
 									</>

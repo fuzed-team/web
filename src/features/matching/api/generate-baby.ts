@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { getUserQuotaQueryOptions } from "@/features/quotas/api/get-user-quota";
 import api from "@/lib/api-client";
 import type { MutationConfig } from "@/lib/react-query";
 import type { BabyApi } from "@/types/api";
@@ -23,6 +24,9 @@ export const useGenerateBaby = ({
 		onSuccess: (data, matchId, ...args) => {
 			queryClient.setQueryData(["baby", "match", matchId], data);
 			queryClient.invalidateQueries({ queryKey: ["baby", "list"] });
+			queryClient.invalidateQueries({
+				queryKey: getUserQuotaQueryOptions().queryKey,
+			});
 			onSuccess?.(data, matchId, ...args);
 		},
 		onError: (error: any, ...args) => {

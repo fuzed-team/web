@@ -1,6 +1,7 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { useMe } from "@/features/auth/api/get-me";
 import { useUserPhotos } from "@/features/matching/api/get-user-photos";
+import { QuotaDisplay } from "@/features/quotas/components/quota-display";
 import { cn } from "@/lib/utils";
 import { BlurImage } from "../blur-image";
 
@@ -46,6 +47,7 @@ export function UserPhoto({ className }: UserPhotoProps) {
 					)}
 				</div>
 			</div>
+			<QuotaDisplay />
 			{/* <button
 				type="button"
 				className="w-full mt-4 flex items-center justify-center gap-2 py-2 rounded-md border border-dashed border-sidebar-border text-xs font-medium text-muted-foreground hover:bg-sidebar-accent transition-colors"

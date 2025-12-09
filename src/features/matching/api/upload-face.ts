@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { z } from "zod";
 import { getMeQueryOptions } from "@/features/auth/api/get-me";
+import { getUserQuotaQueryOptions } from "@/features/quotas/api/get-user-quota";
 import api from "@/lib/api-client";
 import type { MutationConfig } from "@/lib/react-query";
 import type { UserApi, UserPhotosResponse } from "@/types/api";
@@ -65,6 +66,9 @@ export const useUploadFace = ({
 					};
 				},
 			);
+			queryClient.invalidateQueries({
+				queryKey: getUserQuotaQueryOptions().queryKey,
+			});
 			onSuccess?.(data, ...args);
 			toast.success("Upload face success");
 		},
