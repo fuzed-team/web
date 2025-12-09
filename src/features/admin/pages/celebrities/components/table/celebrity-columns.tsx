@@ -1,7 +1,7 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
-import { CalendarIcon, CircleDashed, Star, Text } from "lucide-react";
+import { CalendarIcon, Circle, CircleDashed, Star, Text } from "lucide-react";
 import Image from "next/image";
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
 import LongText from "@/components/long-text";
@@ -201,8 +201,25 @@ export const getCelebrityColumns = ({
 				}
 				return <span className="text-muted-foreground text-sm">-</span>;
 			},
+			filterFn: (row, id, value) => {
+				return value.includes(String(row.getValue(id)));
+			},
+			enableColumnFilter: true,
 			meta: {
 				label: "Status",
+				variant: "select",
+				options: [
+					{
+						label: "Featured",
+						value: "true",
+						icon: Star,
+					},
+					{
+						label: "Standard",
+						value: "false",
+						icon: Circle,
+					},
+				],
 			},
 		},
 		{

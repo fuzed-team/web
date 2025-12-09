@@ -31,6 +31,7 @@ export const searchParamsParsers = {
 		[],
 	),
 	gender: parseAsArrayOf(parseAsStringEnum(CELEBRITY_GENDERS)).withDefault([]),
+	is_featured: parseAsString.withDefault(""),
 };
 
 export function useCelebritiesSearchParams() {

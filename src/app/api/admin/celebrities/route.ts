@@ -11,6 +11,7 @@ const querySchema = z.object({
 	name: z.string().optional(),
 	category: z.string().optional(),
 	gender: z.string().optional(),
+	is_featured: z.string().optional(),
 	sort: z.string().optional(),
 });
 
@@ -36,7 +37,8 @@ export const GET = withAdminSession(async ({ request, supabase }) => {
 			);
 		}
 
-		const { page, limit, name, category, gender, sort } = validation.data;
+		const { page, limit, name, category, gender, sort, is_featured } =
+			validation.data;
 
 		// Calculate pagination
 		const from = (page - 1) * limit;
@@ -88,6 +90,9 @@ export const GET = withAdminSession(async ({ request, supabase }) => {
 			} else {
 				query = query.eq("gender", gender);
 			}
+		}
+		if (is_featured) {
+			query = query.eq("is_featured", is_featured === "true");
 		}
 
 		// Apply sort and pagination

@@ -12,7 +12,7 @@ export type CelebritiesInput = PaginationInput & {
 	name?: string;
 	category?: string[];
 	gender?: string[];
-	isFeatured?: boolean;
+	is_featured?: boolean;
 };
 
 export const getCelebritiesApi = (
