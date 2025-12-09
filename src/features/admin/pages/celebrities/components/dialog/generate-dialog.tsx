@@ -11,7 +11,9 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import React, { useState } from "react";
-
+import { TextLoop } from "@/components/motion-primitives/text-loop";
+import { TextShimmer } from "@/components/motion-primitives/text-shimmer";
+import { AnimatedCircularProgressBar } from "@/components/ui/animated-circular-progress-bar";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -24,7 +26,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { type TMDBCelebrity, useFetchTMDB } from "../../api/fetch-tmdb";
 import { useProcessCelebrity } from "../../api/process-celebrity";
@@ -130,17 +131,21 @@ export function GenerateDialog() {
 		queryClient.invalidateQueries({ queryKey: ["admin-featured-celebrities"] });
 	};
 
+	const getProcessingName = () =>
+		"Processing " +
+		(celebrities.find((_, i) => i === processingIndex - 1)?.name || "...");
+
 	const successCount = results.filter((r) => r.status === "success").length;
 	const errorCount = results.filter((r) => r.status === "error").length;
 
 	return (
 		<Dialog open={isOpen} onOpenChange={(o) => !o && handleClose()}>
-			<DialogContent className="sm:max-w-7xl w-fit max-h-[90vh] flex flex-col p-0 gap-0 overflow-hidden">
+			<DialogContent className="sm:max-w-7xl min-w-lg w-fit max-h-[90vh] flex flex-col p-0 gap-0 overflow-hidden">
 				<DialogHeader className="p-6 pb-4 border-b">
 					<DialogTitle>
 						{step === "configure" && "Generate New Celebrities"}
 						{step === "preview" && "Preview & Select"}
-						{step === "processing" && "Processing..."}
+						{step === "processing" && "Processing"}
 						{step === "complete" && "Complete!"}
 					</DialogTitle>
 					<DialogDescription>
@@ -149,7 +154,7 @@ export function GenerateDialog() {
 						{step === "preview" &&
 							`${selectedCount} of ${celebrities.length} celebrities selected`}
 						{step === "processing" &&
-							`Processing ${processingIndex} of ${selectedCount}...`}
+							`Processing ${processingIndex} of ${selectedCount}`}
 						{step === "complete" &&
 							`${successCount} succeeded, ${errorCount} failed`}
 					</DialogDescription>
@@ -166,7 +171,12 @@ export function GenerateDialog() {
 									min={1}
 									max={100}
 									value={count}
-									onChange={(e) => setCount(Number(e.target.value))}
+									onChange={(e) => {
+										const val = Number(e.target.value);
+										if (val > 100) setCount(100);
+										else if (val < 0) setCount(1);
+										else setCount(val);
+									}}
 								/>
 								<p className="text-xs text-muted-foreground">
 									Fetches popular celebrities from TMDB. Max 100.
@@ -253,33 +263,54 @@ export function GenerateDialog() {
 					)}
 
 					{step === "processing" && (
-						<div className="p-8 space-y-8 flex flex-col items-center justify-center h-full min-h-[300px]">
-							<div className="space-y-3 w-full max-w-sm text-center">
-								<div className="flex justify-between text-xs font-medium text-muted-foreground mb-1">
-									<span>Progress</span>
-									<span>
-										{Math.round((processingIndex / selectedCount) * 100)}%
-									</span>
-								</div>
-								<Progress
-									value={(processingIndex / selectedCount) * 100}
-									className="h-2"
-								/>
-								<p className="text-sm text-muted-foreground">
-									Processing{" "}
-									<span className="font-semibold text-foreground">
-										{celebrities.find((_, i) => i === processingIndex - 1)
-											?.name || "..."}
-									</span>
-								</p>
-							</div>
-							<div className="flex flex-col items-center gap-4">
-								<div className="relative">
-									<div className="absolute inset-0 bg-primary/20 blur-xl rounded-full animate-pulse" />
-									<Loader className="size-12 animate-spin text-primary relative z-10" />
-								</div>
-								<p className="text-xs text-muted-foreground text-center max-w-[200px]">
-									Extracting facial features and generating embeddings...
+						<div className="p-8 flex flex-col items-center justify-center h-full min-h-[300px] gap-6">
+							<AnimatedCircularProgressBar
+								max={selectedCount}
+								min={0}
+								value={processingIndex}
+								gaugePrimaryColor="var(--primary)"
+								gaugeSecondaryColor="var(--muted)"
+							/>
+							<div className="text-center space-y-2">
+								<TextShimmer
+									className="text-sm text-muted-foreground"
+									duration={1}
+								>
+									{getProcessingName()}
+								</TextShimmer>
+								<p className="text-xs text-muted-foreground">
+									<TextLoop
+										className="overflow-y-clip"
+										transition={{
+											type: "spring",
+											stiffness: 900,
+											damping: 80,
+											mass: 10,
+										}}
+										variants={{
+											initial: {
+												y: 20,
+												rotateX: 90,
+												opacity: 0,
+												filter: "blur(4px)",
+											},
+											animate: {
+												y: 0,
+												rotateX: 0,
+												opacity: 1,
+												filter: "blur(0px)",
+											},
+											exit: {
+												y: -20,
+												rotateX: -90,
+												opacity: 0,
+												filter: "blur(4px)",
+											},
+										}}
+									>
+										<span>Extracting facial features</span>
+										<span>and generating embeddings</span>
+									</TextLoop>
 								</p>
 							</div>
 						</div>
