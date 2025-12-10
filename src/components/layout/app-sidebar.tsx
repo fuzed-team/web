@@ -1,6 +1,8 @@
 "use client";
 
-import { Heart, LogOut, Settings } from "lucide-react";
+import { LogOut, Settings } from "lucide-react";
+import Link from "next/link";
+import Logo from "@/assets/logo";
 import confirm from "@/components/confirm";
 import {
 	Sidebar,
@@ -12,9 +14,7 @@ import {
 	SidebarMenuItem,
 	SidebarRail,
 } from "@/components/ui/sidebar";
-
 import { NavGroup } from "@/features/admin/components/layout/nav-group";
-
 import { useLayout } from "@/features/admin/context/layout-provider";
 import { useUser } from "@/features/auth/api/get-me";
 import { useSignOut } from "@/features/auth/api/sign-out";
@@ -71,14 +71,15 @@ export function AppSidebar() {
 		<Sidebar collapsible={collapsible} variant={variant}>
 			<SidebarHeader className="p-4">
 				{/* Logo */}
-				<div className="flex items-center gap-2">
-					<div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary shadow-lg">
-						<Heart className="h-5 w-5 text-primary-foreground" />
+				<Link href="/" className="flex items-center">
+					<Logo className="size-12" />
+					<div className="flex flex-col relative -ml-2">
+						<span className="text-foreground text-lg font-bold">uzed</span>
+						<span className="text-muted-foreground -mt-1 text-xs leading-none">
+							Match. Generate. Discover.
+						</span>
 					</div>
-					<h1 className="text-xl font-semibold tracking-tight text-sidebar-foreground">
-						Fuzed
-					</h1>
-				</div>
+				</Link>
 
 				<UserPhoto className="mt-6" />
 			</SidebarHeader>

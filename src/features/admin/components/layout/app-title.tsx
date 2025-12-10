@@ -1,5 +1,6 @@
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
+import Logo from "@/assets/logo";
 import { Button } from "@/components/ui/button";
 import {
 	SidebarMenu,
@@ -23,10 +24,17 @@ export function AppTitle() {
 						<Link
 							href="/"
 							onClick={() => setOpenMobile(false)}
-							className="grid flex-1 text-start text-sm leading-tight"
+							className="flex-1 flex items-center text-sm"
 						>
-							<span className="truncate font-bold">Fuzzed Admin</span>
-							<span className="truncate text-xs">Admin Panel</span>
+							<Logo className="size-12 -ml-2" />
+							<div className="flex flex-col relative -ml-2">
+								<span className="truncate text-foreground text-lg font-bold">
+									uzed
+								</span>
+								<span className="truncate text-muted-foreground -mt-1 text-xs leading-none">
+									Admin Panel
+								</span>
+							</div>
 						</Link>
 						<ToggleSidebar />
 					</div>

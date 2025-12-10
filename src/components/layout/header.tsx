@@ -4,6 +4,7 @@ import { AnimatePresence, easeInOut, motion } from "framer-motion";
 import { Heart, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useContext, useEffect, useState } from "react";
+import Logo from "@/assets/logo";
 import { ThemeSwitch } from "@/features/admin/components/theme-switch";
 import { LayoutContext } from "@/features/admin/context/layout-provider";
 import { useUser } from "@/features/auth/api/get-me";
@@ -120,18 +121,13 @@ export function Header({ loading = false }: { loading?: boolean }) {
 							whileHover={{ scale: 1.02 }}
 							transition={{ type: "spring", stiffness: 400, damping: 25 }}
 						>
-							<Link href="/" className="flex items-center space-x-3">
-								<div className="relative">
-									<div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary shadow-lg">
-										<Heart className="h-5 w-5 text-primary-foreground" />
-									</div>
-									<div className="absolute -top-1 -right-1 h-3 w-3 animate-pulse rounded-full bg-green-400"></div>
-								</div>
-								<div className="flex flex-col">
+							<Link href="/" className="flex items-center">
+								<Logo className="size-12" />
+								<div className="flex flex-col relative -ml-2">
 									<span className="text-foreground text-lg font-bold">
-										Fuzed
+										uzed
 									</span>
-									<span className="text-muted-foreground -mt-1 text-xs">
+									<span className="text-muted-foreground -mt-1 text-xs leading-none">
 										Match. Generate. Discover.
 									</span>
 								</div>
