@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { api } from "@/lib/api-client";
+import api from "@/lib/api-client";
 
 export interface TMDBCelebrity {
 	id: number;

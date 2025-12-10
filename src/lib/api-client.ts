@@ -82,7 +82,7 @@ async function fetchApi<T>(
 	return response.json();
 }
 
-export const api = {
+const api = {
 	get<T>(url: string, options?: RequestOptions): Promise<T> {
 		return fetchApi<T>(url, { ...options, method: "GET" });
 	},

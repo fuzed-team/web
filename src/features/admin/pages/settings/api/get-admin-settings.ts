@@ -1,5 +1,5 @@
 import { queryOptions, useQuery } from "@tanstack/react-query";
-import { api } from "@/lib/api-client";
+import api from "@/lib/api-client";
 import type { QueryConfig } from "@/lib/react-query";
 
 /**

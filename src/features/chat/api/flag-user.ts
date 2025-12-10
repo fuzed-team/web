@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { z } from "zod";
-import { api } from "@/lib/api-client";
+import api from "@/lib/api-client";
 import type { MutationConfig } from "@/lib/react-query";
 
 export const flagUserSchema = z.object({

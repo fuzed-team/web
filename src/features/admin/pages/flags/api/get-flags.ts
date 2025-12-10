@@ -1,10 +1,5 @@
-import {
-	queryOptions,
-	useInfiniteQuery,
-	useQuery,
-} from "@tanstack/react-query";
-import { api } from "@/lib/api-client";
-import { PAGINATION } from "@/lib/constants/constant";
+import { queryOptions, useQuery } from "@tanstack/react-query";
+import api from "@/lib/api-client";
 import type { QueryConfig } from "@/lib/react-query";
 import type { UserFlag } from "@/types/api";
 

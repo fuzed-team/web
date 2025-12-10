@@ -4,7 +4,7 @@ import {
 	useQuery,
 } from "@tanstack/react-query";
 import qs from "qs";
-import { api } from "@/lib/api-client";
+import api from "@/lib/api-client";
 import { PAGINATION } from "@/lib/constants/constant";
 import type { QueryConfig } from "@/lib/react-query";
 import type { UserApi, UserRole, UserStatus } from "@/types/api";
