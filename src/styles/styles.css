@@ -13,7 +13,7 @@
 	}
 
 	body {
-		@apply bg-background text-foreground min-h-svh w-full;
+		@apply bg-background text-foreground font-sans antialiased min-h-svh w-full;
 		font-feature-settings:
 			"rlig" 1,
 			"calt" 1;

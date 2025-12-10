@@ -1,5 +1,6 @@
 import { Toaster } from "@/components/ui/sonner";
 import { getMeQueryOptions } from "@/features/auth/api/get-me";
+import { cn } from "@/lib/utils";
 import "@/styles/styles.css";
 import {
 	dehydrate,
@@ -7,6 +8,7 @@ import {
 	QueryClient,
 } from "@tanstack/react-query";
 import type { Metadata, Viewport } from "next";
+import { Inter, JetBrains_Mono, Merriweather } from "next/font/google";
 import { Providers } from "./providers";
 
 export const metadata: Metadata = {
@@ -23,6 +25,22 @@ export const viewport: Viewport = {
 	themeColor: "#000000",
 };
 
+const fontSans = Inter({
+	subsets: ["latin"],
+	variable: "--font-sans",
+});
+
+const fontSerif = Merriweather({
+	subsets: ["latin"],
+	weight: ["300", "400", "700", "900"],
+	variable: "--font-serif",
+});
+
+const fontMono = JetBrains_Mono({
+	subsets: ["latin"],
+	variable: "--font-mono",
+});
+
 export default async function RootLayout({
 	children,
 }: {
@@ -36,7 +54,10 @@ export default async function RootLayout({
 
 	return (
 		<html lang="en" suppressHydrationWarning>
-			<body suppressHydrationWarning>
+			<body
+				suppressHydrationWarning
+				className={cn(fontSans.variable, fontSerif.variable, fontMono.variable)}
+			>
 				<Providers>
 					<HydrationBoundary state={dehydratedState}>
 						{children}
