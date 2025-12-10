@@ -3,8 +3,10 @@
   style="
     margin: 0;
     padding: 0;
-    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, sans-serif;
-    background-color: #f5f5f5;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+      sans-serif;
+    background-color: #f8fafc;
+    color: #0f172a;
   "
 >
   <div
@@ -14,25 +16,36 @@
       background-color: #ffffff;
       border-radius: 16px;
       overflow: hidden;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+        0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      border: 1px solid #f1f5f9;
     "
   >
     <!-- Header -->
     <div
       style="
-        background: #f43f5e;
-        padding: 40px 30px;
+        background: linear-gradient(135deg, #8b5cf6 0%, #d946ef 100%);
+        padding: 48px 30px;
         text-align: center;
       "
     >
-      <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700">
-        🎓 AI Matching
+      <h1
+        style="
+          margin: 0;
+          color: #ffffff;
+          font-size: 28px;
+          font-weight: 700;
+          letter-spacing: -0.025em;
+        "
+      >
+        🎓 Fuzed
       </h1>
       <p
         style="
           margin: 10px 0 0 0;
           color: rgba(255, 255, 255, 0.9);
           font-size: 16px;
+          font-weight: 500;
         "
       >
         Your Campus Connection Platform
@@ -40,13 +53,14 @@
     </div>
 
     <!-- Content -->
-    <div style="padding: 40px 30px">
+    <div style="padding: 40px 40px 30px 40px">
       <h2
         style="
           margin: 0 0 20px 0;
-          color: #1a1a1a;
+          color: #1e293b;
           font-size: 24px;
-          font-weight: 600;
+          font-weight: 700;
+          letter-spacing: -0.025em;
         "
       >
         Welcome back! 👋
@@ -54,8 +68,8 @@
 
       <p
         style="
-          margin: 0 0 20px 0;
-          color: #4a5568;
+          margin: 0 0 24px 0;
+          color: #475569;
           font-size: 16px;
           line-height: 1.6;
         "
@@ -65,41 +79,51 @@
       </p>
 
       <!-- Button -->
-      <div style="text-align: center; margin: 30px 0">
+      <div style="text-align: center; margin: 32px 0">
         <a
           href="{{ .ConfirmationURL }}"
           style="
             display: inline-block;
             padding: 16px 40px;
-            background: #f43f5e;
+            background-color: #7c3aed;
+            background-image: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
             color: #ffffff;
             text-decoration: none;
-            border-radius: 8px;
+            border-radius: 12px;
             font-weight: 600;
             font-size: 16px;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 6px -1px rgba(124, 58, 237, 0.3);
+            transition: all 0.2s ease;
           "
         >
           Sign In to Your Account
         </a>
       </div>
 
-      <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 30px 0" />
+      <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 32px 0" />
 
       <!-- Alternative Link -->
-      <p style="margin: 20px 0 10px 0; color: #718096; font-size: 14px">
+      <p
+        style="
+          margin: 20px 0 10px 0;
+          color: #64748b;
+          font-size: 14px;
+          font-weight: 500;
+        "
+      >
         Button not working? Copy and paste this link:
       </p>
       <p
         style="
           margin: 0;
-          padding: 12px;
-          background-color: #f7fafc;
-          border-radius: 6px;
+          padding: 12px 16px;
+          background-color: #f1f5f9;
+          border-radius: 8px;
           word-break: break-all;
           font-size: 13px;
-          color: #4a5568;
-          font-family: monospace;
+          color: #64748b;
+          font-family: 'JetBrains Mono', monospace;
+          line-height: 1.5;
         "
       >
         {{ .ConfirmationURL }}
@@ -109,12 +133,12 @@
     <!-- Security Notice -->
     <div
       style="
-        background-color: #fef3c7;
-        padding: 20px 30px;
-        border-top: 2px solid #fbbf24;
+        background-color: #fffbeb;
+        padding: 20px 40px;
+        border-top: 1px solid #fcd34d;
       "
     >
-      <p style="margin: 0; color: #92400e; font-size: 14px; line-height: 1.5">
+      <p style="margin: 0; color: #b45309; font-size: 14px; line-height: 1.5">
         🔒 <strong>Security tip:</strong> Never share this link with anyone.
         We'll never ask for your password via email.
       </p>
@@ -123,24 +147,24 @@
     <!-- Footer -->
     <div
       style="
-        background-color: #f7fafc;
+        background-color: #f8fafc;
         padding: 30px;
         text-align: center;
         border-top: 1px solid #e2e8f0;
       "
     >
-      <p style="margin: 0 0 10px 0; color: #718096; font-size: 14px">
+      <p style="margin: 0 0 10px 0; color: #64748b; font-size: 14px">
         Didn't request this link? You can safely ignore this email.
       </p>
-      <p style="margin: 0; color: #a0aec0; font-size: 12px">
+      <p style="margin: 0; color: #94a3b8; font-size: 12px">
         © 2025 AI Matching Platform. Made for students, by students.
       </p>
     </div>
   </div>
 
   <!-- Email Address -->
-  <div style="max-width: 600px; margin: 20px auto; text-align: center">
-    <p style="margin: 0; color: #a0aec0; font-size: 12px">
+  <div style="max-width: 600px; margin: 24px auto; text-align: center">
+    <p style="margin: 0; color: #94a3b8; font-size: 12px">
       This email was sent to {{ .Email }}
     </p>
   </div>
