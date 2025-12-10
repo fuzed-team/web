@@ -1,10 +1,10 @@
+import type React from "react";
+
 export default function Logo(props: React.SVGProps<SVGSVGElement>) {
 	return (
 		<svg
 			version="1.0"
 			xmlns="http://www.w3.org/2000/svg"
-			width="2368.000000pt"
-			height="2368.000000pt"
 			viewBox="0 0 2368.000000 2368.000000"
 			preserveAspectRatio="xMidYMid meet"
 			{...props}
