@@ -875,7 +875,7 @@ The following PostgreSQL extensions are installed:
 - `20251031021655` - Enabled `pg_net` extension for HTTP requests
 
 **Face Processing:**
-- `20251031012103` - Removed Qdrant point_id from faces (switched to direct embedding storage)
+- `20251031012103` - Migrated to direct embedding storage with pgvector
 - `20251106032110` - Added advanced face attributes (age, gender, landmarks, quality scores, etc.)
 - `20251106032145` - Advanced matching algorithm with attribute-aware scoring
 

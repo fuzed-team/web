@@ -29,7 +29,7 @@ Welcome to the AI Face Matching Application (Fuzed) documentation. This folder c
 
 - **[Database Schema](./system/database_schema.md)**
   - PostgreSQL schema (Supabase)
-  - Qdrant vector database structure
+  - Vector embeddings with pgvector
   - Entity relationships & indexes
   - Data flow examples
   - Query optimization strategies
@@ -573,7 +573,6 @@ const { setUser } = useAuthActions();  // Actions
 - [TanStack Query Docs](https://tanstack.com/query)
 - [Zustand Docs](https://zustand-demo.pmnd.rs/)
 - [Supabase Docs](https://supabase.com/docs)
-- [Qdrant Docs](https://qdrant.tech/documentation/)
 - [InsightFace Docs](https://insightface.ai/)
 
 ### Project Links
