@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Clock, Sparkles } from "lucide-react";
+import { Clock } from "lucide-react";
 import { useEffect, useState } from "react";
 import { BlurImage } from "@/components/blur-image";
 import {
@@ -57,7 +57,21 @@ export function MatchCard({
 				delay: 0.1 + (index % 3) * 0.1,
 				ease: [0.16, 1, 0.3, 1],
 			}}
-			className="group bg-card border border-border rounded-2xl p-4 shadow-sm hover:shadow-xl dark:hover:border-gray-700 hover:border-gray-300 transition-all duration-300 flex flex-col h-full"
+			className="group bg-card border border-border rounded-2xl p-4 shadow-sm hover:shadow-xl dark:hover:border-gray-700 hover:border-gray-300 transition-all duration-300 flex flex-col h-full cursor-pointer"
+			onClick={() => {
+				const currentIdx = current > 0 ? current - 1 : 0;
+				onOpen(
+					{
+						user1: { name: match.me.name, photo: match.me.image },
+						user2: {
+							name: match.other.name,
+							photo: match.matches[currentIdx].image,
+						},
+						matchPercentage: match.matches[currentIdx].matchPercentage,
+					},
+					match.matches[currentIdx].id,
+				);
+			}}
 		>
 			{/* Carousel */}
 			<div className="relative mb-3">
@@ -73,9 +87,6 @@ export function MatchCard({
 										width={248}
 										height={310}
 									/>
-									<div className="absolute top-2 right-2 bg-background/80 backdrop-blur-md px-2 py-1 rounded-md text-xs font-bold shadow-sm text-primary border border-border">
-										{item.matchPercentage}%
-									</div>
 								</div>
 							</CarouselItem>
 						))}
@@ -83,8 +94,14 @@ export function MatchCard({
 					{/* Conditionally render navigation if more than 1 image */}
 					{allMatchImages.length > 1 && (
 						<>
-							<CarouselPrevious className="left-2 bg-background/50 hover:bg-background border-none backdrop-blur-sm h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-0" />
-							<CarouselNext className="right-2 bg-background/50 hover:bg-background border-none backdrop-blur-sm h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-0" />
+							<CarouselPrevious
+								className="left-2 bg-background/50 hover:bg-background border-none backdrop-blur-sm h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-0"
+								onClick={(e) => e.stopPropagation()}
+							/>
+							<CarouselNext
+								className="right-2 bg-background/50 hover:bg-background border-none backdrop-blur-sm h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-0"
+								onClick={(e) => e.stopPropagation()}
+							/>
 							<div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1.5 z-10">
 								{Array.from({ length: count }).map((_, idx) => (
 									<div
@@ -102,7 +119,7 @@ export function MatchCard({
 				</Carousel>
 			</div>
 
-			<div className="mb-4">
+			<div className="mb-0">
 				<h4 className="text-lg font-semibold text-card-foreground leading-tight">
 					{match.other.name}
 				</h4>
@@ -117,29 +134,6 @@ export function MatchCard({
 						</span>
 					)}
 				</div>
-			</div>
-
-			{/* Generate Baby Button */}
-			<div className="mt-auto space-y-2">
-				<button
-					type="button"
-					className="w-full py-2 rounded-lg bg-gradient-to-r dark:from-primary/30 dark:to-primary/30 from-primary/10 to-primary/10 text-primary dark:text-primary/90 border border-primary/20 dark:border-primary/50 text-xs font-medium flex items-center justify-center gap-2 hover:brightness-95 transition-all"
-					onClick={() => {
-						onOpen(
-							{
-								user1: { name: match.me.name, photo: match.me.image },
-								user2: {
-									name: match.other.name,
-									photo: match.matches[current - 1].image,
-								},
-							},
-							match.matches[current - 1].id,
-						);
-					}}
-				>
-					<Sparkles className="size-4" />
-					Generate Baby
-				</button>
 			</div>
 		</motion.div>
 	);

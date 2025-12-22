@@ -119,8 +119,6 @@ export function PhotoSelector({
 		return <PhotoFilterSkeleton className={className} />;
 	}
 
-	const schoolName = user?.school || "University";
-
 	return (
 		<motion.header
 			initial={{ opacity: 0, y: 20, filter: "blur(5px)" }}
@@ -130,12 +128,6 @@ export function PhotoSelector({
 		>
 			<div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-2">
 				<div>
-					<h2 className="md:text-2xl text-xl font-semibold tracking-tight text-foreground">
-						Your Daily Matches at{" "}
-						<span className="bg-gradient-to-r bg-clip-text text-transparent from-primary to-purple-600">
-							{schoolName}
-						</span>
-					</h2>
 					<p className="text-muted-foreground mt-1">
 						Select a photo below to see who matches with it.
 					</p>

@@ -12,7 +12,7 @@ export const PhotoFilterSkeleton = ({
 		<div className={cn("mb-6", className)}>
 			<div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-2">
 				<div className="space-y-2">
-					<Skeleton className="h-8 w-64" />
+					{/* <Skeleton className="h-8 w-64" /> */}
 					<Skeleton className="h-4 w-80" />
 				</div>
 				<div className="flex items-center gap-2">
