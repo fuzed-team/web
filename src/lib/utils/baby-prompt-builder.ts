@@ -163,3 +163,61 @@ export const buildBabyPrompt = (
 
 	return prompt;
 };
+
+export type CelebrityFeatures = FaceFeatures & {
+	name: string;
+};
+
+export const buildCelebrityBabyPrompt = (
+	userFace: FaceFeatures,
+	celebrity: CelebrityFeatures,
+): string => {
+	const gender = determineGender(userFace.gender, celebrity.gender);
+	const age = getRandomAge();
+	const expression = getRandomExpression(
+		userFace.expression || celebrity.expression,
+	);
+
+	// Skin tone strategy: 50% user, 50% celebrity for celebrity babies
+	let skinTone = "";
+	const skinRand = Math.random();
+	if (skinRand < 0.5) {
+		skinTone = getSkinToneDescription(userFace.skin_tone_lab);
+	} else {
+		skinTone = getSkinToneDescription(celebrity.skin_tone_lab);
+	}
+
+	// Geometry features (mix and match)
+	const faceShape =
+		Math.random() > 0.5
+			? getFaceShapeDescription(userFace.geometry_ratios)
+			: getFaceShapeDescription(celebrity.geometry_ratios);
+
+	const eyeDesc =
+		Math.random() > 0.5
+			? getEyeDescription(userFace.geometry_ratios)
+			: getEyeDescription(celebrity.geometry_ratios);
+
+	// Background variety
+	const backgrounds = [
+		"soft blurred nursery background",
+		"cozy blanket background",
+		"soft natural outdoor light",
+		"warm indoor lighting",
+		"bright airy room",
+	];
+	const background = getRandomElement(backgrounds);
+
+	// Assemble prompt
+	let prompt = `A cute ${age} baby ${gender}`;
+
+	if (skinTone) prompt += ` with ${skinTone}`;
+	if (faceShape) prompt += `, ${faceShape}`;
+	if (eyeDesc) prompt += `, ${eyeDesc}`;
+
+	prompt += `. ${expression} expression, looking at camera.`;
+	prompt += ` ${background}.`;
+	prompt += ` High quality portrait photo, highly detailed, photorealistic, cinematic lighting.`;
+
+	return prompt;
+};

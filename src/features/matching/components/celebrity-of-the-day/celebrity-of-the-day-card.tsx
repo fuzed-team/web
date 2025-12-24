@@ -7,8 +7,10 @@ import { BlurImage } from "@/components/blur-image";
 
 import { cn } from "@/lib/utils";
 import { calculateMatchPercentage } from "@/lib/utils/match-percentage";
+import { useCelebrityBabyActions } from "../../store/celebrity-baby-store";
 
 interface FeaturedCelebrity {
+	id: string; // celebrity_match_id for baby generation
 	celebrity: {
 		id: string;
 		name: string;
@@ -24,6 +26,7 @@ interface FeaturedCelebrity {
 
 interface CelebrityOfTheDayCardProps {
 	faceId: string | null;
+	userPhoto?: string | null;
 	className?: string;
 	initialLoading?: boolean;
 }
@@ -45,10 +48,12 @@ async function fetchFeaturedCelebrity(
 
 export function CelebrityOfTheDayCard({
 	faceId,
+	userPhoto,
 	className,
 	initialLoading,
 }: CelebrityOfTheDayCardProps) {
 	const [timeLeft, setTimeLeft] = useState("");
+	const { onOpen: openBabyDialog } = useCelebrityBabyActions();
 
 	const { data, isLoading, error } = useQuery({
 		queryKey: ["featured-celebrity", faceId],
@@ -146,18 +151,74 @@ export function CelebrityOfTheDayCard({
 							{matchPercentage}%
 						</span>
 					</div>
-					<div className="relative w-48 h-48 md:w-56 md:h-56">
+					<div
+						className="relative w-48 h-48 md:w-56 md:h-56 cursor-pointer group/img"
+						onClick={() => {
+							if (data.id && userPhoto) {
+								openBabyDialog(
+									{
+										id: data.id,
+										celeb: {
+											id: data.celebrity.id,
+											name: data.celebrity.name,
+											image: data.celebrity.image_url,
+											school: null,
+											bio: data.celebrity.bio,
+											category: data.celebrity.category,
+										},
+										matchPercentage,
+										timestamp: "now",
+										isNew: true,
+										isFavorited: false,
+									},
+									userPhoto,
+								);
+							}
+						}}
+						onKeyDown={(e) => {
+							if (e.key === "Enter" || e.key === " ") {
+								if (data.id && userPhoto) {
+									openBabyDialog(
+										{
+											id: data.id,
+											celeb: {
+												id: data.celebrity.id,
+												name: data.celebrity.name,
+												image: data.celebrity.image_url,
+												school: null,
+												bio: data.celebrity.bio,
+												category: data.celebrity.category,
+											},
+											matchPercentage,
+											timestamp: "now",
+											isNew: true,
+											isFavorited: false,
+										},
+										userPhoto,
+									);
+								}
+							}
+						}}
+						role="button"
+						tabIndex={0}
+					>
 						<BlurImage
 							src={data.celebrity.image_url}
 							alt={data.celebrity.name}
 							width={224}
 							height={224}
-							className="w-full h-full object-cover rounded-2xl shadow-2xl border-4 border-white/10"
+							className="w-full h-full object-cover rounded-2xl shadow-2xl border-4 border-white/10 transition-transform group-hover/img:scale-105"
 						/>
 						<div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/60 to-transparent rounded-b-2xl">
 							<p className="text-center font-semibold text-sm">
 								{data.celebrity.name}
 							</p>
+						</div>
+						{/* Hover hint */}
+						<div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity bg-black/20 rounded-2xl">
+							<span className="px-3 py-1.5 bg-white/90 text-purple-900 rounded-full text-xs font-semibold shadow-lg">
+								✨ Generate Baby
+							</span>
 						</div>
 					</div>
 				</div>

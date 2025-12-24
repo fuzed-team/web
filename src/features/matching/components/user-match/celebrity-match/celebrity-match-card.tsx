@@ -5,18 +5,30 @@ import { Heart, Sparkles } from "lucide-react";
 import { BlurImage } from "@/components/blur-image";
 import type { CelebMatch } from "@/features/matching/utils/transform-api-data";
 import { cn } from "@/lib/utils";
+import { useCelebrityBabyActions } from "../../../store/celebrity-baby-store";
 
 interface CelebrityMatchCardProps {
 	celebMatch: CelebMatch;
 	isSelected: boolean;
 	onSelect: (celebMatch: CelebMatch) => void;
+	userPhoto?: string | null;
 }
 
 export const CelebrityMatchCard = ({
 	celebMatch,
 	isSelected,
 	onSelect,
+	userPhoto,
 }: CelebrityMatchCardProps) => {
+	const { onOpen: openBabyDialog } = useCelebrityBabyActions();
+
+	const handleClick = () => {
+		onSelect(celebMatch);
+		if (userPhoto) {
+			openBabyDialog(celebMatch, userPhoto);
+		}
+	};
+
 	return (
 		<div
 			className={cn(
@@ -26,7 +38,7 @@ export const CelebrityMatchCard = ({
 					? "border-pink-400 bg-gradient-to-br from-pink-50 to-white shadow-lg ring-2 ring-pink-200 ring-offset-2"
 					: "border-gray-200 bg-white hover:border-pink-300 hover:bg-gradient-to-br hover:from-pink-25 hover:to-white",
 			)}
-			// onClick={() => onSelect(celebMatch)}
+			onClick={handleClick}
 		>
 			{/* Selection indicator */}
 			{isSelected && (

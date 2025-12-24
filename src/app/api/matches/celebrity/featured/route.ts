@@ -94,12 +94,13 @@ export async function GET(request: Request) {
 	// (Pre-computed using 6-factor advanced algorithm)
 	const { data: existingMatch } = await supabase
 		.from("celebrity_matches")
-		.select("similarity_score")
+		.select("id, similarity_score")
 		.eq("face_id", userFace.id)
 		.eq("celebrity_id", celebrity.id)
 		.maybeSingle();
 
 	let similarityScore = existingMatch?.similarity_score;
+	let celebrityMatchId = existingMatch?.id as string | undefined;
 
 	// Calculate match on-demand if not exists
 	// This handles cases where:
@@ -152,12 +153,20 @@ export async function GET(request: Request) {
 
 		similarityScore = calculatedScore || 0.3;
 
-		// Store the match for future queries
-		await supabase.from("celebrity_matches").insert({
-			face_id: userFace.id,
-			celebrity_id: celebrity.id,
-			similarity_score: similarityScore,
-		});
+		// Store the match for future queries and get the ID
+		const { data: newMatch } = await supabase
+			.from("celebrity_matches")
+			.insert({
+				face_id: userFace.id,
+				celebrity_id: celebrity.id,
+				similarity_score: similarityScore,
+			})
+			.select("id")
+			.single();
+
+		if (newMatch) {
+			celebrityMatchId = newMatch.id;
+		}
 	}
 
 	// Get public URL for celebrity image (bucket is public)
@@ -166,6 +175,7 @@ export async function GET(request: Request) {
 		.getPublicUrl(celebrity.image_path);
 
 	return NextResponse.json({
+		id: celebrityMatchId, // celebrity_match_id for baby generation
 		celebrity: {
 			id: celebrity.id,
 			name: celebrity.name,

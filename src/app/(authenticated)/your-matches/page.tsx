@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { ScrollToTop } from "@/components/scroll-to-top";
 import type { SortByOption } from "@/features/matching/api/get-user-match";
 import { useUserPhotos } from "@/features/matching/api/get-user-photos";
+import { CelebrityBabyDialog } from "@/features/matching/components/celebrity-baby-dialog/celebrity-baby-dialog";
 import { CelebrityOfTheDayCard } from "@/features/matching/components/celebrity-of-the-day/celebrity-of-the-day-card";
 import { MatchDialog } from "@/features/matching/components/match-dialog/match-dialog";
 import { MatchesGrid } from "@/features/matching/components/your-match/matches-grid";
@@ -39,6 +40,7 @@ export default function YourMatchesPage() {
 			/>
 			<CelebrityOfTheDayCard
 				faceId={activePhotoId}
+				userPhoto={photos.find((p) => p.id === activePhotoId)?.image_url}
 				initialLoading={isGlobalLoading}
 			/>
 			<MatchesGrid
@@ -47,6 +49,7 @@ export default function YourMatchesPage() {
 				initialLoading={isGlobalLoading}
 			/>
 			<MatchDialog />
+			<CelebrityBabyDialog />
 			<ScrollToTop />
 		</section>
 	);

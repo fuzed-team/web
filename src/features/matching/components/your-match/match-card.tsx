@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Clock } from "lucide-react";
 import { useEffect, useState } from "react";
 import { BlurImage } from "@/components/blur-image";
 import {
@@ -57,7 +56,7 @@ export function MatchCard({
 				delay: 0.1 + (index % 3) * 0.1,
 				ease: [0.16, 1, 0.3, 1],
 			}}
-			className="group bg-card border border-border rounded-2xl p-4 shadow-sm hover:shadow-xl dark:hover:border-gray-700 hover:border-gray-300 transition-all duration-300 flex flex-col h-full cursor-pointer"
+			className="group relative aspect-[4/5] rounded-2xl overflow-hidden dark:bg-[#1A1D24] bg-slate-100 border dark:border-white/5 border-slate-200 shadow-sm cursor-pointer hover:border-violet-500/50 transition-all"
 			onClick={() => {
 				const currentIdx = current > 0 ? current - 1 : 0;
 				onOpen(
@@ -73,68 +72,72 @@ export function MatchCard({
 				);
 			}}
 		>
-			{/* Carousel */}
-			<div className="relative mb-3">
-				<Carousel setApi={setApi} className="w-full">
-					<CarouselContent>
-						{allMatchImages.map((item, idx) => (
-							<CarouselItem key={idx}>
-								<div className="relative aspect-[4/5] overflow-hidden rounded-xl bg-muted ring-primary/50 transition-all">
-									<BlurImage
-										src={item.image}
-										className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-										alt={match.other.name}
-										width={248}
-										height={310}
-									/>
-								</div>
-							</CarouselItem>
-						))}
-					</CarouselContent>
-					{/* Conditionally render navigation if more than 1 image */}
-					{allMatchImages.length > 1 && (
-						<>
-							<CarouselPrevious
-								className="left-2 bg-background/50 hover:bg-background border-none backdrop-blur-sm h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-0"
-								onClick={(e) => e.stopPropagation()}
-							/>
-							<CarouselNext
-								className="right-2 bg-background/50 hover:bg-background border-none backdrop-blur-sm h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-0"
-								onClick={(e) => e.stopPropagation()}
-							/>
-							<div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1.5 z-10">
-								{Array.from({ length: count }).map((_, idx) => (
-									<div
-										key={idx}
-										className={`h-1.5 w-1.5 rounded-full transition-all duration-300 ${
-											idx === current - 1
-												? "bg-white scale-110"
-												: "bg-white/50 hover:bg-white/80"
-										}`}
-									/>
-								))}
+			<Carousel setApi={setApi} className="w-full h-full">
+				<CarouselContent
+					className="w-full h-full ml-0"
+					containerClassName="w-full h-full"
+				>
+					{allMatchImages.map((item, idx) => (
+						<CarouselItem key={idx} className="w-full h-full pl-0">
+							<div className="relative w-full h-full overflow-hidden">
+								<BlurImage
+									src={item.image}
+									className="w-full h-full object-cover dark:opacity-80 opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
+									alt={match.other.name}
+									width={600}
+									height={750}
+								/>
 							</div>
-						</>
-					)}
-				</Carousel>
-			</div>
+						</CarouselItem>
+					))}
+				</CarouselContent>
 
-			<div className="mb-0">
-				<h4 className="text-lg font-semibold text-card-foreground leading-tight">
-					{match.other.name}
-				</h4>
-				<div className="flex items-center justify-between gap-2 text-xs text-muted-foreground mt-1">
-					<span className="flex items-center gap-1 text-muted-foreground/70">
-						<Clock className="size-3" />
-						{match.timestamp}
-					</span>
-					{match.numberOfMatches > 1 && (
-						<span className="flex items-center gap-1 text-muted-foreground/70">
-							Matched {match.numberOfMatches} photos
-						</span>
-					)}
+				{/* Overlay Gradient */}
+				<div className="absolute inset-0 bg-linear-to-t from-black/60 dark:from-black/80 via-transparent to-transparent pointer-events-none" />
+
+				{/* Info Overlay */}
+				<div className="absolute bottom-4 left-4 right-4 z-10">
+					<p className="text-white font-medium text-lg">{match.other.name}</p>
+					<div className="flex items-center justify-between gap-2 mt-0.5">
+						<p className="text-slate-400 text-xs">{match.timestamp}</p>
+						{match.numberOfMatches > 1 && (
+							<span className="text-white/90 text-[10px] bg-white/10 dark:bg-white/15 backdrop-blur-[2px] px-2 py-0.5 rounded-full border border-white/10 transition-colors group-hover:bg-white/20">
+								{match.numberOfMatches} photos
+							</span>
+						)}
+					</div>
 				</div>
-			</div>
+
+				{/* Navigation Overlay */}
+				{allMatchImages.length > 1 && (
+					<>
+						<CarouselPrevious
+							className="left-2 bg-black/20 hover:bg-black/40 border-none backdrop-blur-sm h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-0"
+							onClick={(e) => {
+								e.stopPropagation();
+							}}
+						/>
+						<CarouselNext
+							className="right-2 bg-black/20 hover:bg-black/40 border-none backdrop-blur-sm h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-0"
+							onClick={(e) => {
+								e.stopPropagation();
+							}}
+						/>
+						<div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1.5 z-10">
+							{Array.from({ length: count }).map((_, idx) => (
+								<div
+									key={idx}
+									className={`h-1 w-4 rounded-full transition-all duration-300 ${
+										idx === current - 1
+											? "bg-white"
+											: "dark:bg-white/30 bg-black/20"
+									}`}
+								/>
+							))}
+						</div>
+					</>
+				)}
+			</Carousel>
 		</motion.div>
 	);
 }
