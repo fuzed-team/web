@@ -9,8 +9,8 @@ import { AxiosError } from "axios";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import React from "react";
 import { toast } from "sonner";
-import { ThemeProvider } from "@/contexts/theme-context";
 import { handleServerError } from "@/lib/utils/handle-server-error";
+import { ThemeProvider } from "@/providers/theme-provider";
 
 export function Providers({ children }: { children: React.ReactNode }) {
 	const [queryClient] = React.useState(
@@ -66,7 +66,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
 	return (
 		<NuqsAdapter>
 			<QueryClientProvider client={queryClient}>
-				<ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+				<ThemeProvider
+					attribute="class"
+					defaultTheme="system"
+					enableSystem
+					disableTransitionOnChange
+				>
 					{children}
 				</ThemeProvider>
 			</QueryClientProvider>

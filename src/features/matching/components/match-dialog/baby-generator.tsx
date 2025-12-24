@@ -35,6 +35,7 @@ interface BabyGeneratorProps {
 	matchPhoto?: string;
 	userName?: string;
 	matchName?: string;
+	matchPercentage?: number;
 	mode?: MatchMode;
 	onBack?: () => void;
 }
@@ -45,6 +46,7 @@ export const BabyGenerator = ({
 	matchPhoto,
 	userName,
 	matchName,
+	matchPercentage,
 	// mode = "own-match", // Unused in new design
 	onBack,
 }: BabyGeneratorProps) => {
@@ -254,9 +256,27 @@ export const BabyGenerator = ({
 									</span>
 								</div>
 
-								{/* DNA Icon in Center */}
-								<div className="w-8 h-8 rounded-full bg-card border border-border flex items-center justify-center text-muted-foreground shadow-sm mt-[-20px] z-20">
-									<Dna className="w-4 h-4" />
+								{/* DNA Icon / Match Percentage in Center */}
+								<div className="relative flex flex-col items-center z-20 -mt-6">
+									{matchPercentage ? (
+										<div className="flex flex-col items-center justify-center">
+											<div className="flex items-baseline justify-center">
+												<span className="text-4xl ml-2 font-black text-primary leading-none">
+													{matchPercentage}
+												</span>
+												<span className="text-sm font-bold text-primary/40">
+													%
+												</span>
+											</div>
+											<div className="text-[10px] font-bold text-primary/40 uppercase tracking-[0.25em] mt-1.5">
+												Match
+											</div>
+										</div>
+									) : (
+										<div className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center text-primary shadow-sm">
+											<Dna className="w-5 h-5 text-primary/60" />
+										</div>
+									)}
 								</div>
 
 								{/* Match */}
@@ -391,12 +411,12 @@ export const BabyGenerator = ({
 									{isGenerating ? (
 										<>
 											<Loader className="w-4 h-4 animate-spin" />
-											Generating genetic prediction...
+											Generating baby...
 										</>
 									) : (
 										<>
 											<Wand2 className="w-4 h-4" />
-											Reveal Predicted Child
+											Generate Baby
 										</>
 									)}
 								</span>

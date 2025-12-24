@@ -1,106 +1,79 @@
-# AI Matching (Fuzed) - Copilot Instructions
+# Copilot Instructions for Fuzed (AI Face Matching)
+
+## Project Overview
+Next.js 16 app using Supabase (PostgreSQL + Auth + Realtime), Replicate (face AI), and FAL.AI (baby generation). Uses TanStack Query for server state, Zustand for client state, and Tailwind CSS 4 + shadcn/ui for styling.
 
 ## Essential Context
+**Before implementing features, read `.agent/README.md`** for documentation index—covers architecture, database schema, SOPs, and completed tasks.
 
-**Before implementing anything, read `.agent/README.md`** for full system documentation, completed tasks, and SOPs.
+## Architecture Patterns
 
-This is a Next.js 16 App Router application for AI-powered face matching with Supabase backend.
+### Feature-Based Organization
+Features live in `src/features/{feature}/` with subdirectories:
+- `api/` - One file per endpoint: `[action]-[resource].ts` (e.g., `get-user-match.ts`, `generate-baby.ts`)
+- `components/` - Feature-specific UI
+- `hooks/` - Custom React hooks
+- `store/` - Zustand stores
+- `types/` - Feature types
 
-## Architecture Overview
-
-- **Frontend**: React 19 + TypeScript + Tailwind CSS 4 + Shadcn/Radix UI
-- **State**: TanStack Query (server) + Zustand (client)
-- **Backend**: Next.js API routes + Supabase (PostgreSQL with pgvector)
-- **AI Services**: Replicate (face analysis), FAL.AI (baby generation)
-- **Auth**: Supabase Auth with Magic Link via `@supabase/ssr`
-
-## Project Structure
-
-```
-src/
-├── app/                    # Next.js App Router
-│   ├── (authenticated)/    # Protected routes (layout guards auth)
-│   ├── (landing-page)/     # Public routes
-│   └── api/                # API route handlers
-├── features/               # Feature modules (matching, chat, auth, etc.)
-│   └── [feature]/
-│       ├── api/            # One file per endpoint
-│       ├── components/     # Feature-specific UI
-│       ├── hooks/          # Feature hooks
-│       └── types/          # Feature types
-├── components/             # Shared UI components
-├── lib/                    # Utilities, Supabase clients, API client
-└── config/env.ts           # Type-safe env vars (@t3-oss/env-nextjs)
-```
-
-## Critical Conventions
-
-### API Files (Feature APIs)
-
-**One concern per file** with naming pattern `[action]-[resource].ts`:
-
+### API File Pattern
 ```typescript
-// src/features/matching/api/get-match-details.ts
-import { queryOptions, useQuery } from "@tanstack/react-query";
-import api from "@/lib/api-client";
-
-export const getMatchDetailsApi = async (matchId: string) => {
-  return api.get<MatchDetails>(`/matches/${matchId}`);
-};
-
-export const getMatchDetailsQueryOptions = (matchId: string) => {
-  return queryOptions({
-    queryKey: ["matches", matchId, "details"],  // Hierarchical keys
-    queryFn: () => getMatchDetailsApi(matchId),
-  });
-};
-
-export const useMatchDetails = ({ matchId, queryConfig }) => {
-  return useQuery({ ...getMatchDetailsQueryOptions(matchId), ...queryConfig });
-};
+// src/features/matching/api/get-user-match.ts
+export const getUserMatchApi = async (input: Input, signal?: AbortSignal) => {...};
+export const getUserMatchQueryOptions = (input: Input) => queryOptions({...});
+export const useUserMatch = (options: Options) => useQuery({...});
 ```
+Always include `signal?: AbortSignal` parameter for cancellation support.
 
-### Environment Variables
+### Protected Routes
+Use Next.js route groups: `src/app/(authenticated)/` contains protected pages. Auth check happens in `(authenticated)/layout.tsx` using server-side Supabase client.
 
-Always use `env` from `@/config/env` - never `process.env` directly:
+### Supabase Clients
+- Server components/API routes: `import { createClient } from "@/lib/supabase/server"`
+- Client components: `import { createClient } from "@/lib/supabase/client"`
+- Admin operations: `import { createAdminClient } from "@/lib/supabase/admin"`
 
-```typescript
-import { env } from "@/config/env";
-const url = env.NEXT_PUBLIC_SUPABASE_URL;  // Type-safe, validated
-```
+## Database Conventions
 
-### Database Migrations
-
-Create in `supabase/migrations/` with format `YYYYMMDDHHmmss_description.sql`:
+### Migrations
+Create in `supabase/migrations/` with format: `YYYYMMDDHHmmss_short_description.sql`
 - Always enable RLS on new tables
-- Use separate policies per operation (select/insert/update/delete)
-- Set `search_path = ''` in functions, use fully qualified names
+- Separate policies per operation (select/insert/update/delete) and role (anon/authenticated)
+- Use `auth.uid()` not `current_user`
 
-### Supabase Realtime
+### Database Functions
+```sql
+create or replace function public.my_function()
+returns text
+language plpgsql
+security invoker
+set search_path = ''
+as $$
+begin
+  -- Use fully qualified names: public.table_name
+end;
+$$;
+```
 
-- Use `broadcast` for all events (not `postgres_changes`)
-- Topic naming: `scope:entity:id` (e.g., `room:123:messages`)
-- Event naming: `entity_action` in snake_case (e.g., `message_created`)
+## Environment Variables
+Type-safe via `@t3-oss/env-nextjs` in `src/config/env.ts`. Import as: `import { env } from "@/config/env"`. Never use `process.env` directly.
 
-## Commands
-
+## Developer Workflow
 ```bash
-bun run dev          # Development server (port 3000)
-bun run build        # Production build
+bun install          # Install deps
+bun run dev          # Dev server at localhost:3000
 bun run lint         # Biome check --write
 bun run test         # Vitest
-bun run gen:type     # Regenerate Supabase types
+bun run gen:type     # Regenerate Supabase types after schema changes
 ```
 
-## Key Patterns
+## Key Integrations
+- **Real-time presence**: Global Zustand store (`src/features/presence/store/`) with single Supabase Realtime subscription
+- **Face analysis**: Replicate API via `/api/faces/` endpoints
+- **Baby generation**: FAL.AI via `/api/baby/` endpoints
+- **Notifications**: Real-time via Supabase + `src/features/notifications/`
 
-- **Auth guard**: `(authenticated)/layout.tsx` uses server-side Supabase to protect routes
-- **API client**: `src/lib/api-client.ts` wraps fetch with typed responses
-- **Formatting**: Biome with tabs, double quotes - run `bun run lint` before committing
-- **Components**: Prefer Shadcn/Radix primitives from `src/components/ui/`
-
-## Documentation
-
-- `.agent/sop/` - Standard operating procedures (animations, API organization, env vars)
-- `.agent/system/` - Architecture and database schema docs
-- `.cursor/rules/` - Database function, migration, RLS, and Edge Function guidelines
+## Code Style
+- Biome for linting/formatting (tabs, double quotes)
+- Framer Motion for animations (see `.agent/sop/animations.md`)
+- Use `@/` path alias for imports from `src/`

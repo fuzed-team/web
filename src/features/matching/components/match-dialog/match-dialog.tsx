@@ -34,6 +34,7 @@ export function MatchDialog() {
 				matchPhoto={userMatches?.user2.photo}
 				userName={userMatches?.user1.name}
 				matchName={userMatches?.user2.name}
+				matchPercentage={userMatches?.matchPercentage}
 				mode={mode}
 				onBack={() => onOpenChange(false)}
 			/>

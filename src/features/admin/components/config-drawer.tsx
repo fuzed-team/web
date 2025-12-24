@@ -14,7 +14,6 @@ import {
 	SheetTrigger,
 } from "@/components/ui/sheet";
 import { useSidebar } from "@/components/ui/sidebar";
-import { useTheme } from "@/contexts/theme-context";
 import { IconDir } from "@/features/admin/assets/custom/icon-dir";
 import { IconLayoutCompact } from "@/features/admin/assets/custom/icon-layout-compact";
 import { IconLayoutDefault } from "@/features/admin/assets/custom/icon-layout-default";
@@ -31,6 +30,7 @@ import {
 	useLayout,
 } from "@/features/admin/context/layout-provider";
 import { cn } from "@/lib/utils";
+import { useTheme } from "@/providers/theme-context";
 
 export function ConfigDrawer() {
 	const { setOpen } = useSidebar();

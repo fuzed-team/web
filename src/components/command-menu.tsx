@@ -12,9 +12,9 @@ import {
 	CommandList,
 	CommandSeparator,
 } from "@/components/ui/command";
-import { useTheme } from "@/contexts/theme-context";
 import { sidebarData } from "@/features/admin/components/layout/data/sidebar-data";
 import { useSearch } from "@/features/admin/context/search-provider";
+import { useTheme } from "@/providers/theme-context";
 import { ScrollArea } from "./ui/scroll-area";
 
 export function CommandMenu() {

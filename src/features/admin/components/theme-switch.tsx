@@ -1,6 +1,7 @@
 "use client";
 
 import { Check, Moon, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,7 +10,6 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useTheme } from "@/contexts/theme-context";
 import { cn } from "@/lib/utils";
 
 export function ThemeSwitch() {

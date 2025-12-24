@@ -55,7 +55,6 @@ export default async function RootLayout({
 	return (
 		<html lang="en" suppressHydrationWarning>
 			<body
-				suppressHydrationWarning
 				className={cn(fontSans.variable, fontSerif.variable, fontMono.variable)}
 			>
 				<Providers>

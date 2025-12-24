@@ -8,6 +8,7 @@ type UserMatchType = {
 export type UserMatchesType = {
 	user1: UserMatchType;
 	user2: UserMatchType;
+	matchPercentage?: number;
 };
 
 export type MatchMode = "own-match" | "live-match";
