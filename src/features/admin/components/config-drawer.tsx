@@ -2,6 +2,7 @@
 
 import { Item, Root as Radio } from "@radix-ui/react-radio-group";
 import { CircleCheck, RotateCcw, Settings } from "lucide-react";
+import { useTheme } from "next-themes";
 import type { SVGProps } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,18 +31,17 @@ import {
 	useLayout,
 } from "@/features/admin/context/layout-provider";
 import { cn } from "@/lib/utils";
-import { useTheme } from "@/providers/theme-context";
 
 export function ConfigDrawer() {
 	const { setOpen } = useSidebar();
 	const { resetDir } = useDirection();
-	const { resetTheme } = useTheme();
+	const { setTheme } = useTheme();
 	const { resetLayout } = useLayout();
 
 	const handleReset = () => {
 		setOpen(true);
 		resetDir();
-		resetTheme();
+		setTheme("system");
 		resetLayout();
 	};
 
@@ -174,13 +174,13 @@ function RadioGroupItem({
 }
 
 function ThemeConfig() {
-	const { defaultTheme, theme, setTheme } = useTheme();
+	const { theme, setTheme } = useTheme();
 	return (
 		<div>
 			<SectionTitle
 				title="Theme"
-				showReset={theme !== defaultTheme}
-				onReset={() => setTheme(defaultTheme)}
+				showReset={theme !== "system"}
+				onReset={() => setTheme("system")}
 			/>
 			<Radio
 				value={theme}

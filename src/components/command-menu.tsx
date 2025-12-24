@@ -2,6 +2,7 @@
 
 import { ArrowRight, ChevronRight, Laptop, Moon, Sun } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
 import React from "react";
 import {
 	CommandDialog,
@@ -14,7 +15,6 @@ import {
 } from "@/components/ui/command";
 import { sidebarData } from "@/features/admin/components/layout/data/sidebar-data";
 import { useSearch } from "@/features/admin/context/search-provider";
-import { useTheme } from "@/providers/theme-context";
 import { ScrollArea } from "./ui/scroll-area";
 
 export function CommandMenu() {
