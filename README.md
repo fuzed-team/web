@@ -73,6 +73,16 @@ FAL_BABY_MODEL_ID=fal-ai/nano-banana/edit
 
 See `.env.example` for complete list of required environment variables.
 
+## FAL.AI Pricing
+
+> Last Updated: December 2025
+
+| Model | Pricing | $1.00 Gets You |
+|-------|---------|----------------|
+| `nano-banana/edit` | $0.039/image | ~25 images |
+| `flux/dev/image-to-image` | $0.03/megapixel | ~33 megapixels |
+| `fal-ai/birefnet` | $0.00111/compute sec | ~900 seconds |
+
 # Learn More
 
 - [Next.js Documentation](https://nextjs.org/docs)

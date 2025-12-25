@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { env } from "@/config/env";
 import { STORAGE_BUCKETS } from "@/lib/constants/constant";
 import { withSession } from "@/lib/middleware/with-session";
+import { generateBabyImage } from "@/lib/services/fal-service";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import {
 	buildCelebrityBabyPrompt,
@@ -176,34 +177,10 @@ export const POST = withSession(async ({ request, supabase, session }) => {
 	);
 
 	// Generate baby image with FAL.AI
-	const falResponse = await fetch(`https://fal.run/${env.FAL_BABY_MODEL_ID}`, {
-		method: "POST",
-		headers: {
-			Authorization: `Key ${env.FAL_AI_API_KEY}`,
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify({
-			prompt: dynamicPrompt,
-			image_urls: [userData.signedUrl, celebrityData.publicUrl],
-			num_images: 1,
-			guidance_scale: 6.5 + Math.random() * 2, // 6.5-8.5 range
-			num_inference_steps: 45 + Math.floor(Math.random() * 10), // 45-55
-			seed: Math.floor(Math.random() * 1000000), // Random seed
-		}),
+	const babyImageUrl = await generateBabyImage({
+		prompt: dynamicPrompt,
+		imageUrls: [userData.signedUrl, celebrityData.publicUrl],
 	});
-
-	if (!falResponse.ok) {
-		const error = await falResponse.text();
-		console.error("FAL.AI error:", error);
-		throw new Error("Failed to generate baby image");
-	}
-
-	const falData = await falResponse.json();
-	const babyImageUrl = falData.images?.[0]?.url;
-
-	if (!babyImageUrl) {
-		throw new Error("No image URL returned from FAL.AI");
-	}
 
 	// Save baby record to database (with celebrity_match_id instead of match_id)
 	const { data: baby, error: babyError } = await supabaseAdmin

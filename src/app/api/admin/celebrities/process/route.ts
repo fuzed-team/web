@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { STORAGE_BUCKETS } from "@/lib/constants/constant";
 import { withAdminSession } from "@/lib/middleware/with-admin-session";
 import { analyzeAdvancedFace } from "@/lib/services/ai-service";
+import { removeBackground } from "@/lib/services/fal-service";
 import { sanitizeFilename } from "@/lib/utils/sanitize";
 
 interface ProcessRequest {
@@ -30,12 +31,11 @@ export const POST = withAdminSession(async ({ request, supabase }) => {
 		if (!imageResponse.ok) {
 			throw new Error("Failed to download image");
 		}
-		const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
+		const originalBuffer = Buffer.from(await imageResponse.arrayBuffer());
 
-		// 2. Generate hash for deduplication
-		const imageHash = createHash("md5").update(imageBuffer).digest("hex");
+		// 2. Generate hash and check duplicate FIRST (save FAL credits)
+		const imageHash = createHash("md5").update(originalBuffer).digest("hex");
 
-		// Check if already exists
 		const { data: existing } = await supabase
 			.from("celebrities")
 			.select("id, name")
@@ -49,10 +49,39 @@ export const POST = withAdminSession(async ({ request, supabase }) => {
 			);
 		}
 
-		// 3. AI Analysis
+		// 3. Upload original to Supabase Storage FIRST (get public URL for FAL.AI)
+		const baseName = sanitizeFilename(name);
+		const originalFilename = `${baseName}.jpg`;
+		const originalStoragePath = `celebrities/${category}/original/${originalFilename}`;
+
+		const { error: originalUploadError } = await supabase.storage
+			.from(STORAGE_BUCKETS.CELEBRITY_IMAGES)
+			.upload(originalStoragePath, originalBuffer, {
+				contentType: "image/jpeg",
+				upsert: true,
+				cacheControl: "3600",
+			});
+
+		if (originalUploadError) {
+			console.error("Original upload error:", originalUploadError);
+			throw new Error("Failed to upload original image");
+		}
+
+		// 4. Remove background using FAL.AI (uses FAL storage internally)
+		// Note: Skipping image expansion as it's unreliable for ensuring complete shoulders
+		let processedBuffer: Buffer | null = null;
+		try {
+			processedBuffer = await removeBackground(originalBuffer);
+			console.log(`Background removed for: ${name}`);
+		} catch (error) {
+			console.error("Background removal failed:", error);
+			// Continue without background removal
+		}
+
+		// 6. AI Analysis (use original image for better face detection)
 		let analysis: any;
 		try {
-			analysis = await analyzeAdvancedFace(imageBuffer);
+			analysis = await analyzeAdvancedFace(originalBuffer);
 		} catch (error: unknown) {
 			const errorMessage =
 				error instanceof Error ? error.message : "Unknown error";
@@ -79,31 +108,35 @@ export const POST = withAdminSession(async ({ request, supabase }) => {
 			);
 		}
 
-		// 4. Upload to Supabase Storage
-		const filename = `${sanitizeFilename(name)}.jpg`;
-		const storagePath = `celebrities/${category}/${filename}`;
+		// 7. Upload processed image (if background removal succeeded)
+		let processedStoragePath: string | null = null;
+		if (processedBuffer) {
+			const processedFilename = `${baseName}.png`;
+			processedStoragePath = `celebrities/${category}/${processedFilename}`;
 
-		const { error: uploadError } = await supabase.storage
-			.from(STORAGE_BUCKETS.CELEBRITY_IMAGES)
-			.upload(storagePath, imageBuffer, {
-				contentType: "image/jpeg",
-				upsert: true,
-				cacheControl: "3600",
-			});
+			const { error: processedUploadError } = await supabase.storage
+				.from(STORAGE_BUCKETS.CELEBRITY_IMAGES)
+				.upload(processedStoragePath, processedBuffer, {
+					contentType: "image/png",
+					upsert: true,
+					cacheControl: "3600",
+				});
 
-		if (uploadError) {
-			console.error("Upload error:", uploadError);
-			// Continue anyway, might be duplicate
+			if (processedUploadError) {
+				console.error("Processed upload error:", processedUploadError);
+				processedStoragePath = null; // Fallback to original
+			}
 		}
 
-		// 5. Save to database
+		// 8. Save to database
 		const { error: dbError } = await supabase.from("celebrities").upsert(
 			{
 				name,
 				bio,
 				category,
 				gender,
-				image_path: storagePath,
+				image_path: processedStoragePath || originalStoragePath,
+				original_image_path: originalStoragePath,
 				embedding: `[${analysis.embedding.join(",")}]`,
 				image_hash: imageHash,
 				age: analysis.age,

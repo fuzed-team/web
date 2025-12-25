@@ -102,7 +102,7 @@ export function GenerateDialog() {
 		const selected = celebrities.filter((c) => c.selected);
 
 		for (let i = 0; i < selected.length; i++) {
-			setProcessingIndex(i + 1);
+			setProcessingIndex(i);
 			const celeb = selected[i];
 
 			try {
@@ -146,7 +146,7 @@ export function GenerateDialog() {
 
 	const getProcessingName = () =>
 		"Processing " +
-		(celebrities.find((_, i) => i === processingIndex - 1)?.name || "...");
+		(celebrities.find((_, i) => i === processingIndex)?.name || "...");
 
 	const successCount = results.filter((r) => r.status === "success").length;
 	const skippedCount = results.filter((r) => r.status === "skipped").length;
@@ -168,7 +168,7 @@ export function GenerateDialog() {
 						{step === "preview" &&
 							`${selectedCount} of ${celebrities.length} celebrities selected`}
 						{step === "processing" &&
-							`Processing ${processingIndex} of ${selectedCount}`}
+							`Processing ${processingIndex + 1} of ${selectedCount}`}
 						{step === "complete" &&
 							`${successCount} succeeded, ${skippedCount} skipped, ${errorCount} failed`}
 					</DialogDescription>

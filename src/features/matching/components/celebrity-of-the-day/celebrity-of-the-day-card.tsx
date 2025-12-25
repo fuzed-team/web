@@ -104,13 +104,15 @@ export function CelebrityOfTheDayCard({
 				</div>
 
 				{/* Skeleton Center Section */}
-				<div className="flex-shrink-0 order-first md:order-0">
-					<div className="w-64 h-64 md:w-72 md:h-72 bg-white/5 rounded-2xl border-4 border-white/5" />
+				<div className="shrink-0 order-first md:order-0 relative">
+					<div className="w-56 aspect-3/4 md:w-64 bg-white/5 rounded-2xl border border-white/10" />
+					{/* Fake glow for skeleton */}
+					<div className="absolute inset-0 bg-white/5 blur-2xl rounded-full -z-10 scale-90" />
 				</div>
 
 				{/* Skeleton Right Section */}
 				<div className="flex flex-col items-center md:items-end space-y-4 min-w-[160px]">
-					<div className="h-4 w-16 bg-white/10 rounded" />
+					<div className="h-4 w-20 bg-white/10 rounded" />
 					<div className="h-16 w-24 bg-white/10 rounded-xl" />
 					<div className="h-2 w-32 bg-white/10 rounded-full" />
 				</div>
@@ -241,24 +243,47 @@ export function CelebrityOfTheDayCard({
 			</div>
 
 			{/* Center Section: Image */}
-			<div className="flex-shrink-0 z-10 order-first md:order-0 mb-6 md:mb-0">
-				<div className="relative w-64 h-64 md:w-72 md:h-72 bg-gray-900 rounded-2xl overflow-hidden shadow-2xl ring-4 ring-white/5 md:-rotate-1 hover:rotate-0 transition-transform duration-500 ease-out group/img cursor-pointer">
+			<div className="shrink-0 z-10 order-first md:order-0 mb-6 md:mb-0 relative group/img-container">
+				{/* Background Glows for depth */}
+				<div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full -z-10 animate-pulse scale-90" />
+				<div className="absolute inset-0 bg-purple-500/20 blur-2xl rounded-full -z-10 animate-pulse delay-700 scale-110" />
+
+				<motion.div
+					animate={{
+						y: [0, -8, 0],
+					}}
+					transition={{
+						duration: 4,
+						repeat: Infinity,
+						ease: "easeInOut",
+					}}
+					className="relative w-56 aspect-3/4 md:w-64 rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/20 md:-rotate-1 hover:rotate-0 transition-all duration-500 ease-out group/img cursor-pointer"
+				>
 					<BlurImage
 						src={data.celebrity.image_url}
 						alt={data.celebrity.name}
-						width={288}
-						height={288}
-						className="w-full h-full object-cover opacity-90 group-hover/img:opacity-100 transition-opacity duration-500"
+						width={256}
+						height={341}
+						className="w-full h-full object-cover object-top opacity-95 group-hover/img:opacity-100 transition-all duration-500 group-hover/img:scale-105"
 					/>
-					{/* Gradient overlay on image */}
-					<div className="absolute inset-0 bg-linear-to-t from-indigo-900/40 to-transparent mix-blend-overlay" />
-				</div>
+					{/* Glassmorphism overlays */}
+					<div className="absolute inset-0 bg-linear-to-t from-indigo-950/60 via-transparent to-white/5 opacity-60 group-hover/img:opacity-100 transition-opacity duration-500" />
+					<div className="absolute inset-0 ring-inset ring-1 ring-white/10 rounded-2xl" />
+
+					{/* Inner Shine Effect (Moving Shine) */}
+					<div className="absolute inset-0 opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 pointer-events-none">
+						<div className="absolute inset-0 w-[200%] h-full bg-linear-to-r from-transparent via-white/30 to-transparent skew-x-[-20deg] animate-shine" />
+					</div>
+
+					{/* Inner Glow Effect */}
+					<div className="absolute inset-0 bg-linear-to-tr from-transparent via-white/5 to-transparent pointer-events-none" />
+				</motion.div>
 			</div>
 
 			{/* Right Section: Stats */}
 			<div className="flex flex-col items-center md:items-end text-center md:text-right z-10 space-y-1 min-w-[160px]">
 				<span className="text-xs font-semibold uppercase tracking-[0.2em] text-white/40 mb-1">
-					Match
+					Compatibility
 				</span>
 				<div className="flex items-start justify-end text-white leading-none">
 					<span className="text-7xl font-bold tracking-tighter drop-shadow-sm">

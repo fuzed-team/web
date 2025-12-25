@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-
 import type { CelebrityApi } from "../../api/get-celebrities";
 import {
 	getCelebrityImageUrl,
@@ -22,7 +21,7 @@ function FeaturedCardSkeleton({ gender }: { gender: "male" | "female" }) {
 					{gender === "male" ? "Male Pick" : "Female Pick"}
 				</span>
 			</div>
-			<div className="h-full w-32 flex-shrink-0 bg-muted rounded-lg" />
+			<div className="h-full w-32 shrink-0 bg-muted rounded-lg" />
 			<div className="p-5 flex flex-col justify-center h-full z-10 relative flex-1">
 				<div className="h-3 w-20 bg-muted rounded mb-2" />
 				<div className="h-5 w-32 bg-muted rounded mb-2" />
@@ -42,7 +41,7 @@ function FeaturedCardEmpty({ gender }: { gender: "male" | "female" }) {
 					{gender === "male" ? "Male Pick" : "Female Pick"}
 				</span>
 			</div>
-			<div className="h-full w-32 flex-shrink-0 bg-muted rounded-lg flex items-center justify-center">
+			<div className="h-full w-32 shrink-0 bg-muted rounded-lg flex items-center justify-center">
 				<span className="text-muted-foreground text-xs">No image</span>
 			</div>
 			<div className="p-5 flex flex-col justify-center h-full z-10 relative">
@@ -99,7 +98,7 @@ export function FeaturedCard({
 					{tagLabel}
 				</span>
 			</div>
-			<div className="h-full w-32 flex-shrink-0 relative">
+			<div className="h-full w-32 shrink-0 relative">
 				<Image
 					src={getCelebrityImageUrl(celebrity.image_path)}
 					alt={celebrity.name}
@@ -120,14 +119,6 @@ export function FeaturedCard({
 					{celebrity.bio ||
 						`${celebrity.category}. ${getTimeLeft(celebrity.featured_until)}`}
 				</p>
-				{/* <div className="flex gap-2 mt-3">
-					<button
-						type="button"
-						className={`text-[10px] font-medium text-muted-foreground ${hoverColorClass} transition-colors border-b border-transparent ${hoverBorderClass}`}
-					>
-						Change Pick
-					</button>
-				</div> */}
 			</div>
 		</div>
 	);
