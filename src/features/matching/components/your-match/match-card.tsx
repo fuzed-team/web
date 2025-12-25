@@ -11,8 +11,8 @@ import {
 	CarouselNext,
 	CarouselPrevious,
 } from "@/components/ui/carousel";
-import type { UniversityMatch } from "@/features/matching/components/user-match/university-match/university-match-tab";
 import { useUserMatchesActions } from "../../store/user-matches";
+import type { UniversityMatch } from "../../types";
 
 export function MatchCard({
 	match,

@@ -1,5 +1,4 @@
 import Link from "next/link";
-import AnimationContainer from "../_components/global/animation-container";
 import MaxWidthWrapper from "../_components/global/max-widht-wrapper";
 
 const TermsPage = () => {

@@ -10,8 +10,9 @@ import {
 	type SortByOption,
 	useUserMatchInfinite,
 } from "@/features/matching/api/get-user-match";
-import type { UniversityMatch } from "@/features/matching/components/user-match/university-match/university-match-tab";
+
 import { PAGINATION } from "@/lib/constants/constant";
+import type { UniversityMatch } from "../../types";
 import { MatchCard } from "./match-card";
 import { MatchesGridSkeleton } from "./matches-grid-skeleton";
 

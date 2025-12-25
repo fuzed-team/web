@@ -18,12 +18,11 @@ import {
 } from "@/components/ui/select";
 import { useUser } from "@/features/auth/api/get-me";
 import type { SortByOption } from "@/features/matching/api/get-user-match";
-
 import { cn } from "@/lib/utils";
 import { useUploadFace } from "../../api/upload-face";
 import { base64ToFile } from "../../utils";
-import { ImageCropDialog } from "../upload-photo/image-crop-dialog";
-import { PhotoFilterSkeleton } from "../user-match/photo-filter-skeleton";
+import { ImageCropDialog } from "../image-crop-dialog";
+import { PhotoFilterSkeleton } from "./photo-filter-skeleton";
 
 const SORT_OPTIONS: { value: SortByOption; label: string }[] = [
 	{ value: "highest_percentage", label: "Highest %" },

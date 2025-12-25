@@ -54,7 +54,6 @@ export const GET = withAdminSession(async ({ request, supabase }) => {
 
 		const { page, limit, name, role, status, createdAt, sort } =
 			validation.data;
-		console.log("🚀 ~ validation.data:", validation.data);
 
 		// Calculate pagination
 		const from = (page - 1) * limit;
@@ -129,7 +128,6 @@ export const GET = withAdminSession(async ({ request, supabase }) => {
 			.range(from, to);
 
 		const { data: users, error, count } = await query;
-		console.log("🚀 ~ users:", users);
 
 		if (error) {
 			console.error("Error fetching users:", error);

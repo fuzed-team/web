@@ -33,7 +33,7 @@ import {
 } from "@/components/ui/select";
 import type { UpdateMeInput } from "@/features/auth/api/update-me";
 import { useUploadFace } from "@/features/matching/api/upload-face";
-import { ImageCropDialog } from "@/features/matching/components/upload-photo/image-crop-dialog";
+import { ImageCropDialog } from "@/features/matching/components/image-crop-dialog";
 import { base64ToFile } from "@/features/matching/utils";
 import type { UserApi } from "@/types/api";
 import { getMeQueryOptions, useUser } from "../api/get-me";

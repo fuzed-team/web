@@ -1,11 +1,10 @@
-import type { MatchCardProps } from "@/features/matching/components/live-match/match-card";
-import type { UniversityMatch } from "@/features/matching/components/user-match/university-match/university-match-tab";
 import { getTimeAgo } from "@/lib/utils/date";
 import type { CelebMatchApi, LiveMatchApi, UserMatchApi } from "@/types/api";
+import type { MatchData, UniversityMatch } from "../types";
 
 export const transformApiMatchToDisplayData = (
 	apiMatch: LiveMatchApi,
-): MatchCardProps["data"] => {
+): MatchData => {
 	// Calculate if match is "new" (created within last 5 minutes)
 	const now = Date.now();
 	const createdAt = new Date(apiMatch.created_at).getTime();
@@ -40,7 +39,7 @@ export const transformApiMatchToDisplayData = (
 
 export const transformApiMatchesToDisplayData = (
 	apiMatches: LiveMatchApi[],
-): MatchCardProps["data"][] => {
+): MatchData[] => {
 	return apiMatches.map(transformApiMatchToDisplayData);
 };
 
