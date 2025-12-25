@@ -1,10 +1,10 @@
 "use client";
 
-import { useBabyListInfinite } from "@/features/matching/api/get-baby-list";
-import { useCelebrityBabyListInfinite } from "@/features/matching/api/get-celebrity-baby-list";
 import { Baby, Sparkles } from "lucide-react";
 import React, { useState } from "react";
 import { useInView } from "react-intersection-observer";
+import { useBabyListInfinite } from "@/features/matching/api/get-baby-list";
+import { useCelebrityBabyListInfinite } from "@/features/matching/api/get-celebrity-baby-list";
 import { BabyHistorySkeleton } from "./baby-history-skeleton";
 import { CelebrityGenerationCard } from "./celebrity-generation-card";
 import { GenerationCard } from "./generation-card";
@@ -65,7 +65,7 @@ export function BabyHistoryPage() {
 
 	if (isCurrentLoading) {
 		return (
-			<section className="max-w-7xl w-full mx-auto px-6 py-8 md:px-10">
+			<section className="max-w-7xl w-full mx-auto px-6 py-8 md:px-10 md:pt-0">
 				<BabyHistorySkeleton activeTab={activeTab} />
 			</section>
 		);

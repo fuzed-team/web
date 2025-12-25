@@ -23,7 +23,10 @@ export const useGenerateBaby = ({
 		mutationFn: generateBabyApi,
 		onSuccess: (data, matchId, ...args) => {
 			queryClient.setQueryData(["baby", "match", matchId], data);
-			queryClient.invalidateQueries({ queryKey: ["baby", "list"] });
+			queryClient.invalidateQueries({
+				queryKey: ["baby", "list"],
+				refetchType: "all",
+			});
 			queryClient.invalidateQueries({
 				queryKey: getUserQuotaQueryOptions().queryKey,
 			});

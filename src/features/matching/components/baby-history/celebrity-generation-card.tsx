@@ -7,7 +7,9 @@ interface CelebrityGenerationCardProps {
 	baby: CelebrityBabyListItem;
 }
 
-export function CelebrityGenerationCard({ baby }: CelebrityGenerationCardProps) {
+export function CelebrityGenerationCard({
+	baby,
+}: CelebrityGenerationCardProps) {
 	// Get the first baby image to display
 	const babyImage = baby.images[0]?.image_url;
 
@@ -68,7 +70,6 @@ export function CelebrityGenerationCard({ baby }: CelebrityGenerationCardProps) 
 				<div className="absolute top-3 right-3 px-2 py-1 backdrop-blur-md rounded-md border text-[10px] font-medium bg-background/60 border-border/50 text-foreground">
 					{getTimeAgo(baby.created_at)}
 				</div>
-
 			</div>
 
 			{/* Details */}
@@ -88,7 +89,7 @@ export function CelebrityGenerationCard({ baby }: CelebrityGenerationCardProps) 
 							alt={baby.celebrity.name}
 							width={100}
 							height={100}
-							className="w-8 h-8 rounded-full ring-2 ring-primary/50 object-cover"
+							className="w-8 h-8 rounded-full ring-2 ring-primary/50 object-cover bg-background"
 							title={baby.celebrity.name}
 						/>
 					</div>

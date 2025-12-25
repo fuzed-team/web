@@ -52,7 +52,10 @@ export const useGenerateCelebrityBaby = ({
 			queryClient.setQueryData(["baby", "celebrity", celebrityMatchId], {
 				baby: data,
 			});
-			queryClient.invalidateQueries({ queryKey: ["baby", "list"] });
+			queryClient.invalidateQueries({
+				queryKey: ["baby", "celebrity", "list"],
+				refetchType: "all",
+			});
 			queryClient.invalidateQueries({
 				queryKey: getUserQuotaQueryOptions().queryKey,
 			});
