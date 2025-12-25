@@ -89,21 +89,30 @@ export function CelebrityOfTheDayCard({
 
 	if (isLoading || initialLoading) {
 		return (
-			<div className="md:p-10 overflow-hidden w-full rounded-3xl mb-10 pt-8 pr-8 pb-8 pl-8 relative shadow-2xl shadow-purple-900/20 text-white bg-gradient-to-r from-violet-900 via-purple-800 to-blue-800 animate-pulse">
-				<div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
-					<div className="max-w-xl w-full space-y-6 text-center md:text-left flex flex-col items-center md:items-start">
-						<div className="h-7 w-48 bg-white/10 rounded-full" />
-						<div className="h-10 w-72 bg-white/10 rounded-lg" />
-						<div className="space-y-3 w-full max-w-md">
-							<div className="h-5 w-full bg-white/10 rounded" />
-							<div className="h-4 w-3/4 bg-white/10 rounded" />
-							<div className="h-10 w-5/6 bg-white/10 rounded mt-2" />
-						</div>
+			<div className="mb-10 w-full bg-linear-to-br from-[#4c1d95] via-[#4338ca] to-[#2e2382] rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row items-center justify-between p-6 md:p-10 relative gap-6 md:gap-4 border border-white/10 animate-pulse">
+				{/* Skeleton Left Section */}
+				<div className="flex-1 flex flex-col items-center md:items-start space-y-6 w-full max-w-md">
+					<div className="space-y-3">
+						<div className="h-6 w-24 bg-white/10 rounded-full" />
+						<div className="h-12 w-64 bg-white/10 rounded-xl" />
 					</div>
+					<div className="space-y-2 w-full">
+						<div className="h-6 w-48 bg-white/10 rounded-lg" />
+						<div className="h-4 w-56 bg-white/10 rounded-lg" />
+					</div>
+					<div className="h-12 w-40 bg-white/10 rounded-2xl" />
+				</div>
 
-					<div className="flex-shrink-0 relative">
-						<div className="w-48 h-48 md:w-56 md:h-56 bg-white/10 rounded-2xl border-4 border-white/5" />
-					</div>
+				{/* Skeleton Center Section */}
+				<div className="flex-shrink-0 order-first md:order-0">
+					<div className="w-64 h-64 md:w-72 md:h-72 bg-white/5 rounded-2xl border-4 border-white/5" />
+				</div>
+
+				{/* Skeleton Right Section */}
+				<div className="flex flex-col items-center md:items-end space-y-4 min-w-[160px]">
+					<div className="h-4 w-16 bg-white/10 rounded" />
+					<div className="h-16 w-24 bg-white/10 rounded-xl" />
+					<div className="h-2 w-32 bg-white/10 rounded-full" />
 				</div>
 			</div>
 		);
@@ -120,107 +129,155 @@ export function CelebrityOfTheDayCard({
 			animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
 			transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
 			className={cn(
-				"md:p-10 overflow-hidden group bg-gradient-to-r w-full rounded-3xl mb-10 pt-8 pr-8 pb-8 pl-8 relative shadow-2xl shadow-purple-900/20 text-white from-violet-900 via-purple-800 to-blue-800",
+				"mb-10 w-full bg-linear-to-br from-[#4c1d95] via-[#4338ca] to-[#2e2382] rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row items-center justify-between p-6 md:p-10 relative gap-6 md:gap-4 border border-white/10 shadow-indigo-900/20 text-white group",
 				className,
 			)}
 		>
-			<div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/30 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+			{/* Background Glow Effects */}
+			<div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+				<div className="absolute -top-[20%] -right-[10%] w-[600px] h-[600px] bg-purple-500/20 rounded-full blur-[100px] mix-blend-overlay" />
+				<div className="absolute -bottom-[20%] -left-[10%] w-[500px] h-[500px] bg-indigo-500/20 rounded-full blur-[100px] mix-blend-overlay" />
+			</div>
 
-			<div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
-				<div className="max-w-xl space-y-4 text-center md:text-left">
-					<div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/20 border text-xs font-medium border-purple-400/30 text-purple-100">
-						<span className="w-2 h-2 rounded-full animate-pulse bg-pink-400" />
-						Daily Featured Match
-					</div>
-					<h3 className="text-3xl md:text-4xl font-semibold tracking-tight leading-tight">
-						Celebrity Match of the Day
-					</h3>
-					<p className="text-base md:text-lg font-light leading-relaxed max-w-md mx-auto md:mx-0 text-purple-100">
-						Discover the daily featured celebrity similarity match.
-						{data.celebrity.bio && (
-							<span className="block mt-2 text-sm opacity-80 line-clamp-2">
-								{data.celebrity.bio}
-							</span>
-						)}
-					</p>
-				</div>
-
-				<div className="flex-shrink-0 relative">
-					<div className="absolute -top-4 -right-4 z-20 text-center animate-bounce duration-1000">
-						<span className="inline-block px-3 py-1 font-bold rounded-lg shadow-lg text-lg bg-white text-purple-900">
-							{matchPercentage}%
+			{/* Left Section: Content */}
+			<div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left z-10 space-y-6 max-w-md">
+				<div className="space-y-3">
+					{/* Badge */}
+					<div className="flex justify-center md:justify-start">
+						<span className="inline-flex items-center text-xs font-medium text-white/90 bg-white/10 border border-white/10 rounded-full px-3 py-1 backdrop-blur-md shadow-sm">
+							Daily Pick
 						</span>
 					</div>
-					<div
-						className="relative w-48 h-48 md:w-56 md:h-56 cursor-pointer group/img"
-						onClick={() => {
-							if (data.id && userPhoto) {
-								openBabyDialog(
-									{
-										id: data.id,
-										celeb: {
-											id: data.celebrity.id,
-											name: data.celebrity.name,
-											image: data.celebrity.image_url,
-											school: null,
-											bio: data.celebrity.bio,
-											category: data.celebrity.category,
-										},
-										matchPercentage,
-										timestamp: "now",
-										isNew: true,
-										isFavorited: false,
+
+					{/* Title */}
+					<h3 className="text-4xl md:text-5xl font-semibold text-white tracking-tight leading-[1.1]">
+						Celebrity Match
+					</h3>
+				</div>
+
+				{/* Description */}
+				<div className="space-y-2">
+					{data.celebrity.bio && (
+						<p className="text-sm font-medium text-white/50 max-w-[460px] mx-auto md:mx-0">
+							{data.celebrity.bio}
+						</p>
+					)}
+				</div>
+
+				{/* Action Button */}
+				<button
+					type="button"
+					onClick={() => {
+						if (data.id && userPhoto) {
+							openBabyDialog(
+								{
+									id: data.id,
+									celeb: {
+										id: data.celebrity.id,
+										name: data.celebrity.name,
+										image: data.celebrity.image_url,
+										school: null,
+										bio: data.celebrity.bio,
+										category: data.celebrity.category,
 									},
-									userPhoto,
-								);
-							}
-						}}
-						onKeyDown={(e) => {
-							if (e.key === "Enter" || e.key === " ") {
-								if (data.id && userPhoto) {
-									openBabyDialog(
-										{
-											id: data.id,
-											celeb: {
-												id: data.celebrity.id,
-												name: data.celebrity.name,
-												image: data.celebrity.image_url,
-												school: null,
-												bio: data.celebrity.bio,
-												category: data.celebrity.category,
-											},
-											matchPercentage,
-											timestamp: "now",
-											isNew: true,
-											isFavorited: false,
-										},
-										userPhoto,
-									);
-								}
-							}
-						}}
-						role="button"
-						tabIndex={0}
-					>
-						<BlurImage
-							src={data.celebrity.image_url}
-							alt={data.celebrity.name}
-							width={224}
-							height={224}
-							className="w-full h-full object-cover rounded-2xl shadow-2xl border-4 border-white/10 transition-transform group-hover/img:scale-105"
-						/>
-						<div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/60 to-transparent rounded-b-2xl">
-							<p className="text-center font-semibold text-sm">
-								{data.celebrity.name}
-							</p>
-						</div>
-						{/* Hover hint */}
-						<div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity bg-black/20 rounded-2xl">
-							<span className="px-3 py-1.5 bg-white/90 text-purple-900 rounded-full text-xs font-semibold shadow-lg">
-								✨ Generate Baby
-							</span>
+									matchPercentage,
+									timestamp: "now",
+									isNew: true,
+									isFavorited: false,
+								},
+								userPhoto,
+							);
+						}
+					}}
+					className="group relative inline-flex items-center justify-center gap-2.5 bg-linear-to-r from-primary to-purple-500 hover:opacity-90 text-primary-foreground px-6 py-3 rounded-xl transition-all duration-300 shadow-lg shadow-primary/25 hover:-translate-y-0.5 w-full md:w-auto overflow-hidden"
+				>
+					<div className="transition-opacity duration-300 bg-white/20 absolute inset-0 overflow-hidden">
+						<div className="pointer-events-none absolute inset-0 z-0">
+							{/* Floating bubbles animation */}
+							{[...Array(10)].map((_, i) => (
+								<motion.div
+									key={i}
+									className="absolute bottom-[-10px] h-0.5 w-0.5 rounded-full bg-white"
+									initial={{
+										y: 0,
+										opacity: 0.5 + Math.random() * 0.5,
+										left: `${Math.random() * 100}%`,
+									}}
+									animate={{
+										y: -60,
+										opacity: 0,
+									}}
+									transition={{
+										duration: 1.5 + Math.random() * 1.5,
+										repeat: Infinity,
+										delay: Math.random() * 2,
+										ease: "easeInOut",
+									}}
+								/>
+							))}
 						</div>
 					</div>
+					<span className="text-sm font-semibold tracking-wide relative z-10">
+						Generate Baby
+					</span>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="24"
+						height="24"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						strokeWidth="2"
+						strokeLinecap="round"
+						strokeLinejoin="round"
+						className="lucide lucide-sparkles z-10 relative w-[16px] h-[16px]"
+					>
+						<path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z" />
+						<path d="M20 2v4" />
+						<path d="M22 4h-4" />
+						<circle cx="4" cy="20" r="2" />
+					</svg>
+				</button>
+			</div>
+
+			{/* Center Section: Image */}
+			<div className="flex-shrink-0 z-10 order-first md:order-0 mb-6 md:mb-0">
+				<div className="relative w-64 h-64 md:w-72 md:h-72 bg-gray-900 rounded-2xl overflow-hidden shadow-2xl ring-4 ring-white/5 md:-rotate-1 hover:rotate-0 transition-transform duration-500 ease-out group/img cursor-pointer">
+					<BlurImage
+						src={data.celebrity.image_url}
+						alt={data.celebrity.name}
+						width={288}
+						height={288}
+						className="w-full h-full object-cover opacity-90 group-hover/img:opacity-100 transition-opacity duration-500"
+					/>
+					{/* Gradient overlay on image */}
+					<div className="absolute inset-0 bg-linear-to-t from-indigo-900/40 to-transparent mix-blend-overlay" />
+				</div>
+			</div>
+
+			{/* Right Section: Stats */}
+			<div className="flex flex-col items-center md:items-end text-center md:text-right z-10 space-y-1 min-w-[160px]">
+				<span className="text-xs font-semibold uppercase tracking-[0.2em] text-white/40 mb-1">
+					Match
+				</span>
+				<div className="flex items-start justify-end text-white leading-none">
+					<span className="text-7xl font-bold tracking-tighter drop-shadow-sm">
+						{matchPercentage}
+					</span>
+					<span className="text-3xl font-medium text-white/50 mt-1.5 ml-1">
+						%
+					</span>
+				</div>
+
+				{/* Progress Bar */}
+				<div className="w-32 h-2 bg-white/10 rounded-full mt-4 overflow-hidden backdrop-blur-sm relative">
+					{/* Glowing bar */}
+					<motion.div
+						initial={{ width: 0 }}
+						animate={{ width: `${matchPercentage}%` }}
+						transition={{ duration: 1.5, ease: "easeOut" }}
+						className="absolute top-0 left-0 h-full bg-linear-to-r from-primary to-purple-500 rounded-full shadow-[0_0_10px_rgba(167,139,250,0.5)]"
+					/>
 				</div>
 			</div>
 		</motion.div>
