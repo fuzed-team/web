@@ -24,12 +24,17 @@ export type UserMatchInput = {
 	signal?: AbortSignal;
 };
 
+type UserMatchResponse = {
+	matches: UserMatchApi[];
+	total: number;
+};
+
 export const getUserMatchApi = async (
 	input: UserMatchInput,
-): Promise<UserMatchApi[]> => {
+): Promise<UserMatchResponse> => {
 	const { signal, skip, faceId, limit, sortBy } = input;
 
-	const response = await api.get<{ matches: UserMatchApi[]; total: number }>(
+	const response = await api.get<UserMatchResponse>(
 		"/matches/for-image",
 		{
 			params: {
@@ -41,13 +46,16 @@ export const getUserMatchApi = async (
 			signal,
 		},
 	);
-	return response.matches;
+	return response;
 };
 
 export const getUserMatchQueryOptions = (input: UserMatchInput) => {
 	return queryOptions({
 		queryKey: ["matching", "user", input],
-		queryFn: ({ signal }) => getUserMatchApi({ ...input, signal }),
+		queryFn: async ({ signal }) => {
+			const response = await getUserMatchApi({ ...input, signal });
+			return response.matches;
+		},
 	});
 };
 
@@ -74,7 +82,7 @@ export const useUserMatchInfinite = ({
 	queryConfig,
 }: UseUserMatchInfiniteOptions) => {
 	return useInfiniteQuery<
-		UserMatchApi[],
+		UserMatchResponse,
 		Error,
 		ReturnType<typeof transformApiUserMatchesToDisplayData>,
 		string[],
@@ -88,15 +96,17 @@ export const useUserMatchInfinite = ({
 				signal,
 			}),
 		getNextPageParam: (lastPage, _, lastPageParam) => {
-			if (lastPage.length === 0) {
+			const nextSkip = lastPageParam + input.limit;
+			// Stop fetching if we've already loaded all items
+			if (lastPage.matches.length === 0 || nextSkip >= lastPage.total) {
 				return undefined;
 			}
-			return lastPageParam + input.limit;
+			return nextSkip;
 		},
 		initialPageParam: PAGINATION.DEFAULT_OFFSET,
 		select: (data) => {
 			return data.pages.flatMap((page) => {
-				return transformApiUserMatchesToDisplayData(page);
+				return transformApiUserMatchesToDisplayData(page.matches);
 			});
 		},
 		...queryConfig,

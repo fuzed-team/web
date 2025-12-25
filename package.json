@@ -9,7 +9,7 @@
 		"lint": "biome check --write",
 		"lint:unsafe": "biome check --write --unsafe",
 		"seed:celebrities": "bun run scripts/generate-celebrity-embeddings.ts",
-		"gen:type": "npx supabase gen types typescript --project-id 'lsbzbltpmmtplakdrjvq' --schema public > src/types/database.types.ts"
+		"gen:type": "npx supabase gen types typescript --linked --schema public > src/types/database.types.ts"
 	},
 	"dependencies": {
 		"@dnd-kit/core": "^6.3.1",

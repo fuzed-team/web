@@ -1,13 +1,13 @@
-import { ArrowRight, Download, Share2 } from "lucide-react";
+import { Download, Share2, Sparkles } from "lucide-react";
 import { BlurImage } from "@/components/blur-image";
-import type { BabyListItem } from "@/features/matching/api/get-baby-list";
+import type { CelebrityBabyListItem } from "@/features/matching/api/get-celebrity-baby-list";
 import { getTimeAgo } from "@/lib/utils/date";
 
-interface GenerationCardProps {
-	baby: BabyListItem;
+interface CelebrityGenerationCardProps {
+	baby: CelebrityBabyListItem;
 }
 
-export function GenerationCard({ baby }: GenerationCardProps) {
+export function CelebrityGenerationCard({ baby }: CelebrityGenerationCardProps) {
 	// Get the first baby image to display
 	const babyImage = baby.images[0]?.image_url;
 
@@ -22,14 +22,14 @@ export function GenerationCard({ baby }: GenerationCardProps) {
 		e.stopPropagation();
 		if (navigator.share && babyImage) {
 			navigator.share({
-				title: `Baby with ${baby.other.name}`,
+				title: `Baby with ${baby.celebrity.name}`,
 				url: babyImage,
 			});
 		}
 	};
 
 	return (
-		<div className="group relative flex flex-col border rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 bg-card border-border hover:border-primary/20 hover:shadow-primary/10 cursor-pointer">
+		<div className="group relative flex flex-col border rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 bg-card border-border hover:border-primary/30 hover:shadow-primary/10 cursor-pointer">
 			{/* Image Container */}
 			<div className="relative aspect-square overflow-hidden bg-muted">
 				{babyImage ? (
@@ -68,6 +68,7 @@ export function GenerationCard({ baby }: GenerationCardProps) {
 				<div className="absolute top-3 right-3 px-2 py-1 backdrop-blur-md rounded-md border text-[10px] font-medium bg-background/60 border-border/50 text-foreground">
 					{getTimeAgo(baby.created_at)}
 				</div>
+
 			</div>
 
 			{/* Details */}
@@ -83,21 +84,26 @@ export function GenerationCard({ baby }: GenerationCardProps) {
 							title="You"
 						/>
 						<BlurImage
-							src={baby.other.image || ""}
-							alt={baby.other.name}
+							src={baby.celebrity.image || ""}
+							alt={baby.celebrity.name}
 							width={100}
 							height={100}
-							className="w-8 h-8 rounded-full ring-2 ring-card object-cover"
-							title={baby.other.name}
+							className="w-8 h-8 rounded-full ring-2 ring-primary/50 object-cover"
+							title={baby.celebrity.name}
 						/>
 					</div>
 					<div className="text-right">
 						<div className="text-sm text-muted-foreground">
 							with{" "}
-							<span className="font-medium text-foreground">
-								{baby.other.name}
+							<span className="font-medium text-primary">
+								{baby.celebrity.name}
 							</span>
 						</div>
+						{baby.celebrity.category && (
+							<div className="text-[10px] text-muted-foreground">
+								{baby.celebrity.category}
+							</div>
+						)}
 					</div>
 				</div>
 			</div>

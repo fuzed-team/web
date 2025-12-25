@@ -15,24 +15,32 @@ export type LiveMatchInput = {
 	signal?: AbortSignal;
 };
 
+type LiveMatchResponse = {
+	matches: LiveMatchApi[];
+	total: number;
+};
+
 export const getLiveMatchApi = async (
 	input: LiveMatchInput,
-): Promise<LiveMatchApi[]> => {
+): Promise<LiveMatchResponse> => {
 	const { signal, ...query } = input;
-	const response = await api.get<{ matches: LiveMatchApi[]; total: number }>(
+	const response = await api.get<LiveMatchResponse>(
 		"/matches/top",
 		{
 			params: query,
 			signal,
 		},
 	);
-	return response.matches;
+	return response;
 };
 
 export const getLiveMatchQueryOptions = (input: LiveMatchInput) => {
 	return queryOptions({
 		queryKey: ["matching", "top", input],
-		queryFn: () => getLiveMatchApi(input),
+		queryFn: async () => {
+			const response = await getLiveMatchApi(input);
+			return response.matches;
+		},
 	});
 };
 
@@ -75,15 +83,17 @@ export const useLiveMatchInfinite = ({
 				signal,
 			}),
 		getNextPageParam: (lastPage, _, lastPageParam) => {
-			if (lastPage.length === 0) {
+			const nextSkip = lastPageParam + input.limit;
+			// Stop fetching if we've already loaded all items
+			if (lastPage.matches.length === 0 || nextSkip >= lastPage.total) {
 				return undefined;
 			}
-			return lastPageParam + input.limit;
+			return nextSkip;
 		},
 		initialPageParam: PAGINATION.DEFAULT_OFFSET,
 		select: (data) => {
 			return data.pages.flatMap((page) => {
-				return transformApiMatchesToDisplayData(page);
+				return transformApiMatchesToDisplayData(page.matches);
 			});
 		},
 		...queryConfig,

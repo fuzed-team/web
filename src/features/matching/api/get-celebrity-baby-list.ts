@@ -8,19 +8,18 @@ import { PAGINATION } from "@/lib/constants/constant";
 import type { QueryConfig } from "@/lib/react-query";
 
 // Types
-export type BabyListItem = {
-	id: string; // match_id
+export type CelebrityBabyListItem = {
+	id: string; // celebrity_match_id
 	me: {
 		id: string;
 		name: string;
 		image: string;
-		school: string;
 	};
-	other: {
+	celebrity: {
 		id: string;
 		name: string;
 		image: string;
-		school: string;
+		category?: string;
 	};
 	created_at: string;
 	images: Array<{
@@ -29,67 +28,69 @@ export type BabyListItem = {
 	}>;
 };
 
-export type GetBabyListInput = {
+export type GetCelebrityBabyListInput = {
 	userId?: string;
 	skip?: number;
 	limit?: number;
 };
 
-type BabyListResponse = {
-	babies: BabyListItem[];
+type CelebrityBabyListResponse = {
+	babies: CelebrityBabyListItem[];
 	total: number;
 	skip: number;
 	limit: number;
 };
 
 // API Function
-export const getBabyListApi = async (
-	input: GetBabyListInput = {},
+export const getCelebrityBabyListApi = async (
+	input: GetCelebrityBabyListInput = {},
 	signal?: AbortSignal,
-): Promise<BabyListResponse> => {
-	const response = await api.get<BabyListResponse>("/baby/list", {
-		params: input,
-		signal,
-	});
+): Promise<CelebrityBabyListResponse> => {
+	const response = await api.get<CelebrityBabyListResponse>(
+		"/baby/celebrity/list",
+		{ params: input, signal },
+	);
 	return response;
 };
 
 // Query Options
-export const getBabyListQueryOptions = (input: GetBabyListInput = {}) => {
+export const getCelebrityBabyListQueryOptions = (
+	input: GetCelebrityBabyListInput = {},
+) => {
 	return queryOptions({
-		queryKey: ["baby", "list", input],
-		queryFn: ({ signal }) => getBabyListApi(input, signal),
+		queryKey: ["baby", "celebrity", "list", input],
+		queryFn: ({ signal }) => getCelebrityBabyListApi(input, signal),
 	});
 };
 
 // Hooks
-type UseBabyListOptions = {
-	input?: GetBabyListInput;
-	queryConfig?: QueryConfig<typeof getBabyListQueryOptions>;
+type UseCelebrityBabyListOptions = {
+	input?: GetCelebrityBabyListInput;
+	queryConfig?: QueryConfig<typeof getCelebrityBabyListQueryOptions>;
 };
 
-export const useBabyList = ({
+export const useCelebrityBabyList = ({
 	input = {},
 	queryConfig,
-}: UseBabyListOptions = {}) => {
+}: UseCelebrityBabyListOptions = {}) => {
 	return useQuery({
-		...getBabyListQueryOptions(input),
+		...getCelebrityBabyListQueryOptions(input),
 		...queryConfig,
 	});
 };
 
 // Infinite Query Hook
-type UseBabyListInfiniteOptions = {
-	input?: GetBabyListInput;
+type UseCelebrityBabyListInfiniteOptions = {
+	input?: GetCelebrityBabyListInput;
 };
 
-export const useBabyListInfinite = ({
+export const useCelebrityBabyListInfinite = ({
 	input = { skip: PAGINATION.DEFAULT_OFFSET, limit: PAGINATION.DEFAULT_LIMIT },
-}: UseBabyListInfiniteOptions = {}) => {
+}: UseCelebrityBabyListInfiniteOptions = {}) => {
 	return useInfiniteQuery({
-		queryKey: ["baby", "list", "infinite"],
+		queryKey: ["baby", "celebrity", "list", "infinite"],
 		queryFn: ({ pageParam = PAGINATION.DEFAULT_OFFSET, signal }) =>
-			getBabyListApi(
+			getCelebrityBabyListApi(
 				{
 					...input,
 					skip: pageParam,

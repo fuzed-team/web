@@ -2,12 +2,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export const MatchesGridSkeleton = () => {
 	return (
-		<div className="relative aspect-[4/5] rounded-2xl overflow-hidden dark:bg-[#1A1D24] bg-slate-100 border dark:border-white/5 border-slate-200 shadow-sm">
+		<div className="relative aspect-4/5 rounded-2xl overflow-hidden dark:bg-[#1A1D24] bg-slate-100 border dark:border-white/5 border-slate-200 shadow-sm">
 			{/* Main Image Skeleton */}
 			<Skeleton className="w-full h-full rounded-none" />
 
 			{/* Overlay Gradient (simulating the one in MatchCard) */}
-			<div className="absolute inset-0 bg-linear-to-t from-black/60 dark:from-black/80 via-transparent to-transparent pointer-events-none" />
+			<div className="absolute inset-0 bg-linear-to-t from-black/10 dark:from-black/80 via-transparent to-transparent pointer-events-none" />
 
 			{/* Info Overlay Skeleton */}
 			<div className="absolute bottom-4 left-4 right-4 z-10">

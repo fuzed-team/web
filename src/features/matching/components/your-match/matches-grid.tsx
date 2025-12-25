@@ -124,7 +124,7 @@ export function MatchesGrid({
 			<div className="mb-6">
 				<h2 className="md:text-2xl text-xl font-semibold tracking-tight text-foreground">
 					Your Daily Matches at{" "}
-					<span className="bg-gradient-to-r bg-clip-text text-transparent from-primary to-purple-600">
+					<span className="bg-linear-to-r bg-clip-text text-transparent from-primary to-purple-600">
 						{schoolName}
 					</span>
 				</h2>
