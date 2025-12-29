@@ -360,13 +360,24 @@ CREATE OR REPLACE FUNCTION "public"."find_similar_faces_advanced"("query_face_id
     LANGUAGE "plpgsql" SECURITY DEFINER
     SET "search_path" TO 'public', 'extensions'
     AS $$
+DECLARE
+    rate_limit int;
+    rate_window_minutes int;
 BEGIN
+    -- Get rate limit settings from EXISTING keys
+    SELECT value::int INTO rate_limit FROM system_settings WHERE key = 'match_rate_limit';
+    SELECT value::int INTO rate_window_minutes FROM system_settings WHERE key = 'match_time_window_minutes';
+
+    -- Default values if settings are missing (fallback)
+    rate_limit := COALESCE(rate_limit, 2);
+    rate_window_minutes := COALESCE(rate_window_minutes, 60); -- Default to 60 minutes (1 hour)
+
     RETURN QUERY
     WITH query_face AS (
         SELECT f.embedding, f.age, f.symmetry_score, f.skin_tone_lab, f.expression, f.geometry_ratios
         FROM faces f WHERE f.id = query_face_id
     ),
-    -- NEW: Get already matched faces directly from matches table
+    -- Get already matched faces directly from matches table
     already_matched AS (
         SELECT DISTINCT 
             CASE 
@@ -375,6 +386,19 @@ BEGIN
             END as matched_face_id
         FROM matches
         WHERE face_a_id = query_face_id OR face_b_id = query_face_id
+    ),
+    -- NEW: Identify faces that have exceeded the match rate limit
+    faces_over_rate_limit AS (
+        SELECT matched_face_id as over_matched_face_id
+        FROM (
+            SELECT face_a_id as matched_face_id FROM matches 
+            WHERE created_at > NOW() - (rate_window_minutes || ' minutes')::interval
+            UNION ALL
+            SELECT face_b_id as matched_face_id FROM matches 
+            WHERE created_at > NOW() - (rate_window_minutes || ' minutes')::interval
+        ) recent_matches
+        GROUP BY matched_face_id
+        HAVING COUNT(*) >= rate_limit
     ),
     candidate_matches AS (
         SELECT f.id as face_id, p.id as profile_id,
@@ -394,6 +418,7 @@ BEGIN
             AND p.gender != user_gender
             AND p.default_face_id = f.id  -- Only match faces set as default
             AND am.matched_face_id IS NULL  -- Exclude already matched
+            AND f.id NOT IN (SELECT over_matched_face_id FROM faces_over_rate_limit) -- NEW: Exclude over-matched faces (fixed column name)
     )
     SELECT cm.face_id, cm.profile_id, cm.similarity, cm.image_path, cm.name, cm.age, cm.expression
     FROM candidate_matches cm 
@@ -831,14 +856,20 @@ SET default_table_access_method = "heap";
 
 CREATE TABLE IF NOT EXISTS "public"."babies" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
-    "match_id" "uuid" NOT NULL,
+    "match_id" "uuid",
     "generated_by_profile_id" "uuid",
     "image_url" "text" NOT NULL,
-    "created_at" timestamp with time zone DEFAULT "now"()
+    "created_at" timestamp with time zone DEFAULT "now"(),
+    "celebrity_match_id" "uuid",
+    CONSTRAINT "babies_match_or_celebrity_check" CHECK (((("match_id" IS NOT NULL) AND ("celebrity_match_id" IS NULL)) OR (("match_id" IS NULL) AND ("celebrity_match_id" IS NOT NULL))))
 );
 
 
 ALTER TABLE "public"."babies" OWNER TO "postgres";
+
+
+COMMENT ON COLUMN "public"."babies"."celebrity_match_id" IS 'Reference to celebrity_matches table for babies generated with celebrities';
+
 
 
 CREATE TABLE IF NOT EXISTS "public"."celebrities" (
@@ -868,6 +899,7 @@ CREATE TABLE IF NOT EXISTS "public"."celebrities" (
     "is_featured" boolean DEFAULT false,
     "featured_from" timestamp with time zone,
     "featured_until" timestamp with time zone,
+    "original_image_path" "text",
     CONSTRAINT "celebrities_gender_check" CHECK (("gender" = ANY (ARRAY['male'::"text", 'female'::"text"])))
 );
 
@@ -899,7 +931,7 @@ COMMENT ON COLUMN "public"."celebrities"."gender" IS 'Gender for filtering match
 
 
 
-COMMENT ON COLUMN "public"."celebrities"."image_path" IS 'Storage path in celebrity-images bucket';
+COMMENT ON COLUMN "public"."celebrities"."image_path" IS 'Path to the processed image in Supabase Storage (with background removed, PNG format)';
 
 
 
@@ -960,6 +992,10 @@ COMMENT ON COLUMN "public"."celebrities"."expression_confidence" IS 'Confidence 
 
 
 COMMENT ON COLUMN "public"."celebrities"."analyzed_at" IS 'Timestamp when advanced analysis was performed';
+
+
+
+COMMENT ON COLUMN "public"."celebrities"."original_image_path" IS 'Path to the original image in Supabase Storage (before background removal)';
 
 
 
@@ -1452,6 +1488,10 @@ CREATE INDEX "faces_embedding_hnsw_idx" ON "public"."faces" USING "hnsw" ("embed
 
 
 
+CREATE INDEX "idx_babies_celebrity_match_id" ON "public"."babies" USING "btree" ("celebrity_match_id");
+
+
+
 CREATE INDEX "idx_babies_created_at" ON "public"."babies" USING "btree" ("created_at" DESC);
 
 
@@ -1673,6 +1713,11 @@ CREATE OR REPLACE TRIGGER "celebrities_updated_at_trigger" BEFORE UPDATE ON "pub
 
 
 CREATE OR REPLACE TRIGGER "trigger_update_celebrity_matches_updated_at" BEFORE UPDATE ON "public"."celebrity_matches" FOR EACH ROW EXECUTE FUNCTION "public"."update_celebrity_matches_updated_at"();
+
+
+
+ALTER TABLE ONLY "public"."babies"
+    ADD CONSTRAINT "babies_celebrity_match_id_fkey" FOREIGN KEY ("celebrity_match_id") REFERENCES "public"."celebrity_matches"("id") ON DELETE SET NULL;
 
 
 
