@@ -36,7 +36,7 @@ import { readdir, readFile } from "node:fs/promises";
 import { basename, extname, join } from "node:path";
 import { createClient } from "@supabase/supabase-js";
 import { STORAGE_BUCKETS } from "@/lib/constants/constant";
-import { analyzeAdvancedFace } from "../src/lib/services/ai-service";
+import { analyzeAdvancedFace } from "@/lib/services/ai-service";
 
 // Configuration
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
