@@ -74,7 +74,7 @@ export function ChatMessage({
 				transition={{ duration: 0.3 }}
 				className={cn("flex justify-center my-6", className)}
 			>
-				<div className="bg-gradient-to-r from-pink-400 to-red-400 dark:from-purple-900/30 dark:to-pink-900/30 rounded-2xl px-6 py-3 max-w-md text-center">
+				<div className="bg-linear-to-r from-pink-400 to-primary dark:from-purple-900/30 dark:to-pink-900/30 rounded-2xl px-6 py-3 max-w-md text-center">
 					<p className="text-sm text-white dark:text-purple-100">{content}</p>
 				</div>
 			</motion.div>
@@ -96,10 +96,9 @@ export function ChatMessage({
 				"flex mb-2",
 				isOwn ? "justify-end" : "justify-start",
 				className,
-				pending && "opacity-30", // Reduced opacity for pending messages
 			)}
 		>
-			<div>
+			<div className={cn(pending && "opacity-70")}>
 				{showHeader && (
 					<div
 						className={cn("flex gap-2 text-xs px-3 mb-1", {
@@ -120,7 +119,7 @@ export function ChatMessage({
 				)}
 				<div
 					className={cn(
-						"chat-box max-w-72 px-3 py-2 break-words shadow-lg",
+						"chat-box max-w-72 px-3 py-2 wrap-break-words shadow-lg",
 						isOwn
 							? "bg-primary text-primary-foreground self-end rounded-[16px_16px_0_16px]"
 							: "bg-muted self-start rounded-[16px_16px_16px_0]",

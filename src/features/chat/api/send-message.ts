@@ -24,6 +24,17 @@ export function useSendMessage() {
 			]);
 
 			if (previousMessages && currentUser) {
+				// Ensure optimistic message timestamp is always greater than any existing message
+				// This prevents sorting issues when messages from other users arrive via realtime
+				const existingTimestamps = previousMessages.messages.map((msg) =>
+					new Date(msg.created_at).getTime(),
+				);
+				const maxExistingTimestamp = Math.max(0, ...existingTimestamps);
+				const optimisticTimestamp = Math.max(
+					maxExistingTimestamp + 1,
+					Date.now(),
+				);
+
 				const optimisticMessage: Message = {
 					id: `temp-${Date.now()}`, // Temporary ID
 					local_id: `temp-${Date.now()}`,
@@ -32,7 +43,7 @@ export function useSendMessage() {
 					content: variables.content,
 					message_type: variables.message_type || "text",
 					read_at: null,
-					created_at: new Date().toISOString(),
+					created_at: new Date(optimisticTimestamp).toISOString(),
 					pending: true, // Mark as pending for reduced opacity
 				};
 

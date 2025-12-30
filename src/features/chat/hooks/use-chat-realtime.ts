@@ -1,6 +1,8 @@
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect } from "react";
+import { useUser } from "@/features/auth/api/get-me";
+import { useMarkMessageNotificationsRead } from "@/features/notifications/api/mark-message-notifications-read";
 import { createClient } from "@/lib/supabase/client";
 import type { Message } from "../types";
 
@@ -25,6 +27,8 @@ export function useChatRealtime({
 }: UseChatRealtimeOptions) {
 	const queryClient = useQueryClient();
 	const supabase = createClient();
+	const currentUser = useUser();
+	const markAsReadMutation = useMarkMessageNotificationsRead();
 
 	const handleNewMessage = useCallback(
 		(message: Message) => {
@@ -69,13 +73,19 @@ export function useChatRealtime({
 				},
 			);
 
+			// If the message is from someone else (not current user), mark as read automatically
+			// since the user is already viewing this conversation
+			if (currentUser?.id && message.sender_id !== currentUser.id) {
+				markAsReadMutation.mutate({ connection_id: connectionId });
+			}
+
 			// Invalidate connections to update last message preview
 			queryClient.invalidateQueries({ queryKey: ["connections"] });
 
 			// Call optional callback
 			onMessage?.(message);
 		},
-		[connectionId, queryClient, onMessage],
+		[connectionId, queryClient, onMessage, currentUser?.id, markAsReadMutation],
 	);
 
 	useEffect(() => {
