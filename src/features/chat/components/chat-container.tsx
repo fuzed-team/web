@@ -1,6 +1,7 @@
 "use client";
 
 import { MessagesSquare } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useLayout } from "@/features/admin/context/layout-provider";
 import { cn } from "@/lib/utils";
@@ -8,6 +9,8 @@ import { useConnections } from "../api/get-connections";
 import type { MutualConnection } from "../types";
 import { ChatList } from "./chat-list";
 import { ChatRoom } from "./chat-room";
+import { AIChatContainer } from "@/features/ai-chat/components/ai-chat-container";
+import { useCelebrity } from "@/features/ai-chat/api/get-celebrity";
 
 interface ChatContainerProps {
 	/**
@@ -17,11 +20,20 @@ interface ChatContainerProps {
 }
 
 export function ChatContainer({ defaultConnectionId }: ChatContainerProps) {
+	const searchParams = useSearchParams();
+	const initialTab = searchParams.get("tab") === "ai" ? "ai" : "inbox";
+	const initialCelebId = searchParams.get("celebId");
+
+	const [activeTab, setActiveTab] = useState<"inbox" | "ai">(initialTab);
 	const [selectedConnection, setSelectedConnection] =
 		useState<MutualConnection | null>(null);
+	const [selectedCelebrityId, setSelectedCelebrityId] = useState<string | null>(initialCelebId);
 	const [mobileSelectedConnection, setMobileSelectedConnection] =
 		useState<MutualConnection | null>(null);
 	const { setHeaderVisible } = useLayout();
+
+	const { data: celebData } = useCelebrity({ id: selectedCelebrityId || "" });
+	const celebrity = celebData;
 
 	const { data } = useConnections();
 	const connections = data?.connections || [];
@@ -61,26 +73,37 @@ export function ChatContainer({ defaultConnectionId }: ChatContainerProps) {
 				connections={connections}
 				selectedConnectionId={selectedConnection?.id}
 				onConnectionSelect={handleConnectionSelect}
+				activeTab={activeTab}
+				onTabChange={setActiveTab}
+				selectedCelebrityId={selectedCelebrityId || undefined}
+				onCelebritySelect={setSelectedCelebrityId}
 			/>
 
-			{/* Right Side - Chat Room or Empty State */}
-			{selectedConnection ? (
+			{/* Right Side - Chat Room, AI Chat Container or Empty State */}
+			{(activeTab === "inbox" && selectedConnection) || (activeTab === "ai" && celebrity) ? (
 				<div
 					className={cn(
 						"bg-white absolute inset-0 start-full z-50 hidden w-full flex-1 flex-col border shadow-xs overflow-hidden sm:static sm:z-auto sm:flex sm:rounded-md",
-						mobileSelectedConnection && "start-0 flex",
+						(activeTab === "inbox" ? mobileSelectedConnection : celebrity) && "start-0 flex",
 					)}
 				>
-					<ChatRoom
-						connectionId={selectedConnection.id}
-						connection={{
-							id: selectedConnection.id,
-							other_user: selectedConnection.other_user,
-							baby_image: selectedConnection.baby_image,
-						}}
-						onBack={() => setMobileSelectedConnection(null)}
-						className="h-full"
-					/>
+					{activeTab === "inbox" && selectedConnection ? (
+						<ChatRoom
+							connectionId={selectedConnection.id}
+							connection={{
+								id: selectedConnection.id,
+								other_user: selectedConnection.other_user,
+								baby_image: selectedConnection.baby_image,
+							}}
+							onBack={() => setMobileSelectedConnection(null)}
+							className="h-full"
+						/>
+					) : activeTab === "ai" && celebrity ? (
+						<AIChatContainer
+							celebrity={celebrity}
+							onBack={() => setSelectedCelebrityId(null)}
+						/>
+					) : null}
 				</div>
 			) : (
 				<div
@@ -93,9 +116,13 @@ export function ChatContainer({ defaultConnectionId }: ChatContainerProps) {
 							<MessagesSquare className="size-8" />
 						</div>
 						<div className="space-y-2 text-center">
-							<h1 className="text-xl font-semibold">Your messages</h1>
+							<h1 className="text-xl font-semibold">
+								{activeTab === "inbox" ? "Your messages" : "AI Celebrity Chats"}
+							</h1>
 							<p className="text-muted-foreground text-sm">
-								Select a conversation to start a chat.
+								{activeTab === "inbox" 
+									? "Select a conversation to start a chat." 
+									: "Select a celebrity match to start an AI conversation."}
 							</p>
 						</div>
 					</div>

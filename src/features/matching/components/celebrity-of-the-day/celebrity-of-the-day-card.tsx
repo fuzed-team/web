@@ -2,7 +2,6 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
 import { BlurImage } from "@/components/blur-image";
 
 import { cn } from "@/lib/utils";
@@ -52,7 +51,6 @@ export function CelebrityOfTheDayCard({
 	className,
 	initialLoading,
 }: CelebrityOfTheDayCardProps) {
-	const [timeLeft, setTimeLeft] = useState("");
 	const { onOpen: openBabyDialog } = useCelebrityBabyActions();
 
 	const { data, isLoading, error } = useQuery({
@@ -63,35 +61,11 @@ export function CelebrityOfTheDayCard({
 		refetchOnWindowFocus: false,
 	});
 
-	useEffect(() => {
-		if (!data?.celebrity?.featured_until) return;
-
-		const updateTimer = () => {
-			const now = Date.now();
-			const end = new Date(data.celebrity.featured_until).getTime();
-			const diff = end - now;
-
-			if (diff <= 0) {
-				setTimeLeft("Expired");
-				return;
-			}
-
-			const hours = Math.floor(diff / (1000 * 60 * 60));
-			const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-			setTimeLeft(`${hours}h ${minutes}m left`);
-		};
-
-		updateTimer();
-		const interval = setInterval(updateTimer, 60000); // Update every minute
-
-		return () => clearInterval(interval);
-	}, [data]);
-
 	if (isLoading || initialLoading) {
 		return (
 			<div className="mb-10 w-full bg-linear-to-br from-[#4c1d95] via-[#4338ca] to-[#2e2382] rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row items-center justify-between p-6 md:p-10 relative gap-6 md:gap-4 border border-white/10 animate-pulse">
 				{/* Skeleton Left Section */}
-				<div className="flex-1 flex flex-col items-center md:items-start space-y-6 w-full max-w-md">
+				<div className="flex-1 flex flex-col items-center md:items-start space-y-6 w-full max-md">
 					<div className="space-y-3">
 						<div className="h-6 w-24 bg-white/10 rounded-full" />
 						<div className="h-12 w-64 bg-white/10 rounded-xl" />
@@ -166,80 +140,108 @@ export function CelebrityOfTheDayCard({
 					)}
 				</div>
 
-				{/* Action Button */}
-				<button
-					type="button"
-					onClick={() => {
-						if (data.id && userPhoto) {
-							openBabyDialog(
-								{
-									id: data.id,
-									celeb: {
-										id: data.celebrity.id,
-										name: data.celebrity.name,
-										image: data.celebrity.image_url,
-										school: null,
-										bio: data.celebrity.bio,
-										category: data.celebrity.category,
+				{/* Action Buttons */}
+				<div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+					<button
+						type="button"
+						onClick={() => {
+							if (data.id && userPhoto) {
+								openBabyDialog(
+									{
+										id: data.id,
+										celeb: {
+											id: data.celebrity.id,
+											name: data.celebrity.name,
+											image: data.celebrity.image_url,
+											school: null,
+											bio: data.celebrity.bio,
+											category: data.celebrity.category,
+										},
+										matchPercentage,
+										timestamp: "now",
+										isNew: true,
+										isFavorited: false,
 									},
-									matchPercentage,
-									timestamp: "now",
-									isNew: true,
-									isFavorited: false,
-								},
-								userPhoto,
-							);
-						}
-					}}
-					className="group relative inline-flex items-center justify-center gap-2.5 bg-linear-to-r from-primary to-purple-500 hover:opacity-90 text-primary-foreground px-6 py-3 rounded-xl transition-all duration-300 shadow-lg shadow-primary/25 hover:-translate-y-0.5 w-full md:w-auto overflow-hidden"
-				>
-					<div className="transition-opacity duration-300 bg-white/20 absolute inset-0 overflow-hidden">
-						<div className="pointer-events-none absolute inset-0 z-0">
-							{/* Floating bubbles animation */}
-							{[...Array(10)].map((_, i) => (
-								<motion.div
-									key={i}
-									className="absolute bottom-[-10px] h-0.5 w-0.5 rounded-full bg-white"
-									initial={{
-										y: 0,
-										opacity: 0.5 + Math.random() * 0.5,
-										left: `${Math.random() * 100}%`,
-									}}
-									animate={{
-										y: -60,
-										opacity: 0,
-									}}
-									transition={{
-										duration: 1.5 + Math.random() * 1.5,
-										repeat: Infinity,
-										delay: Math.random() * 2,
-										ease: "easeInOut",
-									}}
-								/>
-							))}
-						</div>
-					</div>
-					<span className="text-sm font-semibold tracking-wide relative z-10">
-						Generate Baby
-					</span>
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="24"
-						height="24"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						strokeWidth="2"
-						strokeLinecap="round"
-						strokeLinejoin="round"
-						className="lucide lucide-sparkles z-10 relative w-[16px] h-[16px]"
+									userPhoto,
+								);
+							}
+						}}
+						className="group relative inline-flex items-center justify-center gap-2.5 bg-linear-to-r from-primary to-purple-500 hover:opacity-90 text-primary-foreground px-6 py-3 rounded-xl transition-all duration-300 shadow-lg shadow-primary/25 hover:-translate-y-0.5 w-full md:w-auto overflow-hidden"
 					>
-						<path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z" />
-						<path d="M20 2v4" />
-						<path d="M22 4h-4" />
-						<circle cx="4" cy="20" r="2" />
-					</svg>
-				</button>
+						<div className="transition-opacity duration-300 bg-white/20 absolute inset-0 overflow-hidden">
+							<div className="pointer-events-none absolute inset-0 z-0">
+								{/* Floating bubbles animation */}
+								{[...Array(10)].map((_, i) => (
+									<motion.div
+										key={i}
+										className="absolute bottom-[-10px] h-0.5 w-0.5 rounded-full bg-white"
+										initial={{
+											y: 0,
+											opacity: 0.5 + Math.random() * 0.5,
+											left: `${Math.random() * 100}%`,
+										}}
+										animate={{
+											y: -60,
+											opacity: 0,
+										}}
+										transition={{
+											duration: 1.5 + Math.random() * 1.5,
+											repeat: Infinity,
+											delay: Math.random() * 2,
+											ease: "easeInOut",
+										}}
+									/>
+								))}
+							</div>
+						</div>
+						<span className="text-sm font-semibold tracking-wide relative z-10">
+							Generate Baby
+						</span>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="24"
+							height="24"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							strokeWidth="2"
+							strokeLinecap="round"
+							strokeLinejoin="round"
+							className="lucide lucide-sparkles z-10 relative w-[16px] h-[16px]"
+						>
+							<path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z" />
+							<path d="M20 2v4" />
+							<path d="M22 4h-4" />
+							<circle cx="4" cy="20" r="2" />
+						</svg>
+					</button>
+
+					<button
+						type="button"
+						onClick={() => {
+							window.location.href = `/chat?tab=ai&celebId=${data.celebrity.id}`;
+						}}
+						className="group relative inline-flex items-center justify-center gap-2.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white px-6 py-3 rounded-xl transition-all duration-300 backdrop-blur-md hover:-translate-y-0.5 w-full md:w-auto overflow-hidden"
+					>
+						<span className="text-sm font-semibold tracking-wide relative z-10">
+							Chat with AI
+						</span>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="24"
+							height="24"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							strokeWidth="2"
+							strokeLinecap="round"
+							strokeLinejoin="round"
+							className="lucide lucide-message-circle z-10 relative w-[16px] h-[16px]"
+						>
+							<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
+						</svg>
+					</button>
+				</div>
 			</div>
 
 			{/* Center Section: Image */}
