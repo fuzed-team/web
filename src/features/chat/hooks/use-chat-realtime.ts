@@ -32,46 +32,63 @@ export function useChatRealtime({
 
 	const handleNewMessage = useCallback(
 		(message: Message) => {
-			// Optimistically update the messages cache
-			queryClient.setQueryData<{ messages: Message[]; has_more: boolean }>(
-				["messages", connectionId],
-				(old) => {
-					if (!old) {
-						const newCache = {
-							messages: [message],
-							has_more: false,
-						};
-						return newCache;
-					}
-
-					// Avoid duplicates (check by ID, ignore temp IDs)
-					const exists = old.messages.some(
-						(msg) => msg.id === message.id && !msg.id.startsWith("temp-"),
-					);
-
-					if (exists) {
-						console.log("[Chat Realtime] Message already exists, skipping");
-						return old;
-					}
-
-					// Remove any pending messages from the same sender with similar content
-					const filteredMessages = old.messages.filter(
-						(msg) =>
-							!(
-								msg.pending &&
-								msg.sender_id === message.sender_id &&
-								msg.content === message.content
-							),
-					);
-
-					const updatedCache = {
-						...old,
-						messages: [message, ...filteredMessages],
+			// Optimistically update the messages cache (InfiniteData structure)
+			queryClient.setQueryData<{
+				pageParams: (string | undefined)[];
+				pages: {
+					messages: Message[];
+					has_more: boolean;
+					next_cursor: string | null;
+				}[];
+			}>(["messages", connectionId], (old) => {
+				if (!old || !old.pages.length) {
+					// Create initial InfiniteData structure
+					return {
+						pageParams: [undefined],
+						pages: [
+							{
+								messages: [message],
+								has_more: false,
+								next_cursor: null,
+							},
+						],
 					};
+				}
 
-					return updatedCache;
-				},
-			);
+				const firstPage = old.pages[0];
+
+				// Avoid duplicates (check by ID, ignore temp IDs)
+				const exists = firstPage.messages.some(
+					(msg) => msg.id === message.id && !msg.id.startsWith("temp-"),
+				);
+
+				if (exists) {
+					console.log("[Chat Realtime] Message already exists, skipping");
+					return old;
+				}
+
+				// Remove any pending messages from the same sender with similar content
+				const filteredMessages = firstPage.messages.filter(
+					(msg) =>
+						!(
+							msg.pending &&
+							msg.sender_id === message.sender_id &&
+							msg.content === message.content
+						),
+				);
+
+				// Add new message to first page (newest messages)
+				return {
+					...old,
+					pages: [
+						{
+							...firstPage,
+							messages: [...filteredMessages, message],
+						},
+						...old.pages.slice(1),
+					],
+				};
+			});
 
 			// If the message is from someone else (not current user), mark as read automatically
 			// since the user is already viewing this conversation

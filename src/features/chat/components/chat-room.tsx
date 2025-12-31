@@ -5,7 +5,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useUser } from "@/features/auth/api/get-me";
 import { cn } from "@/lib/utils";
-import { useMessages } from "../api/get-messages";
+import { useMessagesInfinite } from "../api/get-messages";
 import { useSendMessage } from "../api/send-message";
 import { useChatRealtime } from "../hooks/use-chat-realtime";
 import { ChatHeader } from "./chat-header";
@@ -38,10 +38,14 @@ export function ChatRoom({
 	const user = useUser();
 	const [isSending, setIsSending] = useState(false);
 
-	// Fetch messages
-	const { data: messagesData, isLoading } = useMessages({
-		input: { connectionId },
-	});
+	// Fetch messages with infinite scroll pagination
+	const {
+		data: messagesData,
+		isLoading,
+		hasNextPage,
+		fetchNextPage,
+		isFetchingNextPage,
+	} = useMessagesInfinite({ connectionId });
 
 	// Real-time subscription
 	useChatRealtime({ connectionId, enabled: true });
@@ -50,7 +54,6 @@ export function ChatRoom({
 	const sendMessageMutation = useSendMessage();
 
 	const messages = messagesData?.messages || [];
-	const hasNextPage = messagesData?.has_more || false;
 
 	const handleSendMessage = async (content: string) => {
 		if (!user?.id || isSending) return;
@@ -90,10 +93,8 @@ export function ChatRoom({
 				messages={messages}
 				isLoading={isLoading}
 				hasMore={hasNextPage}
-				onLoadMore={() => {
-					// TODO: Implement pagination with cursor
-					console.log("Load more messages");
-				}}
+				isLoadingMore={isFetchingNextPage}
+				onLoadMore={() => fetchNextPage()}
 			/>
 
 			<MessageInput

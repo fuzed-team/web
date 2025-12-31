@@ -3,6 +3,12 @@ import { useUser } from "@/features/auth/api/get-me";
 import api from "@/lib/api-client";
 import type { Message, MessagesResponse, SendMessageParams } from "../types";
 
+// InfiniteData structure type
+type MessagesInfiniteData = {
+	pageParams: (string | undefined)[];
+	pages: MessagesResponse[];
+};
+
 export async function sendMessage(params: SendMessageParams): Promise<Message> {
 	return api.post<Message>("/messages", params);
 }
@@ -18,15 +24,18 @@ export function useSendMessage() {
 				queryKey: ["messages", variables.connection_id],
 			});
 
-			const previousMessages = queryClient.getQueryData<MessagesResponse>([
+			const previousMessages = queryClient.getQueryData<MessagesInfiniteData>([
 				"messages",
 				variables.connection_id,
 			]);
 
-			if (previousMessages && currentUser) {
+			if (previousMessages?.pages?.length && currentUser) {
+				const firstPage = previousMessages.pages[0];
+
 				// Ensure optimistic message timestamp is always greater than any existing message
 				// This prevents sorting issues when messages from other users arrive via realtime
-				const existingTimestamps = previousMessages.messages.map((msg) =>
+				const allMessages = previousMessages.pages.flatMap((p) => p.messages);
+				const existingTimestamps = allMessages.map((msg) =>
 					new Date(msg.created_at).getTime(),
 				);
 				const maxExistingTimestamp = Math.max(0, ...existingTimestamps);
@@ -47,12 +56,19 @@ export function useSendMessage() {
 					pending: true, // Mark as pending for reduced opacity
 				};
 
-				const updatedCache = {
+				// Add optimistic message to first page
+				const updatedCache: MessagesInfiniteData = {
 					...previousMessages,
-					messages: [optimisticMessage, ...previousMessages.messages],
+					pages: [
+						{
+							...firstPage,
+							messages: [...firstPage.messages, optimisticMessage],
+						},
+						...previousMessages.pages.slice(1),
+					],
 				};
 
-				queryClient.setQueryData<MessagesResponse>(
+				queryClient.setQueryData<MessagesInfiniteData>(
 					["messages", variables.connection_id],
 					updatedCache,
 				);
@@ -67,31 +83,42 @@ export function useSendMessage() {
 		},
 		// On success, replace pending message with real one
 		onSuccess: (data, variables) => {
-			const cachedData = queryClient.getQueryData<MessagesResponse>([
+			const cachedData = queryClient.getQueryData<MessagesInfiniteData>([
 				"messages",
 				variables.connection_id,
 			]);
 
-			if (cachedData) {
-				// Remove pending message and add real message
-				const updatedMessages = cachedData.messages
-					.filter((msg) => !msg.pending) // Remove all pending messages
-					.concat({
-						...data,
-						pending: false,
-					});
+			if (cachedData?.pages?.length) {
+				// Update all pages to remove pending and add real message
+				const updatedPages = cachedData.pages.map((page, index) => {
+					if (index === 0) {
+						// First page: remove pending messages and add real message
+						const updatedMessages = page.messages
+							.filter((msg) => !msg.pending) // Remove all pending messages
+							.concat({
+								...data,
+								pending: false,
+							});
 
-				// Remove duplicates by ID
-				const uniqueMessages = Array.from(
-					new Map(updatedMessages.map((msg) => [msg.id, msg])).values(),
-				);
+						// Remove duplicates by ID
+						const uniqueMessages = Array.from(
+							new Map(updatedMessages.map((msg) => [msg.id, msg])).values(),
+						);
 
-				const finalCache = {
+						return {
+							...page,
+							messages: uniqueMessages,
+						};
+					}
+					return page;
+				});
+
+				const finalCache: MessagesInfiniteData = {
 					...cachedData,
-					messages: uniqueMessages,
+					pages: updatedPages,
 				};
 
-				queryClient.setQueryData<MessagesResponse>(
+				queryClient.setQueryData<MessagesInfiniteData>(
 					["messages", variables.connection_id],
 					finalCache,
 				);

@@ -10,6 +10,7 @@ interface MessageListProps {
 	messages: Message[];
 	isLoading?: boolean;
 	hasMore?: boolean;
+	isLoadingMore?: boolean;
 	onLoadMore?: () => void;
 }
 
@@ -21,6 +22,7 @@ export function MessageList({
 	messages,
 	isLoading = false,
 	hasMore = false,
+	isLoadingMore = false,
 	onLoadMore,
 }: MessageListProps) {
 	const user = useUser();
@@ -40,6 +42,7 @@ export function MessageList({
 			isLoading={isLoading}
 			autoScroll
 			hasMore={hasMore}
+			isLoadingMore={isLoadingMore}
 			onLoadMore={onLoadMore}
 		/>
 	);

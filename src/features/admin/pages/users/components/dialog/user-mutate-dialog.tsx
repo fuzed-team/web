@@ -74,7 +74,7 @@ export function UserMutateDialog({ currentRow, open, onOpenChange }: Props) {
 		resolver: zodResolver(formSchema),
 		defaultValues: isEdit
 			? {
-					name: currentRow?.name!,
+					name: currentRow.name!,
 					email: currentRow?.email,
 					role: currentRow?.role as any,
 					school: currentRow?.school || "",
@@ -253,12 +253,14 @@ export function UserMutateDialog({ currentRow, open, onOpenChange }: Props) {
 					<Button
 						type="submit"
 						form="user-form"
-						disabled={createUserMutation.isPending}
+						disabled={
+							createUserMutation.isPending || updateUserMutation.isPending
+						}
 					>
-						{createUserMutation.isPending ? (
+						{createUserMutation.isPending || updateUserMutation.isPending ? (
 							<>
 								<Loader className="h-4 w-4 animate-spin" />
-								Creating
+								{isEdit ? "Updating" : "Creating"}
 							</>
 						) : isEdit ? (
 							"Update"
