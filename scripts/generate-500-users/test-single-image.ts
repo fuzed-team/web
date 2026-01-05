@@ -7,7 +7,7 @@ import {
 	ETHNICITIES,
 	EYE_SHAPES,
 	FACE_SHAPES,
-	HAIR_STYLES,
+	FEMALE_HAIR_STYLES,
 	LOCATIONS,
 	NOSE_TYPES,
 	pick,
@@ -26,10 +26,12 @@ import {
 async function main() {
 	console.log("🧪 Testing FAL AI FLUX Image Generation\n");
 
+	const gender = "female" as const;
+
 	const params = {
-		gender: "female" as const,
+		gender,
 		ethnicity: pick(ETHNICITIES),
-		hairStyle: pick(HAIR_STYLES),
+		hairStyle: pick(FEMALE_HAIR_STYLES),
 		clothing: pick(CLOTHING),
 		location: pick(LOCATIONS),
 		vibe: pick(VIBES),

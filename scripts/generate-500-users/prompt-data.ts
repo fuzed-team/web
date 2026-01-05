@@ -542,8 +542,40 @@ export const ETHNICITIES = [
 	"Mixed Race",
 ];
 
-/** Hair styles - diverse options for both genders */
-export const HAIR_STYLES = [
+/** Hair styles for MALE - masculine cuts only */
+export const MALE_HAIR_STYLES = [
+	// Short cuts
+	"buzz cut",
+	"crew cut",
+	"short fade",
+	"undercut",
+	"textured crop",
+	"high and tight",
+	"military cut",
+	"caesar cut",
+	// Medium length
+	"messy medium hair",
+	"slicked back hair",
+	"side part hair",
+	"quiff hairstyle",
+	"pompadour",
+	"comb over",
+	"faux hawk",
+	"shaggy hair",
+	// Textured & Natural
+	"afro",
+	"dreadlocks",
+	"cornrows",
+	"short curly hair",
+	"natural coils",
+	// Longer styles (still masculine)
+	"man bun",
+	"long hair tied back",
+	"shoulder length wavy hair",
+];
+
+/** Hair styles for FEMALE - feminine styles only */
+export const FEMALE_HAIR_STYLES = [
 	// Long hair styles
 	"long straight hair",
 	"long wavy hair",
@@ -555,16 +587,10 @@ export const HAIR_STYLES = [
 	"shoulder-length hair",
 	"lob haircut",
 	"medium curly hair",
-	"shaggy hair",
 	// Short hair
 	"pixie cut",
 	"bob haircut",
 	"short curly hair",
-	"buzz cut",
-	"crew cut",
-	"short fade",
-	"undercut",
-	"textured crop",
 	// Updos & Tied
 	"messy bun",
 	"high ponytail",

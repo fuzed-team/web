@@ -143,8 +143,8 @@ export async function generateProfileImage(
 		${params.faceShape}, ${params.chinType}, ${params.noseType}, ${params.eyeShape}, ${params.uniqueFeature},
 		${params.hairStyle}, wearing ${params.clothing},
 		${params.location} background, ${params.vibe} expression,
-		natural lighting, slight skin imperfections, visible skin texture,
-		amateur phone photo, not professionally lit, casual pose,
+		natural lighting, clear healthy skin,
+		amateur phone photo, casual pose,
 		raw unedited selfie, realistic person`;
 
 	const result = (await fal.subscribe("fal-ai/flux/dev", {
