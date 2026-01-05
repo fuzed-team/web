@@ -1,6 +1,7 @@
-import { faker } from "@faker-js/faker";
 import { createClient } from "@supabase/supabase-js";
 import { randomUUID } from "crypto";
+import { env } from "@/config/env";
+import { FEMALE_NAMES, MALE_NAMES, shuffle } from "./prompt-data";
 
 /**
  * Generate 500 Synthetic Test Users
@@ -8,7 +9,7 @@ import { randomUUID } from "crypto";
  * Requirements:
  * - 500 total users (250 male, 250 female)
  * - All assigned to same school
- * - Diverse, realistic names
+ * - Census-based names (2004 birth year for 20-year-olds)
  * - Non-.edu emails (dev environment)
  */
 
@@ -27,23 +28,28 @@ interface TestUser {
 
 async function generateTestUsers() {
 	const supabase = createClient(
-		process.env.NEXT_PUBLIC_SUPABASE_URL!,
-		process.env.SUPABASE_SERVICE_ROLE_KEY!,
+		env.NEXT_PUBLIC_SUPABASE_URL,
+		env.SUPABASE_SERVICE_ROLE_KEY,
 	);
 
 	console.log("🚀 Starting 500-user generation...");
 	console.log(`Test Run ID: ${TEST_RUN_ID}\n`);
+
+	// Pre-shuffle name pools (each name used exactly once)
+	const maleNames = shuffle(MALE_NAMES);
+	const femaleNames = shuffle(FEMALE_NAMES);
 
 	const users: TestUser[] = [];
 
 	// Generate 250 male + 250 female users
 	for (let i = 0; i < TOTAL_USERS; i++) {
 		const gender: "male" | "female" = i < 250 ? "male" : "female";
+		const name = gender === "male" ? maleNames.pop()! : femaleNames.pop()!;
 
 		const user: TestUser = {
 			id: randomUUID(), // Generate UUID for profile ID
-			email: faker.internet.email(),
-			name: faker.person.fullName({ sex: gender }),
+			email: `${name.toLowerCase().replace(/\s+/g, ".")}.${randomUUID().slice(0, 8)}@test.com`,
+			name,
 			gender: gender,
 			school: SCHOOL,
 			role: "user",

@@ -1,18 +1,31 @@
 import { createClient } from "@supabase/supabase-js";
-import fetch from "node-fetch";
 import { analyzeAdvancedFace } from "@/lib/services/ai-service";
+import { generateProfileImage } from "@/lib/services/fal-service";
+import {
+	CHIN_TYPES,
+	CLOTHING,
+	ETHNICITIES,
+	EYE_SHAPES,
+	FACE_SHAPES,
+	HAIR_STYLES,
+	LOCATIONS,
+	NOSE_TYPES,
+	pick,
+	UNIQUE_FEATURES,
+	VIBES,
+} from "./prompt-data";
 
 /**
- * Generate and Analyze 500 Faces using Replicate
+ * Generate and Analyze 500 Faces using FAL AI FLUX + Replicate
  *
  * This script:
- * 1. Fetches face images from ThisPersonDoesNotExist
+ * 1. Generates AI face images using FAL FLUX/dev
  * 2. Analyzes each face through Replicate (existing analyzeAdvancedFace function)
  * 3. Inserts complete face records with all 6-factor attributes
  * 4. Updates profiles with default_face_id
  *
- * Cost: ~$0.11 (500 × $0.00022)
- * Time: ~25-30 minutes (500 × 3s + overhead)
+ * Cost: ~$12.50 (500 × $0.025 FLUX) + ~$0.11 (500 × $0.00022 analysis)
+ * Time: ~30-40 minutes (500 × 4s + overhead)
  */
 
 const SCHOOL = "Columbia University";
@@ -33,32 +46,24 @@ async function sleep(ms: number) {
 	return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function fetchFaceImage(gender: "male" | "female"): Promise<Buffer> {
-	// Use randomuser.me API - provides gender-specific photos with good face detection
-	// Age range 18-25 is automatically more likely with this API
-	const response = await fetch(
-		`https://randomuser.me/api/?gender=${gender}&nat=us,gb,ca,au&noinfo`,
-	);
-
-	if (!response.ok) {
-		throw new Error(
-			`Failed to fetch from randomuser.me: ${response.statusText}`,
-		);
-	}
-
-	const data = (await response.json()) as {
-		results: Array<{ picture: { large: string } }>;
-	};
-	const photoUrl = data.results[0].picture.large; // Large size for better analysis
-
-	// Download the actual image
-	const imageResponse = await fetch(photoUrl);
-	if (!imageResponse.ok) {
-		throw new Error(`Failed to download image: ${imageResponse.statusText}`);
-	}
-
-	const arrayBuffer = await imageResponse.arrayBuffer();
-	return Buffer.from(arrayBuffer);
+/**
+ * Generate face image using FAL AI FLUX with combinatorial prompts
+ */
+async function generateFaceImage(gender: "male" | "female"): Promise<Buffer> {
+	return generateProfileImage({
+		gender,
+		ethnicity: pick(ETHNICITIES),
+		hairStyle: pick(HAIR_STYLES),
+		clothing: pick(CLOTHING),
+		location: pick(LOCATIONS),
+		vibe: pick(VIBES),
+		// Facial diversity features
+		faceShape: pick(FACE_SHAPES),
+		noseType: pick(NOSE_TYPES),
+		eyeShape: pick(EYE_SHAPES),
+		uniqueFeature: pick(UNIQUE_FEATURES),
+		chinType: pick(CHIN_TYPES),
+	});
 }
 
 async function processFaceWithRetry(
@@ -67,9 +72,9 @@ async function processFaceWithRetry(
 	retryCount = 0,
 ): Promise<boolean> {
 	try {
-		// 1. Fetch face image matching profile gender
-		console.log(`📸 Fetching ${profile.gender} face image...`);
-		const imageBuffer = await fetchFaceImage(profile.gender);
+		// 1. Generate AI face image matching profile gender
+		console.log(`🎨 Generating ${profile.gender} AI face image...`);
+		const imageBuffer = await generateFaceImage(profile.gender);
 
 		// Small delay to avoid rate limits
 		await sleep(500);

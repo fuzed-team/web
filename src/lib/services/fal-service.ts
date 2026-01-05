@@ -99,3 +99,77 @@ export async function generateBabyImage({
 
 	return babyImageUrl;
 }
+
+// =============================================================================
+// Profile Image Generation (FLUX)
+// =============================================================================
+
+interface ProfileImageParams {
+	gender: "male" | "female";
+	ethnicity: string;
+	hairStyle: string;
+	clothing: string;
+	location: string;
+	vibe: string;
+	// Facial diversity features
+	faceShape: string;
+	noseType: string;
+	eyeShape: string;
+	uniqueFeature: string;
+	chinType: string;
+}
+
+interface FluxResult {
+	data: {
+		images: Array<{ url: string }>;
+	};
+}
+
+/**
+ * Generate AI profile image using FAL.AI FLUX/dev
+ *
+ * Uses combinatorial prompts with facial features for maximum diversity.
+ * Cost: ~$0.025 per image
+ *
+ * @param params - Object containing appearance attributes
+ * @returns Buffer of the generated image
+ * @throws Error if generation fails
+ */
+export async function generateProfileImage(
+	params: ProfileImageParams,
+): Promise<Buffer> {
+	// Prompt with specific facial features for diversity
+	const prompt = `Candid iPhone selfie of a ${params.ethnicity} ${params.gender}, age 20-22,
+		${params.faceShape}, ${params.chinType}, ${params.noseType}, ${params.eyeShape}, ${params.uniqueFeature},
+		${params.hairStyle}, wearing ${params.clothing},
+		${params.location} background, ${params.vibe} expression,
+		natural lighting, slight skin imperfections, visible skin texture,
+		amateur phone photo, not professionally lit, casual pose,
+		raw unedited selfie, realistic person`;
+
+	const result = (await fal.subscribe("fal-ai/flux/dev", {
+		input: {
+			prompt,
+			image_size: "portrait_4_3",
+			num_images: 1,
+			guidance_scale: 3.5,
+			num_inference_steps: 28,
+			seed: Math.floor(Math.random() * 2147483647), // Random seed for variation
+			enable_safety_checker: true,
+		},
+	})) as FluxResult;
+
+	const imageUrl = result.data.images?.[0]?.url;
+
+	if (!imageUrl) {
+		throw new Error("No image URL returned from FAL.AI FLUX");
+	}
+
+	// Download the generated image
+	const response = await fetch(imageUrl);
+	if (!response.ok) {
+		throw new Error("Failed to download generated image from FAL.AI");
+	}
+
+	return Buffer.from(await response.arrayBuffer());
+}
