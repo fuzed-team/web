@@ -32,15 +32,9 @@ const SCHOOL = "Columbia University";
 const STORAGE_BUCKET = "user-images";
 const TEST_FOLDER = "test-500";
 
-// Retry configuration
-const MAX_RETRIES = 3;
-const RETRY_DELAY_MS = 2000;
-
 // Progress tracking
-let totalProcessed = 0;
 let successCount = 0;
 let errorCount = 0;
-const lowQualityCount = 0;
 
 async function sleep(ms: number) {
 	return new Promise((resolve) => setTimeout(resolve, ms));
@@ -187,7 +181,6 @@ async function main() {
 	// Process each profile
 	for (let i = 0; i < profiles.length; i++) {
 		const profile = profiles[i];
-		totalProcessed++;
 
 		console.log(
 			`\n[${i + 1}/${profiles.length}] Processing: ${profile.name} (${profile.gender})`,
@@ -205,7 +198,6 @@ async function main() {
 			console.log(`\n📈 Progress: ${i + 1}/${profiles.length}`);
 			console.log(`   ✅ Success: ${successCount}`);
 			console.log(`   ❌ Errors: ${errorCount}`);
-			console.log(`   ⚠️  Low Quality Retries: ${lowQualityCount}`);
 			console.log(`   ⏱️  Elapsed: ${elapsed}min`);
 			console.log(`   ⏳ Est. Remaining: ${remaining.toFixed(1)}min\n`);
 		}
@@ -218,7 +210,6 @@ async function main() {
 	console.log("🎉 Face Analysis Complete!\n");
 	console.log(`✅ Successful: ${successCount}/${profiles.length}`);
 	console.log(`❌ Failed: ${errorCount}`);
-	console.log(`⚠️  Low Quality Retries: ${lowQualityCount}`);
 	console.log(`⏱️  Total Time: ${totalTime} minutes`);
 	console.log(`💰 Estimated Cost: $${estimatedCost}\n`);
 

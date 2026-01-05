@@ -690,15 +690,26 @@ export const VIBES = [
 // FACIAL FEATURES (For breaking "same-face" AI syndrome)
 // =============================================================================
 
-/** Face shapes for diversity */
+/** Face shapes for diversity - includes fullness descriptions */
 export const FACE_SHAPES = [
-	"round face",
+	// Thin/Angular
+	"slim angular face",
+	"narrow face",
+	"thin elongated face",
+	// Average
 	"oval face",
-	"square jaw",
 	"heart-shaped face",
-	"long face",
 	"diamond-shaped face",
-	"rectangular face",
+	// Full/Round
+	"round chubby face",
+	"wide round face",
+	"full plump cheeks",
+	"chubby cheeks",
+	"pudgy round face",
+	// Square/Broad
+	"square broad face",
+	"wide square jaw",
+	"broad rectangular face",
 ];
 
 /** Nose types */
