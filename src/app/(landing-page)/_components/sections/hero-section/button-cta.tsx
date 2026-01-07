@@ -78,7 +78,7 @@ export function ButtonCTA() {
 				/>
 			</div>
 			<span className="relative z-20 flex items-center gap-2">
-				Get Started
+				Find My Match
 				<ArrowUpRight className="w-4 h-4" />
 			</span>
 		</Link>

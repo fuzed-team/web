@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, easeInOut, motion } from "framer-motion";
-import { Heart, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useContext, useEffect, useState } from "react";
 import Logo from "@/assets/logo";
@@ -113,7 +113,7 @@ export function Header({ loading = false }: { loading?: boolean }) {
 				initial="hidden"
 				animate="visible"
 			>
-				<div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+				<div className="mx-auto max-w-full md:max-w-screen-2xl px-4 md:px-12 lg:px-20">
 					<div className="flex h-16 items-center justify-between">
 						<motion.div
 							className="flex items-center space-x-3"

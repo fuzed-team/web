@@ -24,13 +24,10 @@ export const getLiveMatchApi = async (
 	input: LiveMatchInput,
 ): Promise<LiveMatchResponse> => {
 	const { signal, ...query } = input;
-	const response = await api.get<LiveMatchResponse>(
-		"/matches/top",
-		{
-			params: query,
-			signal,
-		},
-	);
+	const response = await api.get<LiveMatchResponse>("/matches/top", {
+		params: query,
+		signal,
+	});
 	return response;
 };
 

@@ -34,18 +34,15 @@ export const getUserMatchApi = async (
 ): Promise<UserMatchResponse> => {
 	const { signal, skip, faceId, limit, sortBy } = input;
 
-	const response = await api.get<UserMatchResponse>(
-		"/matches/for-image",
-		{
-			params: {
-				face_id: faceId,
-				skip: skip,
-				limit: limit,
-				sort_by: sortBy,
-			},
-			signal,
+	const response = await api.get<UserMatchResponse>("/matches/for-image", {
+		params: {
+			face_id: faceId,
+			skip: skip,
+			limit: limit,
+			sort_by: sortBy,
 		},
-	);
+		signal,
+	});
 	return response;
 };
 
