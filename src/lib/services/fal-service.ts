@@ -119,17 +119,17 @@ interface ProfileImageParams {
 	chinType: string;
 }
 
-interface FluxResult {
+interface NanoBananaResult {
 	data: {
 		images: Array<{ url: string }>;
 	};
 }
 
 /**
- * Generate AI profile image using FAL.AI FLUX/dev
+ * Generate AI profile image using FAL.AI nano-banana-pro
  *
  * Uses combinatorial prompts with facial features for maximum diversity.
- * Cost: ~$0.025 per image
+ * Faster and more cost-effective than FLUX.
  *
  * @param params - Object containing appearance attributes
  * @returns Buffer of the generated image
@@ -147,22 +147,20 @@ export async function generateProfileImage(
 		amateur phone photo, casual pose,
 		raw unedited selfie, realistic person`;
 
-	const result = (await fal.subscribe("fal-ai/flux/dev", {
+	const result = (await fal.subscribe("fal-ai/nano-banana-pro", {
 		input: {
 			prompt,
-			image_size: "portrait_4_3",
+			aspect_ratio: "3:4",
 			num_images: 1,
-			guidance_scale: 3.5,
-			num_inference_steps: 28,
-			seed: Math.floor(Math.random() * 2147483647), // Random seed for variation
-			enable_safety_checker: true,
+			resolution: "1K",
+			output_format: "png",
 		},
-	})) as FluxResult;
+	})) as NanoBananaResult;
 
 	const imageUrl = result.data.images?.[0]?.url;
 
 	if (!imageUrl) {
-		throw new Error("No image URL returned from FAL.AI FLUX");
+		throw new Error("No image URL returned from FAL.AI nano-banana-pro");
 	}
 
 	// Download the generated image

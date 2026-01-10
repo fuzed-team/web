@@ -26,7 +26,7 @@ import {
 async function main() {
 	console.log("🧪 Testing FAL AI FLUX Image Generation\n");
 
-	const gender = "female" as const;
+	const gender = "male" as const;
 
 	const params = {
 		gender,
@@ -64,7 +64,7 @@ async function main() {
 		const duration = ((Date.now() - startTime) / 1000).toFixed(2);
 
 		// Save to temp file for inspection
-		const outputPath = join(__dirname, "test-output.jpg");
+		const outputPath = join(__dirname, `test-output-${Date.now()}.jpg`);
 		writeFileSync(outputPath, imageBuffer);
 
 		console.log(`\n✅ Success!`);
