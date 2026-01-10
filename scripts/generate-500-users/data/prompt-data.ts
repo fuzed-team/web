@@ -610,18 +610,16 @@ export const FEMALE_HAIR_STYLES = [
 	"side swept fringe",
 ];
 
-/** Clothing options - diverse styles for college students */
-export const CLOTHING = [
+/** Clothing for MALE - masculine styles only */
+export const MALE_CLOTHING = [
 	// Casual tops
 	"University hoodie",
 	"vintage band tee",
 	"plain white t-shirt",
 	"graphic tee",
-	"crop top",
-	"tank top",
 	"polo shirt",
 	"henley shirt",
-	// Shirts & Blouses
+	// Shirts
 	"flannel shirt",
 	"denim shirt",
 	"button-down oxford shirt",
@@ -632,10 +630,45 @@ export const CLOTHING = [
 	"leather jacket",
 	"varsity jacket",
 	"windbreaker",
-	"cardigan",
+	"bomber jacket",
 	// Sporty
 	"soccer jersey",
 	"basketball jersey",
+	"gym workout tank",
+	"athletic zip-up",
+	// Smart Casual
+	"casual blazer",
+	"turtleneck sweater",
+	"cable knit sweater",
+	"crewneck sweatshirt",
+];
+
+/** Clothing for FEMALE - feminine styles only */
+export const FEMALE_CLOTHING = [
+	// Casual tops
+	"University hoodie",
+	"vintage band tee",
+	"plain white t-shirt",
+	"graphic tee",
+	"crop top",
+	"tank top",
+	"off-shoulder top",
+	"camisole",
+	// Shirts & Blouses
+	"flannel shirt",
+	"denim shirt",
+	"flowy blouse",
+	"oversized shirt",
+	// Jackets & Outerwear
+	"puffer jacket",
+	"denim jacket",
+	"leather jacket",
+	"varsity jacket",
+	"cardigan",
+	"cropped jacket",
+	// Sporty
+	"sports bra and jacket",
+	"athletic tank",
 	"gym workout top",
 	"athletic zip-up",
 	// Smart Casual
@@ -643,6 +676,9 @@ export const CLOTHING = [
 	"turtleneck sweater",
 	"cable knit sweater",
 	"crewneck sweatshirt",
+	// Dresses (partial view)
+	"sundress",
+	"casual dress",
 ];
 
 /** Background locations - diverse college and social settings */

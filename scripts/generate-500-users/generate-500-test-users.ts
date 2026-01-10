@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { randomUUID } from "crypto";
 import { env } from "@/config/env";
-import { FEMALE_NAMES, MALE_NAMES, shuffle } from "./prompt-data";
+import { FEMALE_NAMES, MALE_NAMES, shuffle } from "./data/prompt-data";
 
 /**
  * Generate 500 Synthetic Test Users
@@ -13,7 +13,7 @@ import { FEMALE_NAMES, MALE_NAMES, shuffle } from "./prompt-data";
  * - Non-.edu emails (dev environment)
  */
 
-const TOTAL_USERS = 500;
+const TOTAL_USERS = 100;
 const SCHOOL = "Columbia University"; // All users same school
 const TEST_RUN_ID = `test-500-${Date.now()}`;
 
@@ -43,7 +43,7 @@ async function generateTestUsers() {
 
 	// Generate 250 male + 250 female users
 	for (let i = 0; i < TOTAL_USERS; i++) {
-		const gender: "male" | "female" = i < 250 ? "male" : "female";
+		const gender: "male" | "female" = i < TOTAL_USERS / 2 ? "male" : "female";
 		const name = gender === "male" ? maleNames.pop()! : femaleNames.pop()!;
 
 		const user: TestUser = {
@@ -94,9 +94,15 @@ async function generateTestUsers() {
 
 	console.log(`\n🎉 Successfully created ${insertedCount} test users!`);
 	console.log(`\nNext steps:`);
-	console.log(`1. Run: bun run scripts/analyze-faces-replicate.ts`);
-	console.log(`2. Run: bun run scripts/trigger-match-generation.ts`);
-	console.log(`3. Monitor: bun run scripts/monitor-load-test.ts\n`);
+	console.log(
+		`1. Run: bun run scripts/generate-500-users/analyze-faces-replicate.ts`,
+	);
+	console.log(
+		`2. Run: bun run scripts/generate-500-users/trigger-match-generation.ts`,
+	);
+	console.log(
+		`3. Monitor: bun run scripts/generate-500-users/monitor-load-test.ts\n`,
+	);
 
 	return insertedCount;
 }

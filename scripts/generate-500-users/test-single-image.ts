@@ -3,17 +3,19 @@ import { join } from "path";
 import { generateProfileImage } from "@/lib/services/fal-service";
 import {
 	CHIN_TYPES,
-	CLOTHING,
 	ETHNICITIES,
 	EYE_SHAPES,
 	FACE_SHAPES,
+	FEMALE_CLOTHING,
 	FEMALE_HAIR_STYLES,
 	LOCATIONS,
+	MALE_CLOTHING,
+	MALE_HAIR_STYLES,
 	NOSE_TYPES,
 	pick,
 	UNIQUE_FEATURES,
 	VIBES,
-} from "./prompt-data";
+} from "./data/prompt-data";
 
 /**
  * Test FAL AI Profile Image Generation
@@ -31,8 +33,8 @@ async function main() {
 	const params = {
 		gender,
 		ethnicity: pick(ETHNICITIES),
-		hairStyle: pick(FEMALE_HAIR_STYLES),
-		clothing: pick(CLOTHING),
+		hairStyle: pick(gender === "male" ? MALE_HAIR_STYLES : FEMALE_HAIR_STYLES),
+		clothing: pick(gender === "male" ? MALE_CLOTHING : FEMALE_CLOTHING),
 		location: pick(LOCATIONS),
 		vibe: pick(VIBES),
 		// New facial diversity features
@@ -64,7 +66,7 @@ async function main() {
 		const duration = ((Date.now() - startTime) / 1000).toFixed(2);
 
 		// Save to temp file for inspection
-		const outputPath = join(__dirname, `test-output-${Date.now()}.jpg`);
+		const outputPath = join(__dirname, `images/test-output-${Date.now()}.jpg`);
 		writeFileSync(outputPath, imageBuffer);
 
 		console.log(`\n✅ Success!`);

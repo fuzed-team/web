@@ -10,7 +10,6 @@ import { createClient } from "@supabase/supabase-js";
  */
 
 const SCHOOL = "Columbia University";
-const TEST_EMAIL_PATTERN = "test-500-%"; // Assuming emails like test-500-1@example.com
 const STORAGE_BUCKET = "user-images";
 const TEST_FOLDER = "test-500";
 
@@ -34,7 +33,7 @@ async function main() {
 		const { data: profiles } = await supabase
 			.from("profiles")
 			.select("id")
-			.eq("school", SCHOOL);
+			.is("last_seen", null);
 
 		if (!profiles || profiles.length === 0) {
 			console.log("No test profiles found");
@@ -44,7 +43,39 @@ async function main() {
 		const profileIds = profiles.map((p) => p.id);
 		console.log(`Found ${profileIds.length} test profiles\n`);
 
-		// 2. Delete matches (FK constraint)
+		// 2. Get all face IDs for these profiles
+		const { data: faces } = await supabase
+			.from("faces")
+			.select("id")
+			.in("profile_id", profileIds);
+
+		const faceIds = faces?.map((f) => f.id) || [];
+
+		// 3. Get all match IDs involving these faces
+		const { data: matchData } = await supabase
+			.from("matches")
+			.select("id")
+			.or(
+				`face_a_id.in.(${faceIds.join(",")}),face_b_id.in.(${faceIds.join(",")})`,
+			);
+
+		const matchIds = matchData?.map((m) => m.id) || [];
+
+		// 4. Delete babies by match_id first
+		console.log("🗑️  Deleting babies...");
+		if (matchIds.length > 0) {
+			const { error: babyError } = await supabase
+				.from("babies")
+				.delete()
+				.in("match_id", matchIds);
+
+			if (babyError) console.error("Baby deletion error:", babyError);
+			else console.log("✅ Babies deleted\n");
+		} else {
+			console.log("✅ No babies to delete\n");
+		}
+
+		// 4. Delete matches
 		console.log("🗑️  Deleting matches...");
 		const { error: matchError } = await supabase
 			.from("matches")
@@ -58,7 +89,7 @@ async function main() {
 		if (matchError) console.error("Match deletion error:", matchError);
 		else console.log("✅ Matches deleted\n");
 
-		// 3. Delete match_jobs
+		// 5. Delete match_jobs
 		console.log("🗑️  Deleting match_jobs...");
 		const { error: jobError } = await supabase
 			.from("match_jobs")
@@ -68,7 +99,7 @@ async function main() {
 		if (jobError) console.error("Job deletion error:", jobError);
 		else console.log("✅ Match jobs deleted\n");
 
-		// 4. Delete faces
+		// 6. Delete faces
 		console.log("🗑️  Deleting faces...");
 		const { error: faceError } = await supabase
 			.from("faces")
@@ -78,17 +109,17 @@ async function main() {
 		if (faceError) console.error("Face deletion error:", faceError);
 		else console.log("✅ Faces deleted\n");
 
-		// 5. Delete profiles
+		// 7. Delete profiles
 		console.log("🗑️  Deleting profiles...");
 		const { error: profileError } = await supabase
 			.from("profiles")
 			.delete()
-			.eq("school", SCHOOL);
+			.is("last_seen", null);
 
 		if (profileError) console.error("Profile deletion error:", profileError);
 		else console.log("✅ Profiles deleted\n");
 
-		// 6. Delete storage files
+		// 8. Delete storage files
 		console.log("🗑️  Deleting storage files...");
 		const { data: files } = await supabase.storage
 			.from(STORAGE_BUCKET)

@@ -7,8 +7,6 @@ import { createClient } from "@supabase/supabase-js";
  * which will be processed by the match-generator Edge Function.
  */
 
-const SCHOOL = "Columbia University";
-
 async function triggerMatchGeneration() {
 	const supabase = createClient(
 		process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -28,7 +26,8 @@ async function triggerMatchGeneration() {
       profile:profiles!faces_profile_id_fkey (
         id,
         school,
-        name
+        name,
+		last_seen
       )
     `,
 		)
@@ -41,7 +40,7 @@ async function triggerMatchGeneration() {
 
 	// Filter by school
 	const testFaces = faces?.filter(
-		(face: any) => face.profile?.school === SCHOOL,
+		(face: any) => face.profile?.last_seen === null,
 	);
 
 	if (!testFaces || testFaces.length === 0) {

@@ -12,7 +12,7 @@
 		"gen:type": "npx supabase gen types typescript --schema public > src/types/database.types.ts",
 		"gen:schema": "supabase db dump -f supabase/schema/schema.sql",
 		"seed:users": "bun run scripts/generate-500-users/generate-500-test-users.ts",
-		"test:users": "bun run scripts/generate-500-users/test-single-image.ts"
+		"test:seed-user": "bun run scripts/generate-500-users/test-single-image.ts"
 	},
 	"dependencies": {
 		"@dnd-kit/core": "^6.3.1",

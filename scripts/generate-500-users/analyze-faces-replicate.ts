@@ -3,18 +3,19 @@ import { analyzeAdvancedFace } from "@/lib/services/ai-service";
 import { generateProfileImage } from "@/lib/services/fal-service";
 import {
 	CHIN_TYPES,
-	CLOTHING,
 	ETHNICITIES,
 	EYE_SHAPES,
 	FACE_SHAPES,
+	FEMALE_CLOTHING,
 	FEMALE_HAIR_STYLES,
 	LOCATIONS,
+	MALE_CLOTHING,
 	MALE_HAIR_STYLES,
 	NOSE_TYPES,
 	pick,
 	UNIQUE_FEATURES,
 	VIBES,
-} from "./prompt-data";
+} from "./data/prompt-data";
 
 /**
  * Generate and Analyze 500 Faces using FAL AI FLUX + Replicate
@@ -49,7 +50,7 @@ async function generateFaceImage(gender: "male" | "female"): Promise<Buffer> {
 		gender,
 		ethnicity: pick(ETHNICITIES),
 		hairStyle: pick(gender === "male" ? MALE_HAIR_STYLES : FEMALE_HAIR_STYLES),
-		clothing: pick(CLOTHING),
+		clothing: pick(gender === "male" ? MALE_CLOTHING : FEMALE_CLOTHING),
 		location: pick(LOCATIONS),
 		vibe: pick(VIBES),
 		// Facial diversity features
@@ -215,8 +216,12 @@ async function main() {
 	console.log(`💰 Estimated Cost: $${estimatedCost}\n`);
 
 	console.log("Next steps:");
-	console.log("1. Run: bun run scripts/trigger-match-jobs.ts");
-	console.log("2. Monitor: bun run scripts/monitor-load-test.ts\n");
+	console.log(
+		"1. Run: bun run scripts/generate-500-users/trigger-match-generation.ts",
+	);
+	console.log(
+		"2. Monitor: bun run scripts/generate-500-users/monitor-load-test.ts\n",
+	);
 
 	process.exit(errorCount > 0 ? 1 : 0);
 }

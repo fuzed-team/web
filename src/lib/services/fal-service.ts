@@ -139,13 +139,13 @@ export async function generateProfileImage(
 	params: ProfileImageParams,
 ): Promise<Buffer> {
 	// Prompt with specific facial features for diversity
-	const prompt = `Candid iPhone selfie of a ${params.ethnicity} ${params.gender}, age 20-22,
+	const prompt = `Candid portrait photo of a ${params.ethnicity} ${params.gender}, age 20-22,
 		${params.faceShape}, ${params.chinType}, ${params.noseType}, ${params.eyeShape}, ${params.uniqueFeature},
 		${params.hairStyle}, wearing ${params.clothing},
 		${params.location} background, ${params.vibe} expression,
 		natural lighting, clear healthy skin,
-		amateur phone photo, casual pose,
-		raw unedited selfie, realistic person`;
+		casual relaxed pose, looking at camera,
+		authentic natural photo, realistic person`;
 
 	const result = (await fal.subscribe("fal-ai/nano-banana-pro", {
 		input: {
