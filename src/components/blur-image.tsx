@@ -41,7 +41,6 @@ export const BlurImage = memo((props: ImageProps) => {
 			onError={() => {
 				setSrc(`https://avatar.vercel.sh/${encodeURIComponent(props.alt)}`); // if the image fails to load, use the default avatar
 			}}
-			unoptimized
 		/>
 	);
 });
