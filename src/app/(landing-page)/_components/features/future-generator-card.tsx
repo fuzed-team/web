@@ -107,7 +107,7 @@ export function FutureGeneratorCard() {
 							<div className="relative w-14 h-14 rounded-full p-[2px] bg-gradient-to-b from-blue-500 to-indigo-600 shadow-[0_0_20px_-5px_rgba(59,130,246,0.5)] transition-transform duration-300 group-hover/avatar:scale-105">
 								<div className="w-full h-full rounded-full overflow-hidden border-2 border-[#1E1B4B] bg-slate-800 relative">
 									<Image
-										src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=150&auto=format&fit=crop"
+										src="/images/mock-images/boy-4.webp"
 										alt="Nam"
 										fill
 										className="object-cover"
@@ -122,7 +122,7 @@ export function FutureGeneratorCard() {
 							<div className="relative w-14 h-14 rounded-full p-[2px] bg-gradient-to-b from-pink-500 to-purple-600 shadow-[0_0_20px_-5px_rgba(236,72,153,0.5)] transition-transform duration-300 group-hover/avatar:scale-105">
 								<div className="w-full h-full rounded-full overflow-hidden border-2 border-[#1E1B4B] bg-slate-800 relative">
 									<Image
-										src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/c543a9e1-f226-4ced-80b0-feb8445a75b9_1600w.jpg"
+										src="/images/mock-images/girl-5.webp"
 										alt="Jackie"
 										fill
 										className="object-cover"

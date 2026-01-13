@@ -8,8 +8,7 @@ const testimonialsRow1 = [
 	{
 		name: "Amanda L.",
 		handle: "@amanda_ucla",
-		image:
-			"https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=100&auto=format&fit=crop",
+		image: "/images/mock-images/girl-1.webp",
 		content:
 			"Found 3 matches in my campus within the first day! The AI matching is surprisingly accurate. Already chatting with one of them 😊",
 		tag: "Campus Match",
@@ -20,8 +19,7 @@ const testimonialsRow1 = [
 	{
 		name: "Marcus J.",
 		handle: "@marcus_dev",
-		image:
-			"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=100&auto=format&fit=crop",
+		image: "/images/mock-images/boy-1.webp",
 		content:
 			"The baby generator feature is wild! Generated a baby photo with my match and we can't stop laughing. This app is genius 😂",
 		tag: "Baby Generator",
@@ -32,8 +30,7 @@ const testimonialsRow1 = [
 	{
 		name: "Sarah K.",
 		handle: "@sarah_designs",
-		image:
-			"https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=100&auto=format&fit=crop",
+		image: "/images/mock-images/girl-2.webp",
 		content:
 			"Love that it's web-based, no app download needed. The face matching algorithm works really well and the UI is super clean!",
 		tag: "Platform",
@@ -44,8 +41,7 @@ const testimonialsRow1 = [
 	{
 		name: "David Chen",
 		handle: "@dave_c",
-		image:
-			"https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=100&auto=format&fit=crop",
+		image: "/images/mock-images/boy-2.webp",
 		content:
 			"Got matched with someone who has 87% facial similarity. We actually look alike! The AI is pretty impressive 🤯",
 		tag: "AI Matching",
@@ -59,8 +55,7 @@ const testimonialsRow2 = [
 	{
 		name: "Emily Rose",
 		handle: "@emrose_99",
-		image:
-			"https://images.unsplash.com/photo-1517365830460-955ce3ccd263?q=80&w=100&auto=format&fit=crop",
+		image: "/images/mock-images/girl-3.webp",
 		content:
 			"The real-time chat is smooth and the conversation starters are actually helpful. Made connecting with my matches so much easier!",
 		tag: "Chat",
@@ -71,8 +66,7 @@ const testimonialsRow2 = [
 	{
 		name: "Tom H.",
 		handle: "@tom_h_tech",
-		image:
-			"https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=100&auto=format&fit=crop",
+		image: "/images/mock-images/boy-3.webp",
 		content:
 			"The celebrity lookalike feature is addictive! Apparently I look 78% like young Brad Pitt. My friends are jealous 😎",
 		tag: "Celebrity Match",
@@ -83,8 +77,7 @@ const testimonialsRow2 = [
 	{
 		name: "Jessica Lee",
 		handle: "@jess_lee",
-		image:
-			"https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=100&auto=format&fit=crop",
+		image: "/images/mock-images/girl-4.webp",
 		content:
 			"Been using Fuzzed for a week. The UI is so clean and modern. Love the minimalist design and smooth animations! 🎨",
 		tag: "Design",
@@ -95,8 +88,7 @@ const testimonialsRow2 = [
 	{
 		name: "Alex M.",
 		handle: "@alex_m_photo",
-		image:
-			"https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=100&auto=format&fit=crop",
+		image: "/images/mock-images/boy-4.webp",
 		content:
 			"Daily celebrity recommendations are fun! Today I got matched with Emma Watson at 82%. Makes checking the app every day worth it!",
 		tag: "Daily Match",

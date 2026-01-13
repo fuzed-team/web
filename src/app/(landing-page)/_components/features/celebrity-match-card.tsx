@@ -51,7 +51,7 @@ export function CelebrityMatchCard() {
 					<div className="absolute top-1/2 left-1/4 right-1/4 h-[2px] bg-gradient-to-r from-transparent via-purple-300 to-transparent z-20" />
 					<div className="relative w-24 h-32 bg-white rounded-lg -rotate-[6deg] z-10 border-2 border-white shadow-xl transition-transform duration-500 group-hover:-rotate-[12deg] group-hover:translate-x-[-10px]">
 						<Image
-							src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=200&auto=format&fit=crop"
+							src="/images/mock-images/boy-4.webp"
 							className="w-full h-full object-cover rounded-[inherit]"
 							alt="User"
 							fill

@@ -38,7 +38,7 @@ export function CampusConnectCard() {
 							name="Jessica M."
 							school="UCLA"
 							percentage="68%"
-							image="https://images.unsplash.com/photo-1517365830460-955ce3ccd263?q=80&w=100&auto=format&fit=crop"
+							image="/images/mock-images/girl-5.webp"
 							online
 						/>
 						{/* List Item 2 */}
@@ -46,7 +46,7 @@ export function CampusConnectCard() {
 							name="Tyler D."
 							school="Columbia"
 							percentage="64%"
-							image="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=100&auto=format&fit=crop"
+							image="/images/mock-images/boy-1.webp"
 						/>
 					</div>
 					<div className="absolute bottom-0 left-0 w-full h-16 bg-gradient-to-t from-slate-50 via-slate-50/80 to-transparent" />

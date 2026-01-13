@@ -83,7 +83,7 @@ export function BrowserMockup() {
 							<div className="flex items-center gap-3">
 								<div className="relative">
 									<Image
-										src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=100&auto=format&fit=crop"
+										src="/images/mock-images/boy-4.webp"
 										alt="User"
 										width={40}
 										height={40}
@@ -137,7 +137,7 @@ export function BrowserMockup() {
 
 						<div className="flex-1 overflow-y-auto p-4 md:p-8">
 							{/* Banner */}
-							<div className="w-full bg-gradient-to-r from-[#4f25c7] via-[#5b2ad4] to-[#3b3dbf] rounded-2xl md:rounded-3xl p-6 md:p-10 text-white relative overflow-hidden mb-8 shadow-xl shadow-indigo-900/10">
+							<div className="w-full bg-linear-to-r from-[#4f25c7] via-[#5b2ad4] to-[#3b3dbf] rounded-2xl md:rounded-3xl p-6 md:p-10 text-white relative overflow-hidden mb-8 shadow-xl shadow-indigo-900/10">
 								<div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-soft-light" />
 								<div className="absolute top-0 right-0 w-64 h-64 bg-pink-500/30 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
 								<div className="relative z-10 flex flex-col-reverse md:flex-row justify-between items-center gap-8">
@@ -182,25 +182,25 @@ export function BrowserMockup() {
 							<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
 								<MatchCard
 									name="Natalie Dibbert"
-									image="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=400&auto=format&fit=crop"
+									image="/images/mock-images/girl-1.webp"
 									percentage="51%"
 									time="44m ago"
 								/>
 								<MatchCard
 									name="Vera Upton"
-									image="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop"
+									image="/images/mock-images/girl-2.webp"
 									percentage="53%"
 									time="44m ago"
 								/>
 								<MatchCard
 									name="Charlene Purdy"
-									image="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=400&auto=format&fit=crop"
+									image="/images/mock-images/girl-3.webp"
 									percentage="51%"
 									time="1h ago"
 								/>
 								<MatchCard
 									name="Patricia Heath"
-									image="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=400&auto=format&fit=crop"
+									image="/images/mock-images/girl-4.webp"
 									percentage="51%"
 									time="1h ago"
 								/>
