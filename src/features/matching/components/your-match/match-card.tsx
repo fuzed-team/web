@@ -11,6 +11,7 @@ import {
 	CarouselNext,
 	CarouselPrevious,
 } from "@/components/ui/carousel";
+import { getCardImageUrl } from "@/lib/utils/image-transform";
 import { useUserMatchesActions } from "../../store/user-matches";
 import type { UniversityMatch } from "../../types";
 
@@ -56,7 +57,7 @@ export function MatchCard({
 				delay: 0.1 + (index % 3) * 0.1,
 				ease: [0.16, 1, 0.3, 1],
 			}}
-			className="group relative aspect-[4/5] rounded-2xl overflow-hidden dark:bg-[#1A1D24] bg-slate-100 border dark:border-white/5 border-slate-200 shadow-sm cursor-pointer hover:border-violet-500/50 transition-all"
+			className="group relative aspect-4/5 rounded-2xl overflow-hidden dark:bg-[#1A1D24] bg-slate-100 border dark:border-white/5 border-slate-200 shadow-sm cursor-pointer hover:border-violet-500/50 transition-all"
 			onClick={() => {
 				const currentIdx = current > 0 ? current - 1 : 0;
 				onOpen(
@@ -81,11 +82,15 @@ export function MatchCard({
 						<CarouselItem key={idx} className="w-full h-full pl-0">
 							<div className="relative w-full h-full overflow-hidden">
 								<BlurImage
-									src={item.image}
+									src={getCardImageUrl(item.image) || item.image}
 									className="w-full h-full object-cover dark:opacity-80 opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
 									alt={match.other.name}
 									width={600}
 									height={750}
+									quality={90}
+									priority={idx === 0 && index < 4}
+									loading={idx === 0 && index < 4 ? undefined : "lazy"}
+									sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
 								/>
 							</div>
 						</CarouselItem>
