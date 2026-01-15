@@ -17,7 +17,7 @@ import { GoogleGenAI } from "@google/genai";
 const DEFAULT_OUTPUT = "./public/images/hero-mockup.png";
 const INPUT_IMAGE =
 	"/Users/ngocla/.gemini/antigravity/brain/ef1744f1-5795-40e4-aa53-7acc976d6866/uploaded_image_1768402419992.png";
-const apiKey = "AIzaSyA6eJuHH60CIdWuHF11ZedhLtAqdZYiXj8";
+const apiKey = process.env.GEMINI_API_KEY!;
 const outputPath = DEFAULT_OUTPUT;
 
 // Validate API key
