@@ -12,13 +12,15 @@
 		"gen:type": "npx supabase gen types typescript --schema public > src/types/database.types.ts",
 		"gen:schema": "supabase db dump -f supabase/schema/schema.sql",
 		"seed:users": "bun run scripts/generate-500-users/generate-500-test-users.ts",
-		"test:seed-user": "bun run scripts/generate-500-users/test-single-image.ts"
+		"test:seed-user": "bun run scripts/generate-500-users/test-single-image.ts",
+		"gen:hero": "bun run scripts/generate-hero-mockup/generate-hero-mockup.ts"
 	},
 	"dependencies": {
 		"@dnd-kit/core": "^6.3.1",
 		"@dnd-kit/modifiers": "^9.0.0",
 		"@dnd-kit/sortable": "^10.0.0",
 		"@fal-ai/client": "^1.8.1",
+		"@google/genai": "^1.35.0",
 		"@hookform/resolvers": "^5.2.2",
 		"@lottiefiles/dotlottie-react": "^0.17.12",
 		"@radix-ui/react-accordion": "^1.2.12",

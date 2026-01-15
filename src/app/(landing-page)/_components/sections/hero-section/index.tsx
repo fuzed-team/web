@@ -7,10 +7,7 @@ import { RightSide } from "./right-side";
 
 export function HeroSection() {
 	return (
-		<section
-			className="md:py-24 overflow-hidden pt-24 pb-20 relative"
-			id="platform"
-		>
+		<section className="md:py-24 overflow-hidden pt-24 relative" id="platform">
 			<div
 				className="absolute inset-0 pointer-events-none"
 				style={{
@@ -23,7 +20,7 @@ export function HeroSection() {
 						"radial-gradient(ellipse 60% 50% at 50% 0%, #000 70%, transparent 100%)",
 				}}
 			/>
-			<MaxWidthWrapper className="grid md:grid-cols-2 relative z-10 min-h-[80vh] items-center">
+			<MaxWidthWrapper className="grid md:grid-cols-2 relative z-10 min-h-[80vh] items-center gap-6 md:gap-0">
 				<div className="flex flex-col items-center md:items-start max-w-3xl">
 					{/* Pill Badge */}
 					<AnimationContainer delay={0.2}>
@@ -79,7 +76,9 @@ export function HeroSection() {
 					</AnimationContainer>
 				</div>
 
-				<RightSide />
+				<AnimationContainer delay={0.8}>
+					<RightSide />
+				</AnimationContainer>
 			</MaxWidthWrapper>
 		</section>
 	);

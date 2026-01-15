@@ -12,11 +12,11 @@ export function LandingPage() {
 		<div className="overflow-x-hidden scrollbar-hide size-full">
 			<HeroSection />
 			{/* Browser Mockup */}
-			<MaxWidthWrapper>
+			{/* <MaxWidthWrapper>
 				<AnimationContainer delay={0.3}>
 					<BrowserMockup />
 				</AnimationContainer>
-			</MaxWidthWrapper>
+			</MaxWidthWrapper> */}
 			<FeaturesSection />
 			<TestimonialsSection />
 		</div>
